@@ -30,7 +30,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-build
-          path: play2learn/.next
+          path: .next
 
       - name: Verificar contenid del directori descarregat
         run: ls -la .next || echo "⚠️ No s'ha descarregat res a '.next'!"
