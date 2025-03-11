@@ -17,7 +17,7 @@ function loading() {
     const [birdVelocity, setBirdVelocity] = useState(0);
     const [obstacles, setObstacles] = useState<Obstacle[]>([]);
 
-    const gameLoopRef = useRef<number>();
+    const gameLoopRef = useRef<number>(0);
     const lastObstacleSpawnRef = useRef(0);
 
     const BIRD_SIZE = 40;
