@@ -39,9 +39,9 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/prod_key.pem
           chmod 600 ~/prod_key.pem
-          scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standlone/.next/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next
+          scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standalone/.next/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/static/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next/static
-          scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standlone/server.js ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
+          scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standalone/server.js ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
