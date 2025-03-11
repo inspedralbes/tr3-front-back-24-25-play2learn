@@ -1,6 +1,9 @@
 name: Preparant per producció
 run-name: ${{ github.actor }} està pujant l'aplicació a PROD NEXTJS🚀
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,6 +46,5 @@ jobs:
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/static/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next/static
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standalone/server.js ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standalone/package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /var/www/html && npm i"
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
