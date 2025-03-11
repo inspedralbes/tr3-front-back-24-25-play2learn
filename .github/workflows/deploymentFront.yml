@@ -10,7 +10,7 @@ jobs:
       - run: cd play2learn && npm run build --if-present
 
       # 👇 Verificar si '.next' existe
-      - run: ls -la .next || echo "⚠️ Directori '.next' no existeix!"
+      - run: ls -la play2learn/.next || echo "⚠️ Directori 'play2learn/.next' no existeix!"
 
       - uses: actions/upload-artifact@v4
         with:
