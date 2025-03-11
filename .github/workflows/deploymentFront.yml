@@ -16,6 +16,7 @@ jobs:
         with:
           name: app-build
           path: play2learn/.next
+          include-hidden-files: true
 
   Pujar-a-produccio-amb-SCP:
     runs-on: ubuntu-latest
