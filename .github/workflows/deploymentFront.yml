@@ -43,5 +43,6 @@ jobs:
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/static/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next/static
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standalone/server.js ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /var/www/html && npm i && npm run start"
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
