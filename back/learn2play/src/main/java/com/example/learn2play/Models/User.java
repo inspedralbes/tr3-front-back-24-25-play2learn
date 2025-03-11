@@ -17,58 +17,13 @@ public class User {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "email")
+    private String email;
 
-    @Column(name = "date_registry")
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "created_at")
     @CreatedDate
     private Date date;
-
-    public User() {
-
-    }
-
-    public User(Long id, String name, String userName, Date date) {
-        this.id = id;
-        this.name = name;
-        this.userName = userName;
-        this.date = date;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    @Override
-    public String toString() {
-        return "Person [id=" + id + ", name=" + name + ", userName=" + userName + ", date=" + date + "]";
-    }
 }
