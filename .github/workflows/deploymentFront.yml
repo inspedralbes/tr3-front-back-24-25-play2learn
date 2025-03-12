@@ -1,6 +1,9 @@
 name: Preparant per producció
 run-name: ${{ github.actor }} està pujant l'aplicació a PROD NEXTJS🚀
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
