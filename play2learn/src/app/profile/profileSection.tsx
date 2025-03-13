@@ -1,11 +1,16 @@
+"use client";
 import React from 'react';
 import { Trophy, Star, Clock, Calendar, Award, Zap, BarChart3, Target, ChevronDown } from 'lucide-react';
+import {AuthContext} from "@/contexts/AuthContext";
+import { useContext, useEffect } from "react";
 
-interface ProfileSectionProps {
-  // selectedLanguage: string;
-}
+const ProfileSection: React.FC = () => {
+  const { selectedLanguage, setActiveSection } = useContext(AuthContext);
+  
+  useEffect(() => {
+    setActiveSection('profile');
+  }, []);
 
-const ProfileSection: React.FC<ProfileSectionProps> = ({ selectedLanguage }) => {
   const achievements = [
     { id: 1, name: 'First Victory', icon: '🏆', description: 'Win your first game', completed: true },
     { id: 2, name: 'Vocabulary Master', icon: '📚', description: 'Learn 100 words', completed: true },

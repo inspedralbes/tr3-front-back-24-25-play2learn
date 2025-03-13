@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+"use client"
+import { useState } from 'react';
 import { Users, Clock, Star, Trophy, ChevronRight, Play, X, Plus, Search } from 'lucide-react';
+import {AuthContext} from "@/contexts/AuthContext";
+import { useContext } from "react";
 
-// interface GameLobbyProps {
-//   selectedLanguage: string;
-// }
+const GameLobby: React.FC = () => {
+  const { selectedLanguage } = useContext(AuthContext);
 
-const GameLobby: React.FC<GameLobbyProps> = ({ selectedLanguage }) => {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   

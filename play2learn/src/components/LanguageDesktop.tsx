@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
 import { Languages, ChevronRight, Sparkles, Clock } from "lucide-react";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useContext } from "react";
 
 function App() {
-  const [selectedLanguage, setSelectedLanguage] = useState("Spanish");
+  const { selectedLanguage, setSelectedLanguage } = useContext(AuthContext);
   
   const languages = [
     { id: 1, name: "Spanish", level: 3, progress: 65 },

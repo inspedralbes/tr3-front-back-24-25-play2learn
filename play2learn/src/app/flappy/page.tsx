@@ -1,6 +1,7 @@
 "use client"
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Bird } from 'lucide-react';
+import {AuthContext} from "@/contexts/AuthContext";
 
 interface Obstacle {
     x: number;
@@ -9,6 +10,8 @@ interface Obstacle {
 }
 
 function loading() {
+    const { selectedLanguage, setActiveSection } = useContext(AuthContext);
+      
     const [isPlaying, setIsPlaying] = useState(false);
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
@@ -17,7 +20,7 @@ function loading() {
     const [birdVelocity, setBirdVelocity] = useState(0);
     const [obstacles, setObstacles] = useState<Obstacle[]>([]);
 
-    const gameLoopRef = useRef<number>();
+    const gameLoopRef = useRef<number | null>(null);
     const lastObstacleSpawnRef = useRef(0);
 
     const BIRD_SIZE = 40;
@@ -27,6 +30,10 @@ function loading() {
     const GRAVITY = 0.6;
     const JUMP_FORCE = -12;
     const BIRD_X_POSITION = 100;
+
+    useEffect(() => {
+        setActiveSection('flappy');
+    }, []);
 
     const handleKeyPress = useCallback((e: KeyboardEvent) => {
         if (e.code === 'Space') {

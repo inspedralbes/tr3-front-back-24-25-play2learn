@@ -1,9 +1,11 @@
 "use client";
-import { useState } from "react";
 import { Globe, Users, TowerControl as GameController, Trophy, BookOpen, Settings, LogOut } from "lucide-react";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useContext } from "react";
+import Link from 'next/link';
 
 function App() {
-    const [activeSection, setActiveSection] = useState('lobby');
+  const { activeSection, setActiveSection } = useContext(AuthContext);
   
   return (
     <div className="hidden md:flex md:w-20 bg-indigo-950 flex-col items-center py-8 border-r border-indigo-700">
@@ -14,24 +16,29 @@ function App() {
         </div>
         
         <nav className="flex flex-col items-center space-y-8 flex-1">
-          <button 
-            onClick={() => setActiveSection('lobby')}
+          <Link href="/">
+            <button 
+            onClick={() => setActiveSection('lobby') }
             className={`p-3 rounded-xl transition-all ${activeSection === 'lobby' ? 'bg-purple-700 text-white' : 'text-indigo-400 hover:bg-indigo-800'}`}
           >
             <Users size={24} />
           </button>
-          <button 
+          </Link>
+          {/* Ocultar por ahora el modo individual */}
+          {/* <button 
             onClick={() => setActiveSection('games')}
             className={`p-3 rounded-xl transition-all ${activeSection === 'games' ? 'bg-purple-700 text-white' : 'text-indigo-400 hover:bg-indigo-800'}`}
           >
             <GameController size={24} />
-          </button>
+          </button> */}
+          <Link href="/profile">
           <button 
-            onClick={() => setActiveSection('profile')}
+            onClick={() => setActiveSection('profile') }
             className={`p-3 rounded-xl transition-all ${activeSection === 'profile' ? 'bg-purple-700 text-white' : 'text-indigo-400 hover:bg-indigo-800'}`}
           >
             <Trophy size={24} />
           </button>
+          </Link>
           <button className="p-3 rounded-xl text-indigo-400 hover:bg-indigo-800 transition-all">
             <BookOpen size={24} />
           </button>

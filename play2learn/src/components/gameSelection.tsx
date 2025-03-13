@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { Star, Clock, Trophy, Users, ArrowRight, Search, Filter, X } from 'lucide-react';
 
 interface Game {
-//   id: number;
-//   name: string;
-//   icon: string;
-//   description: string;
-//   difficulty: string;
+  id: number;
+  name: string;
+  icon: string;
+  description: string;
+  difficulty: string;
 }
 
 interface GameSelectionProps {
-//   games: Game[];
-//   selectedLanguage: string;
+  games: Game[];
+  selectedLanguage: string;
 }
 
 const GameSelection: React.FC<GameSelectionProps> = ({ games, selectedLanguage }) => {
