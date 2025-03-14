@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} està pujant l'aplicació a PROD NEXTJS🚀
 on:
   push:
     branches:
-      - main
+      - dev
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,6 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: cd play2learn && npm install
       - run: cd play2learn && npm run build --if-present
+      - run: cp -r play2learn/public play2learn/.next/public
 
       # 👇 Verificar si 'dist' existe
       - run: ls -la dist || echo "⚠️ Directori 'dist' no existeix!"
@@ -45,5 +46,6 @@ jobs:
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/static/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next/static
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standlone/server.js ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
+          scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/public/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next/public
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
