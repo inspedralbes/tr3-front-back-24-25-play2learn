@@ -17,12 +17,40 @@ class ArchievementsSeeder extends Seeder
         //
         DB::table('archievements')->insert([
             [
-                'name' => 'Primera Win',
-                'slug' => Str::slug('Primera Win'),
+                'id' => 1,
+                'name' => 'Primera Victoria',
+                'slug' => Str::slug('Primera Victoria'),
                 'description' => 'Logro otorgado por ganar tu primera partida.',
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'name' => 'Puntuación Perfecta',
+                'slug' => Str::slug('Puntuación Perfecta'),
+                'description' => 'Logro otorgado por ganar tu puntuación perfecta.',
+            ],
+            [
+                'id' => 3,
+                'name' => 'Demonio de la velocidad',
+                'slug' => Str::slug('Demonio de la velocidad'),
+                'description' => 'Logro otorgado por ganar una partida en menos de un minuto.',
+            ],
+            [
+                'id' => 4,
+                'name' => 'Políglota',
+                'slug' => Str::slug('Políglota'),
+                'description' => 'Logro otorgado por ganar una partida en menos de un minuto.',
+            ],
+            [
+                'id' => 5,
+                'name' => 'Maestro de la racha',
+                'slug' => Str::slug('Maestro de la racha'),
+                'description' => 'Logro otorgado por jugar 30 dias seguidos.',
+            ],
+            [
+                'id' => 6,
+                'name' => 'Maestro de vocabulario',
+                'slug' => Str::slug('Maestro de vocabulario'),
+                'description' => 'Logro otorgado por aprender 100 palabras nuevas.',
             ],
         ]);
     }

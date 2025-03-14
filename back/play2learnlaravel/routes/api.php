@@ -9,4 +9,8 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('/auth')->group(function () {
     Route::post('/register', [\App\Http\Controllers\AuthenticatorController::class, 'register']);
+    Route::post('/login', [\App\Http\Controllers\AuthenticatorController::class, 'login']);
+    Route::post('/logout', [\App\Http\Controllers\AuthenticatorController::class, 'logout']);
 });
+
+

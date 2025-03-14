@@ -11,19 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stats_user_languages', function (Blueprint $table) {
+        Schema::create('activity_connection_users', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->unsignedBigInteger('language_id');
-            $table->foreign('language_id')->references('id')->on('languages');
-
-            $table->integer('level');
-            $table->integer('experience');
-            $table->integer('total_games');
-            $table->integer('total_wins');
-            $table->integer('total_experience');
-            $table->integer('daily_streak');
+            $table->string('ip_address');
             $table->timestamps();
         });
     }
@@ -33,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stats_user_languages');
+        Schema::dropIfExists('activity_connection_users');
     }
 };
