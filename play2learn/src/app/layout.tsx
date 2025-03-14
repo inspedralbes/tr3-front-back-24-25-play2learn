@@ -34,11 +34,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white flex flex-col md:flex-row">
+          <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white">
             {/* <NavBarMovile/> */}
-            <Secciones />
-            <Idiomas />
-            <div className="flex-1 p-4 md:p-8 overflow-y-auto">
+            <div className="fixed top-0 left-0 h-full flex flex-row">
+              <Secciones />
+              <Idiomas />
+            </div>
+            <div className="p-4 md:p-8 md:ml-[330px] overflow-y-auto">
               <main>{children}</main>
             </div>
           </div>
