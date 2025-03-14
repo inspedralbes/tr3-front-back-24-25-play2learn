@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} està pujant l'aplicació a PROD NEXTJS🚀
 on:
   push:
     branches:
-      - dev
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
