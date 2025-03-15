@@ -1,8 +1,9 @@
 "use client";
-import { UserPlus, Eye, EyeOff, Search, Loader2, User2 } from "lucide-react";
+import { UserPlus, Eye, EyeOff, Search, Loader2, User2, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { useRouter } from "next/navigation";
+import Input from "@/components/ui/Input";
 
 function RegisterClientComponent() {
   const router = useRouter();
@@ -69,13 +70,16 @@ function RegisterClientComponent() {
     }));
   };
 
-  const handleRegister = async() => {
+  // useEffect(()=>{
+  //   console.log(user);
+  // },[user]);
+
+  const handleRegister = async () => {
     try {
       setIsLoading(true);
       const response = await apiRequest("/auth/register", "POST", user);
       console.log(response);
-      if(response.status === 'success')
-      {
+      if (response.status === 'success') {
         router.push('/');
       }
     } catch (error) {
@@ -90,105 +94,54 @@ function RegisterClientComponent() {
       <div className="bg-indigo-800/60 rounded-xl border border-indigo-700 max-w-screen-xl m-0 sm:m-10 flex justify-center flex-1">
         <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
           <div className="mt-12 flex flex-col items-center">
-            <h1 className="text-2xl xl:text-3xl font-extrabold">Register</h1>
+            <h1 className="text-2xl xl:text-3xl font-extrabold text-white">Register</h1>
             <div className="w-full flex-1 mt-8">
               <div className="mx-auto max-w-xs">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User2 className="h-5 w-5 text-indigo-400" />
-                    </div>
-                    <input
-                      name="name"
-                      className="w-full pl-10 pr-4 py-3 bg-indigo-900/30 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      type="text"
-                      placeholder="Nombre"
-                      onChange={handleInputChange}
-                      value={user.name}
-                    />
-                  </div>
-
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Search className="h-5 w-5 text-indigo-400" />
-                    </div>
-                    <input
-                      name="username"
-                      className="w-full pl-10 pr-4 py-3 bg-indigo-900/30 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      type="text"
-                      placeholder="Username"
-                      onChange={handleInputChange}
-                      value={user.username}
-                    />
-                  </div>
+                  <Input name="name" placeholder="Nombre" type="text" onChange={handleInputChange} value={user.name} icon={User2} />
+                  <Input name="username" placeholder="Username" type="text" onChange={handleInputChange} value={user.username} icon={Search} />
                 </div>
 
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-indigo-400" />
-                  </div>
-                  <input
-                    name="email"
-                    className="w-full pl-10 pr-4 py-3 bg-indigo-900/30 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mt-5"
-                    type="email"
-                    placeholder="Email"
-                    onChange={handleInputChange}
-                    value={user.email}
+                <div className="mt-5">
+                  <Input name="email" 
+                  placeholder="Email" 
+                  type="email" 
+                  onChange={handleInputChange} 
+                  value={user.email} 
+                  icon={Mail} 
                   />
                 </div>
-                <div className="relative mt-5">
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 left-0 pl-3 flex items-center"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-indigo-400" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-indigo-400" />
-                    )}
-                  </button>
-                  <input
-                    name="password"
-                    className="w-full pl-10 pr-4 py-3 bg-indigo-900/30 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    onChange={handleInputChange}
-                    value={user.password}
-                  />
+                <div className="mt-5">
+                  <Input name="password" 
+                    placeholder="Password" 
+                    type={showPassword ? "text" : "password"} 
+                    onChange={handleInputChange} 
+                    value={user.password} 
+                    icon={showPassword ? EyeOff : Eye} 
+                    iconClick={() => setShowPassword(!showPassword)} 
+                    />
                 </div>
-                <div className="relative mt-5">
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 left-0 pl-3 flex items-center"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-5 w-5 text-indigo-400" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-indigo-400" />
-                    )}
-                  </button>
-                  <input
-                    name="confirmPassword"
-                    className="w-full pl-10 pr-4 py-3 bg-indigo-900/30 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm Password"
-                    onChange={handleInputChange}
-                    value={user.confirmPassword}
-                  />
+                <div className="mt-5">
+                  <Input name="confirmPassword" 
+                    placeholder="Confirm Password" 
+                    type={showConfirmPassword ? "text" : "password"} 
+                    onChange={handleInputChange} 
+                    value={user.confirmPassword} 
+                    icon={showConfirmPassword ? EyeOff : Eye} 
+                    iconClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                    />
                 </div>
                 {error.confirmPassword && (
                   <p className="text-red-500 text-sm mt-1">
                     {error.confirmPassword}
                   </p>
                 )}
-                <button 
-                  onClick={handleRegister} 
+
+                <button
+                  onClick={handleRegister}
                   disabled={isLoading}
-                  className={`mt-5 tracking-wide font-semibold ${
-                    isLoading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-700'
-                  } text-gray-100 w-full py-2 rounded-lg transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none`}
+                  className={`mt-5 tracking-wide font-semibold ${isLoading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-700'
+                    } text-gray-100 w-full py-2 rounded-lg transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none`}
                 >
                   {isLoading ? (
                     <Loader2 size={24} className="animate-spin -ml-2" />

@@ -1,7 +1,44 @@
 "use client";
 
-import { UserPlus, Search, Mail } from "lucide-react";
+import { UserPlus, Search, User, Eye, EyeOff } from "lucide-react";
+import { useEffect, useState } from "react";
+import Input from "@/components/ui/Input";
+import { apiRequest } from "@/services/communicationManager/apiRequest";
+import { useRouter } from "next/navigation";
+
 function LoginClientComponent() {
+  const router = useRouter();
+
+  const [user, setUser] = useState({
+    user: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
+  useEffect(() => {
+    console.log(showPassword);
+  }, [showPassword]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleLogin = async () => {
+    const response = await apiRequest("/auth/login", "POST", user);
+    console.log(response);
+    if (response.status === 'success') {
+      router.push('/');
+    }
+  };
+
   return (
     <div className="min-h-screen text-gray-900 flex justify-center">
       <div className="bg-indigo-800/60 rounded-xl border border-indigo-700 max-w-screen-xl m-0 sm:m-10 shadow sm:rounded-lg flex justify-center flex-1">
@@ -29,34 +66,35 @@ function LoginClientComponent() {
                 </button>
               </div>
 
-              <div className="my-10 border-b text-center">
-                <div className="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
+              <div className="my-10 border-b border-indigo-700 text-center">
+                <div className="leading-none px-2 inline-block text-sm text-white tracking-wide font-medium bg-indigo-800/60 transform translate-y-1/2">
                   Or sign up with e-mail
                 </div>
               </div>
 
               <div className="mx-auto max-w-xs">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-indigo-400" />
-                  </div>
-                  <input
-                    className="w-full pl-10 pr-4 py-3 bg-indigo-900/30 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    type="email"
-                    placeholder="Email"
+
+                <div className="">
+                  <Input name="user" 
+                  placeholder="User" 
+                  type="text" 
+                  onChange={handleInputChange} 
+                  value={user.user} 
+                  icon={User} 
                   />
                 </div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-indigo-400" />
-                  </div>
-                  <input
-                    className="w-full px-8 py-3 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                    type="password"
-                    placeholder="Password"
+                <div className="mt-5">
+                  <Input name="password" 
+                  placeholder="Password" 
+                  type={showPassword ? "text" : "password"} 
+                  onChange={handleInputChange} 
+                  value={user.password} 
+                  icon={showPassword ? EyeOff : Eye} 
+                  iconClick={() => setShowPassword(!showPassword)} 
                   />
                 </div>
-                <button className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
+                <button className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                  onClick={handleLogin}>
                   <UserPlus size={24} className="-ml-2" />
                   <span className="ml-3">Sign Up</span>
                 </button>
