@@ -1,10 +1,10 @@
-name: Preparant per producció front test
+name: Preparant per producció front
 run-name: ${{ github.actor }} està pujant l'aplicació a PROD NEXTJS🚀
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build:
