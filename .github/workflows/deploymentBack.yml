@@ -29,12 +29,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/prod_key.pem
           chmod 600 ~/prod_key.pem
           rsync -avz --delete --exclude '.env' -e "ssh -o StrictHostKeyChecking=no -i ~/prod_key.pem" ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/backend/laravel/
-          rm ~/prod_key.pem
         working-directory: back/play2learnlaravel
 
       - name: 📦 Optimizar y migrar en el servidor
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/prod_key.pem ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd /var/www/backend/laravel
           php artisan migrate --force
           php artisan config:cache
@@ -42,6 +41,9 @@ jobs:
           php artisan view:cache
           sudo systemctl restart php8.2-fpm
           EOF
+
+      - name: 🔥 Eliminar clave privada
+        run: rm ~/prod_key.pem
 
       - name: ✅ Deploy exitós
         run: echo "🍏 Deployment completat amb èxit!"
