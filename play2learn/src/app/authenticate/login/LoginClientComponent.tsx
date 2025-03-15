@@ -1,6 +1,6 @@
 "use client";
 
-import { UserPlus, Search, User, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Search, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Input from "@/components/ui/Input";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
@@ -9,19 +9,28 @@ import { useRouter } from "next/navigation";
 function LoginClientComponent() {
   const router = useRouter();
 
-  const [user, setUser] = useState({
+  interface User {
+    user: string;
+    password: string;
+  }
+
+  interface Error {
+    user: string;
+    password: string;
+  }
+
+  const [user, setUser] = useState<User>({
     user: "",
     password: "",
   });
+  const [error, setError] = useState<Error>({
+    user: "",
+    password: "",
+  });
+  const [loginError, setLoginError] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-
-  useEffect(() => {
-    console.log(showPassword);
-  }, [showPassword]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,12 +40,50 @@ function LoginClientComponent() {
     }));
   };
 
+  const fields: (keyof User)[] = ['user', 'password'];
+
+  const verifyFields = () => {
+    let hasErrors = false;
+
+    fields.forEach((field) => {
+      if (user[field] === '') {
+        hasErrors = true;
+        setError((prev) => ({
+          ...prev,
+          [field]: "Este campo es obligatorio",
+        }));
+      } else {
+        setError((prev) => ({
+          ...prev,
+          [field]: "",
+        }));
+      }
+    });
+
+    return !hasErrors;
+  }
+
   const handleLogin = async () => {
-    const response = await apiRequest("/auth/login", "POST", user);
-    console.log(response);
-    if (response.status === 'success') {
-      router.push('/');
+    try {
+      setIsLoading(true);
+      const isValid = verifyFields();
+      if (!isValid) {
+        setIsLoading(false);
+        return;
+      }
+      const response = await apiRequest("/auth/login", "POST", user);
+      console.log(response);
+      if (response.status === 'success') {
+        router.push('/');
+      }else{
+        setLoginError(response.message);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
+
   };
 
   return (
@@ -75,28 +122,51 @@ function LoginClientComponent() {
               <div className="mx-auto max-w-xs">
 
                 <div className="">
-                  <Input name="user" 
-                  placeholder="User" 
-                  type="text" 
-                  onChange={handleInputChange} 
-                  value={user.user} 
-                  icon={User} 
+                  <Input name="user"
+                    placeholder="User"
+                    type="text"
+                    onChange={handleInputChange}
+                    value={user.user}
+                    icon={User}
                   />
                 </div>
+                {error.user && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {error.user}
+                  </p>
+                )}
                 <div className="mt-5">
-                  <Input name="password" 
-                  placeholder="Password" 
-                  type={showPassword ? "text" : "password"} 
-                  onChange={handleInputChange} 
-                  value={user.password} 
-                  icon={showPassword ? EyeOff : Eye} 
-                  iconClick={() => setShowPassword(!showPassword)} 
+                  <Input name="password"
+                    placeholder="Password"
+                    type={showPassword ? "text" : "password"}
+                    onChange={handleInputChange}
+                    value={user.password}
+                    icon={showPassword ? EyeOff : Eye}
+                    iconClick={() => setShowPassword(!showPassword)}
                   />
                 </div>
+                {error.password && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {error.password}
+                  </p>
+                )}
+                {loginError && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {loginError}
+                  </p>
+                )}
                 <button className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-                  onClick={handleLogin}>
-                  <UserPlus size={24} className="-ml-2" />
-                  <span className="ml-3">Sign Up</span>
+                  onClick={handleLogin}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 size={24} className="animate-spin -ml-2" />
+                  ) : (
+                    <UserPlus size={24} className="-ml-2" />
+                  )}
+                  <span className="ml-3">
+                    {isLoading ? 'Logging in...' : 'Login'}
+                  </span>
                 </button>
                 <p className="mt-6 text-xs text-gray-600 text-center">
                   I agree to abide by templatana's

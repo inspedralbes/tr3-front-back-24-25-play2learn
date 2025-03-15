@@ -5,43 +5,44 @@ import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { useRouter } from "next/navigation";
 import Input from "@/components/ui/Input";
 
+interface User {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface Error {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 function RegisterClientComponent() {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  interface User {
-    name: string;
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }
-
-  interface Error {
-    name: string;
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }
-
-  const [error, setError] = useState<Error>({
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [isValid, setIsValid] = useState(false);
 
   const [user, setUser] = useState<User>({
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const [error, setError] = useState<Error>({
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
 
   const verifyPassword = () => {
@@ -58,6 +59,29 @@ function RegisterClientComponent() {
     }
   };
 
+  const fields: (keyof User)[] = ['name', 'username', 'email', 'password', 'confirmPassword'];
+
+  const verifyFields = () => {
+    let hasErrors = false;
+    
+    fields.forEach((field) => {
+      if (user[field] === '') {
+        hasErrors = true;
+        setError((prev) => ({
+          ...prev,
+          [field]: "Este campo es obligatorio",
+        }));
+      } else {
+        setError((prev) => ({
+          ...prev,
+          [field]: "",
+        }));
+      }
+    });
+
+    return !hasErrors;
+  }
+
   useEffect(() => {
     verifyPassword();
   }, [user.password, user.confirmPassword]);
@@ -70,13 +94,14 @@ function RegisterClientComponent() {
     }));
   };
 
-  // useEffect(()=>{
-  //   console.log(user);
-  // },[user]);
-
   const handleRegister = async () => {
     try {
       setIsLoading(true);
+      const isValid = verifyFields();
+      if (!isValid) {
+        setIsLoading(false);
+        return;
+      }
       const response = await apiRequest("/auth/register", "POST", user);
       console.log(response);
       if (response.status === 'success') {
@@ -98,38 +123,62 @@ function RegisterClientComponent() {
             <div className="w-full flex-1 mt-8">
               <div className="mx-auto max-w-xs">
                 <div className="grid grid-cols-2 gap-4">
-                  <Input name="name" placeholder="Nombre" type="text" onChange={handleInputChange} value={user.name} icon={User2} />
-                  <Input name="username" placeholder="Username" type="text" onChange={handleInputChange} value={user.username} icon={Search} />
+                  <div>
+                    <Input name="name" placeholder="Nombre" type="text" onChange={handleInputChange} value={user.name} icon={User2} />
+                    {error.name && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {error.name}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Input name="username" placeholder="Username" type="text" onChange={handleInputChange} value={user.username} icon={Search} />
+                    {error.username && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {error.username}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="mt-5">
-                  <Input name="email" 
-                  placeholder="Email" 
-                  type="email" 
-                  onChange={handleInputChange} 
-                  value={user.email} 
-                  icon={Mail} 
+                  <Input name="email"
+                    placeholder="Email"
+                    type="email"
+                    onChange={handleInputChange}
+                    value={user.email}
+                    icon={Mail}
                   />
                 </div>
+                {error.email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {error.email}
+                  </p>
+                )}
                 <div className="mt-5">
-                  <Input name="password" 
-                    placeholder="Password" 
-                    type={showPassword ? "text" : "password"} 
-                    onChange={handleInputChange} 
-                    value={user.password} 
-                    icon={showPassword ? EyeOff : Eye} 
-                    iconClick={() => setShowPassword(!showPassword)} 
-                    />
+                  <Input name="password"
+                    placeholder="Password"
+                    type={showPassword ? "text" : "password"}
+                    onChange={handleInputChange}
+                    value={user.password}
+                    icon={showPassword ? EyeOff : Eye}
+                    iconClick={() => setShowPassword(!showPassword)}
+                  />
                 </div>
+                {error.password && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {error.password}
+                  </p>
+                )}
                 <div className="mt-5">
-                  <Input name="confirmPassword" 
-                    placeholder="Confirm Password" 
-                    type={showConfirmPassword ? "text" : "password"} 
-                    onChange={handleInputChange} 
-                    value={user.confirmPassword} 
-                    icon={showConfirmPassword ? EyeOff : Eye} 
-                    iconClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                    />
+                  <Input name="confirmPassword"
+                    placeholder="Confirm Password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    onChange={handleInputChange}
+                    value={user.confirmPassword}
+                    icon={showConfirmPassword ? EyeOff : Eye}
+                    iconClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  />
                 </div>
                 {error.confirmPassword && (
                   <p className="text-red-500 text-sm mt-1">
