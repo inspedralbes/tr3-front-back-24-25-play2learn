@@ -1,8 +1,9 @@
 "use client";
 import { UserPlus, Eye, EyeOff, Search, Loader2, User2, Mail } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { useRouter } from "next/navigation";
+import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import Input from "@/components/ui/Input";
 
 interface User {
@@ -23,6 +24,8 @@ interface Error {
 
 function RegisterClientComponent() {
   const router = useRouter();
+  const { authUser } = useContext(AuthenticatorContext);
+
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -105,6 +108,8 @@ function RegisterClientComponent() {
       const response = await apiRequest("/auth/register", "POST", user);
       console.log(response);
       if (response.status === 'success') {
+        const { user, token } = response;
+        authUser(user, token);
         router.push('/');
       }
     } catch (error) {

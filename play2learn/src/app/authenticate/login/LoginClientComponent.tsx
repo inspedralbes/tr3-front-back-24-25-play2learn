@@ -1,13 +1,15 @@
 "use client";
 
 import { UserPlus, Search, User, Eye, EyeOff, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Input from "@/components/ui/Input";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { useRouter } from "next/navigation";
+import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 
 function LoginClientComponent() {
   const router = useRouter();
+  const { authUser } = useContext(AuthenticatorContext);
 
   interface User {
     user: string;
@@ -18,6 +20,7 @@ function LoginClientComponent() {
     user: string;
     password: string;
   }
+
 
   const [user, setUser] = useState<User>({
     user: "",
@@ -74,6 +77,8 @@ function LoginClientComponent() {
       const response = await apiRequest("/auth/login", "POST", user);
       console.log(response);
       if (response.status === 'success') {
+        const { user, token } = response;
+        authUser(user, token);
         router.push('/');
       }else{
         setLoginError(response.message);

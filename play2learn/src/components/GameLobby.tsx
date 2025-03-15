@@ -1,11 +1,15 @@
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Users, Clock, Star, Trophy, ChevronRight, Play, X, Plus, Search } from 'lucide-react';
 import {AuthContext} from "@/contexts/AuthContext";
 import { useContext } from "react";
+import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
+import { useRouter } from 'next/navigation';
 
 const GameLobby: React.FC = () => {
+  const router = useRouter();
   const { selectedLanguage } = useContext(AuthContext);
+  const { user, isAuthenticated } = useContext(AuthenticatorContext);
 
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,6 +56,12 @@ const GameLobby: React.FC = () => {
   const toggleCreateRoom = () => {
     setShowCreateRoom(!showCreateRoom);
   };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/authenticate/login');
+    }
+  }, [isAuthenticated, router]);
 
   return (
     <div>
@@ -182,9 +192,7 @@ const GameLobby: React.FC = () => {
               
               <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:justify-between md:items-center">
                 <div className="flex items-center mb-4 md:mb-0">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center text-xs font-bold">
-                    {room.host.substring(0, 2).toUpperCase()}
-                  </div>
+                  <div className="w-8 text-center font-bold">#{room.host.substring(0, 2).toUpperCase()}</div>
                   <span className="ml-2 text-sm text-indigo-300">Host: {room.host}</span>
                 </div>
                 
