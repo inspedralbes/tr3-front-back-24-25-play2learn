@@ -10,12 +10,27 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: 🔄 Clonar el repositori
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Configurar PHP i Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, xml, ctype, curl, gd, pdo_mysql, zip
+          tools: composer:v2
+
+      - name: 📦 Instalar dependencias en el runner
+        run: composer install --optimize-autoloader
+        working-directory: back/play2learnlaravel
+
       - name: 📂 Sincronizar archivos con el servidor
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/prod_key.pem
           chmod 600 ~/prod_key.pem
           rsync -avz --delete --exclude '.env' -e "ssh -o StrictHostKeyChecking=no -i ~/prod_key.pem" ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/backend/laravel/
           rm ~/prod_key.pem
+        working-directory: back/play2learnlaravel
 
       - name: 📦 Optimizar y migrar en el servidor
         run: |
