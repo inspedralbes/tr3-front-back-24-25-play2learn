@@ -13,6 +13,6 @@ Route::prefix('/auth')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\AuthenticatorController::class, 'logout']);
 });
 
-Route::get('/te', function () {
+Route::get('/test', function () {
     return response()->json(['message' => 'Test route is working!']);
 });
