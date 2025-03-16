@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('archievements_rewards', function (Blueprint $table) {
+        Schema::create('achievements', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('archievement_id');
-            $table->foreign('archievement_id')->references('id')->on('archievements');
-
-            $table->string('type');
-            $table->integer('quantity');
+            $table->string('name');
+            $table->string('slug');
+            $table->text('description');
+            $table->enum('status', ['inactive', 'active'])->default('active');
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('archievements_rewards');
+        Schema::dropIfExists('achievements');
     }
 };

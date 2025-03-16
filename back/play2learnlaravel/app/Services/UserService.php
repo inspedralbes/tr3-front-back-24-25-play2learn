@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Archievements;
-use App\Models\ArchievementsUser;
+use App\Models\achievements;
+use App\Models\achievementsUser;
 use App\Models\StatsUserLanguage;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +15,7 @@ class UserService
     /***
      * This function create new user with the default archivments and global stats...
      * Steps: - Create User
-     *        - Create Archievements Users
+     *        - Create achievements Users
      * @param $user
      * @return User
      */
@@ -28,16 +28,16 @@ class UserService
         $newUser->password = $user['password'];
         $newUser->save();
 
-        //init the active archievements for new user
-        $archievements = Archievements::select('id')
+        //init the active achievements for new user
+        $achievements = achievements::select('id')
             ->where('status', 'active')->get();
 
-        foreach ($archievements as $archievement) {
-            $defaultArchievement = new ArchievementsUser();
-            $defaultArchievement->user_id = $newUser->id;
-            $defaultArchievement->archievement_id = $archievement->id;
-            $defaultArchievement->progress = 0.00;
-            $defaultArchievement->save();
+        foreach ($achievements as $achievement) {
+            $defaultachievement = new achievementsUser();
+            $defaultachievement->user_id = $newUser->id;
+            $defaultachievement->achievement_id = $achievement->id;
+            $defaultachievement->progress = 0.00;
+            $defaultachievement->save();
         }
 
         //init the default stats for new user

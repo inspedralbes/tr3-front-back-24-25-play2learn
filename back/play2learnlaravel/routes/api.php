@@ -13,6 +13,12 @@ Route::prefix('/auth')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\AuthenticatorController::class, 'logout']);
 });
 
+Route::group(['middleware' => ['auth:sanctum']], function () {
+   Route::prefix('/user')->group(function () {
+       Route::get('/getUserStatsLanguage/{languageId}', [\App\Http\Controllers\StatsUserLanguageController::class, 'getUserStatsLanguage']);
+   });
+});
+
 Route::get('/test', function () {
     return response()->json(['message' => 'Test route is working!']);
 });
