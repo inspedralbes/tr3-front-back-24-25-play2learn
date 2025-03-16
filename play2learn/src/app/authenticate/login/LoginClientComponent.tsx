@@ -105,14 +105,14 @@ function LoginClientComponent() {
               <div className="flex flex-col items-center">
                 <button className="w-full max-w-xs font-bold shadow-sm rounded-lg py-1 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                   <div className="bg-white p-1 rounded-full">
-                    <img src="/google.svg" alt="Google" />
+                    <img src="/img/google.svg" alt="Google" />
                   </div>
                   <span className="ml-4">Sign Up with Google</span>
                 </button>
 
                 <button className="w-full max-w-xs font-bold shadow-sm rounded-lg py-1 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline mt-5">
                   <div className="bg-white p-1 rounded-full">
-                    <img src="/github.svg" alt="GitHub" />
+                    <img src="/img/github.svg" alt="GitHub" />
                   </div>
                   <span className="ml-4">Sign Up with GitHub</span>
                 </button>

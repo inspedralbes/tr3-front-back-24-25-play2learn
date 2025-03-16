@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} està pujant l'aplicació a PROD NEXTJS🚀
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build:
@@ -58,7 +58,7 @@ jobs:
           scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/static/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next/static
           scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standalone/server.js ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
           scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/standalone/package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html
-          scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/public/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/.next/public
+          scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" .next/public/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/html/public
           rm ~/prod_key.pem
 
       - run: echo "🍏 This job's status is ${{ job.status }}."

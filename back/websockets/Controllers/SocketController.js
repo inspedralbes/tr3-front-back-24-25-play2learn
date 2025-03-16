@@ -1,10 +1,9 @@
 class SocketController {
     static initialize(io) {
-        var userNumber = 0;
+        let users = [];
 
         io.on('connection', (socket) => {
             console.log('A user connected');
-            socket.idUser = userNumber++;
             
         });
     }
