@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class ArchievementsRewardsController extends Controller
+class AchievementsUserController extends Controller
 {
     //
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { apiRequest } from "@/services/communicationManager/apiRequest";
 import Cookies from "js-cookie";
 
 interface User {
@@ -10,6 +9,7 @@ interface User {
   username: string;
   email: string;
   profile_pic: string;
+  created_at: string;
 }
 
 interface AuthenticatorContextProps {

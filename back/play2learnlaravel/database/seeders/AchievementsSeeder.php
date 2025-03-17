@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class ArchievementsSeeder extends Seeder
+class AchievementsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +15,7 @@ class ArchievementsSeeder extends Seeder
     public function run(): void
     {
         //
-        DB::table('archievements')->insert([
+        DB::table('achievements')->insert([
             [
                 'id' => 1,
                 'name' => 'Primera Victoria',
