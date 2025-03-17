@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\achievements;
-use App\Models\achievementsUser;
+use App\Models\Achievements;
+use App\Models\AchievementsUser;
 use App\Models\StatsUserLanguage;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -29,11 +29,11 @@ class UserService
         $newUser->save();
 
         //init the active achievements for new user
-        $achievements = achievements::select('id')
+        $achievements = Achievements::select('id')
             ->where('status', 'active')->get();
 
         foreach ($achievements as $achievement) {
-            $defaultachievement = new achievementsUser();
+            $defaultachievement = new AchievementsUser();
             $defaultachievement->user_id = $newUser->id;
             $defaultachievement->achievement_id = $achievement->id;
             $defaultachievement->progress = 0.00;

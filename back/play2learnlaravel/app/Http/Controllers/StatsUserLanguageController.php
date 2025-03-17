@@ -27,7 +27,8 @@ class StatsUserLanguageController extends Controller
                 ->where('user_id', $userId)
                 ->get();
 
-            $gameHistoryUser = GameHistoryUsers::where('user_id', $userId)
+            $gameHistoryUser = GameHistoryUsers::with('rounds')
+                ->where('user_id', $userId)
                 ->orderBy('created_at', 'desc')
                 ->limit(3)
                 ->get();

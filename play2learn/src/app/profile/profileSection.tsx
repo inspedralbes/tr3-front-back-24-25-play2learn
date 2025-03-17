@@ -61,13 +61,40 @@ const ProfileSection: React.FC = () => {
 
   const [stats, setStats] = useState<Stats | null>(null);
 
+  interface Game {
+    id: number;
+    uuid: string;
+    name: string;
+    n_rounds: number;
+    max_clues: number;
+    max_time: number;
+    status: string;
+  }
+
+  interface GameRound {
+    id: number;
+    name: string;
+    score: number;
+    position: number;
+  }
+
+  interface GameHistory {
+    id: number;
+    game: Game;
+    rounds: GameRound[];
+    score: number;
+    result: string;
+  }
+
+  const [gameHistory, setGameHistory] = useState<GameHistory[]>([]);
+
   const initStats = async () => {
     const response = await apiRequest(`/user/getUserStatsLanguage/1`);
     console.log(response);
     if (response.status === 'success') {
       setAchievements(response.achievements);
       setStats(response.statsLanguage);
-      console.log(user)
+      setGameHistory(response.gameHistoryUser);
     }
   }
 
@@ -217,32 +244,36 @@ const ProfileSection: React.FC = () => {
             </h2>
 
             <div className="space-y-3">
-              {recentGames.map(game => (
-                <div key={game.id} className="flex items-center p-3 md:p-4 bg-indigo-900/30 rounded-lg">
-                  <div className={`w-2 h-10 md:h-12 rounded-full mr-3 md:mr-4 ${game.result === 'win' ? 'bg-green-500' : 'bg-red- 500'
-                    }`}></div>
-                  <div>
-                    <h3 className="font-medium">{game.game}</h3>
-                    <p className="text-xs text-indigo-300">{game.date}</p>
-                  </div>
-                  <div className="ml-auto">
-                    <div className="font-bold text-right">{game.score} pts</div>
-                    <div className={`text-xs text-right ${game.result === 'win' ? 'text-green-400' : 'text-red-400'
-                      }`}>
-                      {game.result === 'win' ? 'Victory' : 'Defeat'}
+              {gameHistory && gameHistory.length > 0 ? (
+                gameHistory.map(game => (
+                  <div key={game.id} className="flex items-center p-3 md:p-4 bg-indigo-900/30 rounded-lg">
+                    <div className={`w-2 h-10 md:h-12 rounded-full mr-3 md:mr-4 ${game.result === 'win' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <div>
+                      <h3 className="font-medium">{game.game.name}</h3>
+                      <p className="text-xs text-indigo-300">{game.game.status === "finished" ? getTimeAgo(game.game.created_at) : 'Recently joined'}</p>
+                    </div>
+                    <div className="ml-auto">
+                      <div className="font-bold text-right">{game.score} pts</div>
+                      <div className={`text-xs text-right ${game.result === 'win' ? 'text-green-400' : 'text-red-400'}`}>
+                        {game.result === 'win' ? 'Victory' : 'Defeat'}
+                      </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center p-4 text-indigo-300">
+                  No hay registros de partidas todavía
                 </div>
-              ))}
+              )}
             </div>
-
+            
             <button className="w-full mt-4 py-2 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-sm font-medium transition-all">
               View Game History
             </button>
           </div>
 
           {/* Language Progress */}
-          <div className="bg-gradient-to-r from-purple-900/60 to-indigo-900/60 rounded-xl p-4 md:p-6 border border-indigo-700">
+          {/* <div className="bg-gradient-to-r from-purple-900/60 to-indigo-900/60 rounded-xl p-4 md:p-6 border border-indigo-700">
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold">Language Progress</h2>
@@ -271,7 +302,7 @@ const ProfileSection: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
