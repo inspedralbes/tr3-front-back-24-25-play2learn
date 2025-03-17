@@ -7,6 +7,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/languages', [\App\Http\Controllers\LanguageController::class, 'index']);
+});
 Route::prefix('/auth')->group(function () {
     Route::post('/register', [\App\Http\Controllers\AuthenticatorController::class, 'register']);
     Route::post('/login', [\App\Http\Controllers\AuthenticatorController::class, 'login']);

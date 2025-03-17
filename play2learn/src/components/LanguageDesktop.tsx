@@ -1,7 +1,8 @@
 "use client";
 import { Languages, ChevronRight, Sparkles, Clock } from "lucide-react";
 import { NavBarContext } from "@/contexts/NavBarContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import { apiRequest } from "@/services/communicationManager/apiRequest";
 
 function App() {
   const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
@@ -11,6 +12,15 @@ function App() {
     { id: 2, name: "French", level: 1, progress: 20 },
     { id: 3, name: "German", level: 2, progress: 45 },
   ];
+
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      const response = await apiRequest("languages");
+    };
+    
+    fetchLanguages();
+  }, []);
+
   return (
     <div className="hidden md:block md:w-64 bg-indigo-900/50 p-6 border-r border-indigo-700">
       <h2 className="text-xl font-bold mb-6 flex items-center">
