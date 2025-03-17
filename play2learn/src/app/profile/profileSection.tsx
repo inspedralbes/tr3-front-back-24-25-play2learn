@@ -1,11 +1,11 @@
 "use client";
 import React from 'react';
 import { Trophy, Star, Clock, Calendar, Award, Zap, BarChart3, Target, ChevronDown } from 'lucide-react';
-import {AuthContext} from "@/contexts/AuthContext";
+import {NavBarContext} from "@/contexts/NavBarContext";
 import { useContext, useEffect } from "react";
 
 const ProfileSection: React.FC = () => {
-  const { selectedLanguage, setActiveSection } = useContext(AuthContext);
+  const { selectedLanguage, setActiveSection } = useContext(NavBarContext);
   
   useEffect(() => {
     setActiveSection('profile');

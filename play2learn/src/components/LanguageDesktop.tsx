@@ -1,10 +1,10 @@
 "use client";
 import { Languages, ChevronRight, Sparkles, Clock } from "lucide-react";
-import { AuthContext } from "@/contexts/AuthContext";
+import { NavBarContext } from "@/contexts/NavBarContext";
 import { useContext } from "react";
 
 function App() {
-  const { selectedLanguage, setSelectedLanguage } = useContext(AuthContext);
+  const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
   
   const languages = [
     { id: 1, name: "Spanish", level: 3, progress: 65 },

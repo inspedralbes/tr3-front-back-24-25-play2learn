@@ -1,14 +1,14 @@
 "use client"
 import { useState, useEffect } from 'react';
 import { Users, Clock, Star, Trophy, ChevronRight, Play, X, Plus, Search } from 'lucide-react';
-import {AuthContext} from "@/contexts/AuthContext";
+import {NavBarContext} from "@/contexts/NavBarContext";
 import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import { useRouter } from 'next/navigation';
 
 const GameLobby: React.FC = () => {
   const router = useRouter();
-  const { selectedLanguage } = useContext(AuthContext);
+  const { selectedLanguage } = useContext(NavBarContext);
   const { user, isAuthenticated } = useContext(AuthenticatorContext);
 
   const [showCreateRoom, setShowCreateRoom] = useState(false);

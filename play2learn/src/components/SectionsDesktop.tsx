@@ -8,12 +8,12 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { AuthContext } from "@/contexts/AuthContext";
+import { NavBarContext } from "@/contexts/NavBarContext";
 import { useContext } from "react";
 import Link from "next/link";
 
 function App() {
-  const { activeSection, setActiveSection } = useContext(AuthContext);
+  const { activeSection, setActiveSection } = useContext(NavBarContext);
 
   return (
     <div className="hidden md:flex md:w-20 bg-indigo-950 flex-col items-center py-8 border-r border-indigo-700">
