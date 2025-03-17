@@ -13,13 +13,13 @@ function App() {
     { id: 3, name: "German", level: 2, progress: 45 },
   ];
 
-  useEffect(() => {
-    const fetchLanguages = async () => {
-      const response = await apiRequest("languages");
-    };
+  // useEffect(() => {
+  //   const fetchLanguages = async () => {
+  //     const response = await apiRequest("languages");
+  //   };
     
-    fetchLanguages();
-  }, []);
+  //   fetchLanguages();
+  // }, []);
 
   return (
     <div className="hidden md:block md:w-64 bg-indigo-900/50 p-6 border-r border-indigo-700">

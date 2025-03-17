@@ -2,9 +2,6 @@
 import React from 'react';
 import { Trophy, Star, Clock, Calendar, Award, Zap, BarChart3, Target, ChevronDown } from 'lucide-react';
 import {NavBarContext} from "@/contexts/NavBarContext";
-import { useContext, useEffect } from "react";
-import { Trophy, Star, Clock, Calendar, Award, Zap, BarChart3, Target, ChevronDown, Book } from 'lucide-react';
-import { AuthContext } from "@/contexts/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
@@ -12,11 +9,9 @@ import { apiRequest } from "@/services/communicationManager/apiRequest";
 
 const ProfileSection: React.FC = () => {
   const { selectedLanguage, setActiveSection } = useContext(NavBarContext);
+  const { user, isAuthenticated } = useContext(AuthenticatorContext);
   
   const router = useRouter();
-
-  const { selectedLanguage, setActiveSection } = useContext(AuthContext);
-  const { user, isAuthenticated } = useContext(AuthenticatorContext);
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
