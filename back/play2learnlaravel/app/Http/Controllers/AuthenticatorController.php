@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthenticatorController extends Controller
 {
@@ -117,5 +118,77 @@ class AuthenticatorController extends Controller
             ]);
         }
 
+    }
+
+    public function googleLogin(Request $request)
+    {
+        try{
+
+            $googleUser = Socialite::driver('google')->user();
+
+            Log::info('Google login attempt', ['email' => $request->input('email')]);
+
+            // Extreure el correu i el nom directament de l'objecte retornat
+            $email = $googleUser->getEmail();
+            $name = $googleUser->getName();
+
+            if(!$email){
+                Log::error('Email no encontrado');
+                return response()->json(['status' => 'error', 'message' => 'Email no encontrado']);
+            }
+
+            $user = User::where('email', $email)->first();
+
+            if (!$user) {
+                // Extraer nombre y apellido del nombre completo
+                $nameParts = explode(' ', $name);
+                $firstName = $nameParts[0];
+
+                Log::info('Creating new user from Google login', ['email' => $email]);
+
+                $user = User::create([
+                    'name' => $firstName,
+                    'email' => $email,
+                    'password' => bcrypt(uniqid() . time()),
+                ]);
+            }
+
+            Auth::login($user);
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            Log::info('Google login successful', ['email' => $email]);
+
+
+            // Crear l'objecte de dades d'usuari
+            $userData = [
+                'status' => 'success',
+                'user' => $user,
+                'token' => $token
+            ];
+
+            return redirect()->to('http://localhost:3000/login/callback?data=' . urlencode(json_encode($userData)));
+
+
+        }catch (\Exception $e){
+
+            Log::error('Google login error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json(['status' => 'error', 'errors' => $e->getMessage()]);
+        }
+    }
+
+    public function googleRedirect()
+    {
+        try{
+
+            return Socialite::driver('google')->stateless()->redirect();
+
+        }catch (\Exception $e){
+            return response()->json(['status' => 'error', 'errors' => $e->getMessage()]);
+        }
     }
 }
