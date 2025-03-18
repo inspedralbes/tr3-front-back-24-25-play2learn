@@ -10,6 +10,7 @@ import {
   X,
   Plus,
   Search,
+  Loader2
 } from "lucide-react";
 import { AuthContext } from "@/contexts/AuthContext";
 import { useContext } from "react";
@@ -79,7 +80,7 @@ const GameLobby: React.FC = () => {
     max_players: 4,
     participants: null,
   });
-  
+
   const router = useRouter();
   const { selectedLanguage } = useContext(AuthContext);
   const { user, token, isAuthenticated } = useContext(AuthenticatorContext);
@@ -90,6 +91,7 @@ const GameLobby: React.FC = () => {
   const [waitingRooms, setWaitingRooms] = useState<Game[]>([]);
   const [gameSelected, setGameSelected] = useState<Game>({} as Game);
   const [passwordModal, setPasswordModal] = useState<string>("");
+  const [containerLobbies, setContainerLobbies] = useState(false);
 
   const filteredRooms = waitingRooms.filter(
     (room) =>
@@ -129,9 +131,9 @@ const GameLobby: React.FC = () => {
   };
 
   const handleJoinLobby = async () => {
-    if(!gameSelected.uuid) return;
+    if (!gameSelected.uuid) return;
     console.log(passwordModal, gameSelected.password);
-    if(passwordModal == gameSelected.password) {
+    if (passwordModal == gameSelected.password) {
       socket.emit("joinRoom", { token: token || "", roomUUID: gameSelected.uuid });
       router.push("/lobby/" + gameSelected.uuid);
     } else {
@@ -207,6 +209,7 @@ const GameLobby: React.FC = () => {
     socket.on("getLobbies", (data) => {
       console.log(data);
       setWaitingRooms(data.games);
+      setContainerLobbies(true);
     });
 
     socket.on("loobbieCreated", (data) => {
@@ -400,72 +403,80 @@ const GameLobby: React.FC = () => {
       )}
 
       {/* Room List */}
-      <div className="grid grid-cols-1 gap-4 md:gap-6">
-        {filteredRooms.length > 0 ? (
-          filteredRooms.map((room) => (
-            <div
-              key={room.id}
-              className="bg-indigo-800/40 rounded-xl p-4 md:p-6 border border-indigo-700 hover:bg-indigo-800/60 transition-all"
-            >
-              <div className="flex flex-col md:flex-row md:justify-between">
-                <div>
-                  <h2 className="text-xl font-bold">{room.name}</h2>
-                  <p className="text-indigo-300 mt-1">Max Clues: {room.max_clues}</p>
+      {containerLobbies ? (
+        <div className="grid grid-cols-1 gap-4 md:gap-6">
+          {filteredRooms.length > 0 ? (
+            filteredRooms.map((room) => (
+              <div
+                key={room.id}
+                className="bg-indigo-800/40 rounded-xl p-4 md:p-6 border border-indigo-700 hover:bg-indigo-800/60 transition-all"
+              >
+                <div className="flex flex-col md:flex-row md:justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold">{room.name}</h2>
+                    <p className="text-indigo-300 mt-1">Max Clues: {room.max_clues}</p>
+                  </div>
+                  <div className="flex items-center space-x-2 mt-3 md:mt-0">
+                    <div className="bg-indigo-700 px-3 py-1 rounded-full text-sm flex items-center">
+                      <Users size={14} className="mr-1" />
+                      <span>
+                        {room.participants?.length}/{room.max_players}
+                      </span>
+                    </div>
+                    <div className="bg-indigo-700 px-3 py-1 rounded-full text-sm flex items-center">
+                      <Star size={14} className="mr-1 text-yellow-400" />
+                      <span>{room.language_level.level}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2 mt-3 md:mt-0">
-                  <div className="bg-indigo-700 px-3 py-1 rounded-full text-sm flex items-center">
-                    <Users size={14} className="mr-1" />
-                    <span>
-                      {room.participants?.length}/{room.max_players}
+
+                <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:justify-between md:items-center">
+                  <div className="flex items-center mb-4 md:mb-0">
+                    <div className="w-8 text-center font-bold">
+                      #{room.participants?.find((p) => p.rol === 'host')?.user.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <span className="ml-3 text-sm text-indigo-300">
+                      Host: {room.participants?.find((p) => p.rol === 'host')?.user.name}
                     </span>
                   </div>
-                  <div className="bg-indigo-700 px-3 py-1 rounded-full text-sm flex items-center">
-                    <Star size={14} className="mr-1 text-yellow-400" />
-                    <span>{room.language_level.level}</span>
-                  </div>
-                </div>
-              </div>
 
-              <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:justify-between md:items-center">
-                <div className="flex items-center mb-4 md:mb-0">
-                  <div className="w-8 text-center font-bold">
-                    #{room.participants?.find((p) => p.rol === 'host')?.user.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <span className="ml-3 text-sm text-indigo-300">
-                    Host: {room.participants?.find((p) => p.rol === 'host')?.user.name}
-                  </span>
-                </div>
+                  <div className="flex items-center justify-between md:space-x-4">
+                    <div className="flex items-center text-pink-400">
+                      <Clock size={16} className="mr-1" />
+                      <span>{room.max_time}s</span>
+                    </div>
 
-                <div className="flex items-center justify-between md:space-x-4">
-                  <div className="flex items-center text-pink-400">
-                    <Clock size={16} className="mr-1" />
-                    <span>{room.max_time}s</span>
-                  </div>
-
-                  <button
-                    className={`px-5 py-2 rounded-lg font-medium flex items-center ${room.participants?.length === room.max_players
+                    <button
+                      className={`px-5 py-2 rounded-lg font-medium flex items-center ${room.participants?.length === room.max_players
                         ? "bg-indigo-700/50 text-indigo-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white shadow-lg shadow-emerald-900/30"
-                      }`}
-                    onClick={() => showModalJoinLobby(room)}
-                  >
-                    <Play size={16} className="mr-2" />
-                    Join
-                  </button>
+                        }`}
+                      onClick={() => showModalJoinLobby(room)}
+                    >
+                      <Play size={16} className="mr-2" />
+                      Join
+                    </button>
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="bg-indigo-800/20 rounded-xl p-6 border border-indigo-700 text-center">
+              <p className="text-indigo-300">
+                No rooms match your search. Try different keywords or create a new
+                room!
+              </p>
             </div>
-          ))
-        ) : (
-          <div className="bg-indigo-800/20 rounded-xl p-6 border border-indigo-700 text-center">
-            <p className="text-indigo-300">
-              No rooms match your search. Try different keywords or create a new
-              room!
-            </p>
-          </div>
-        )}
-      </div>
-
+          )}
+        </div>
+      ):
+      (
+        <>
+        <div className="flex items-center justify-center">
+          <Loader2 className="animate-spin" size={40}/>
+        </div>
+        </>
+      )}
       {/* Create Room Modal */}
       {showPasswordLobby && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -494,7 +505,7 @@ const GameLobby: React.FC = () => {
                   className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
-              
+
               <div className="pt-4">
                 <button
                   className="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 rounded-lg font-medium transition-all shadow-lg"
