@@ -1,10 +1,11 @@
 const express = require("express");
+const apiRequest = require('./apiRequest')
 const cors = require("cors"); // Importar CORS
 const ExempleController = require('./Controllers/ExempleController');
 const SocketController = require('./Controllers/SocketController');
 
 const app = express();
-const port = 3000;
+const port = 3777;
 
 app.use(express.json());
 

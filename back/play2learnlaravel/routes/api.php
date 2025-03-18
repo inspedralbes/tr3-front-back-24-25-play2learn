@@ -17,6 +17,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
    Route::prefix('/user')->group(function () {
        Route::get('/getUserStatsLanguage/{languageId}', [\App\Http\Controllers\StatsUserLanguageController::class, 'getUserStatsLanguage']);
    });
+
+   Route::prefix('/games')->group(function () {
+       Route::get('/', [\App\Http\Controllers\GameController::class, 'getList']);
+   });
 });
 
 Route::get('/test', function () {
