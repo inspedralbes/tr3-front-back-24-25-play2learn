@@ -1,4 +1,4 @@
-const { apiRequest } = require("../apiRequest");
+const apiRequest  = require("../apiRequest");
 
 class SocketController {
     static initialize(io) {
@@ -7,17 +7,38 @@ class SocketController {
         io.on('connection', (socket) => {
             console.log('A user connected');
             
-            socket.on('setLobbies', ({token, game})=>{
-                const response = apiRequest('/games/store', token, "POST", game);
-                
-                io.emit('getLobbies', response.games);
+            socket.on('setLobbies', async ({token, game})=>{
+                const response = await apiRequest('/games/store', token, "POST", game);
+                console.log(response);
+                // Crear y unirse a la sala con el UUID del juego
+                const roomUUID = response.gameCreated.uuid;
+                socket.join(roomUUID);
+                // Emitir a todos los demás clientes
+                socket.broadcast.emit('getLobbies', response);
+                // Emitir al socket actual con datos personalizados
+                socket.emit('loobbieCreated', response);
+
             });
 
-            socket.on('lobbie', ({token}) => {
-                
-                const response = apiRequest('/games', token);
+            socket.on('joinRoom', async ({token, roomUUID}) => {
+                socket.join(roomUUID);
+                const response = await apiRequest('/games/join/' + roomUUID, token, "GET");
+                console.log(response);
+                io.to(roomUUID).emit('playerJoined', response);
+                io.emit('getLobbies', response)
+            });
 
-                socket.emit('getLoobies', response.games)
+            socket.on('getGame', async ({token, roomUUID}) => {
+                socket.join(roomUUID);
+
+                const response = await apiRequest('/games/' + roomUUID, token, "GET");
+                console.log(response);
+                io.to(roomUUID).emit('playerJoined', response);
+            })
+
+            socket.on('lobbie', async ({token}) => {
+                const response = await apiRequest('/games', token);
+                socket.emit('getLobbies', response)
             });
 
             socket.on('disconnect', () => {

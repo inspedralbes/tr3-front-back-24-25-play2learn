@@ -1,5 +1,4 @@
 const express = require("express");
-const apiRequest = require('./apiRequest')
 const cors = require("cors"); // Importar CORS
 const ExempleController = require('./Controllers/ExempleController');
 const SocketController = require('./Controllers/SocketController');

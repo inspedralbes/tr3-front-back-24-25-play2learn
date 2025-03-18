@@ -6,7 +6,7 @@ async function apiRequest(endpoint, token = null, method = "GET", body = null) {
       method,
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
+        "Accept": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       //   credentials: "include",

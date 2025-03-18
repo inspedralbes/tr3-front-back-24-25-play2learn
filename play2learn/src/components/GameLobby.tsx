@@ -19,10 +19,6 @@ import socket from "@/services/websockets/socket";
 import Input from "@/components/ui/Input";
 
 const GameLobby: React.FC = () => {
-  const router = useRouter();
-  const { selectedLanguage } = useContext(AuthContext);
-  const { user, token, isAuthenticated } = useContext(AuthenticatorContext);
-
   interface Language {
     id: number;
     name: string;
@@ -33,6 +29,19 @@ const GameLobby: React.FC = () => {
     language_id: number;
     language: Language;
     level: string;
+  }
+
+  interface User {
+    id: number;
+    name: string;
+    profile_pic: string;
+  }
+
+  interface Participant {
+    id: number;
+    user: User;
+    rol: string;
+    points: number;
   }
 
   interface Game {
@@ -46,6 +55,7 @@ const GameLobby: React.FC = () => {
     max_clues: number;
     max_time: number;
     max_players: number;
+    participants: Participant[] | null;
   }
 
   const [game, setGame] = useState<Game>({
@@ -67,59 +77,67 @@ const GameLobby: React.FC = () => {
     max_clues: 0,
     max_time: 10,
     max_players: 4,
+    participants: null,
   });
-
+  
+  const router = useRouter();
+  const { selectedLanguage } = useContext(AuthContext);
+  const { user, token, isAuthenticated } = useContext(AuthenticatorContext);
+  const [showPasswordLobby, setShowPasswordLobby] = useState(false);
   const [languageLevels, setLanguageLevels] = useState<LanguageLevel[]>([]);
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const waitingRooms = [
-    {
-      id: 1,
-      name: "Word Wizards",
-      game: "Word Match",
-      players: 3,
-      maxPlayers: 4,
-      difficulty: "Easy",
-      startingIn: "1:30",
-      host: "LinguaMaster",
-    },
-    {
-      id: 2,
-      name: "Vocab Champions",
-      game: "Speed Vocab",
-      players: 2,
-      maxPlayers: 6,
-      difficulty: "Medium",
-      startingIn: "3:45",
-      host: "WordNinja",
-    },
-    {
-      id: 3,
-      name: "Grammar Gladiators",
-      game: "Sentence Builder",
-      players: 5,
-      maxPlayers: 5,
-      difficulty: "Hard",
-      startingIn: "0:45",
-      host: "SyntaxPro",
-    },
-  ];
+  const [waitingRooms, setWaitingRooms] = useState<Game[]>([]);
+  const [gameSelected, setGameSelected] = useState<Game>({} as Game);
+  const [passwordModal, setPasswordModal] = useState<string>("");
 
   const filteredRooms = waitingRooms.filter(
     (room) =>
       room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      room.game.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      room.host.toLowerCase().includes(searchQuery.toLowerCase())
+      room.uuid.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const toggleCreateRoom = () => {
     setShowCreateRoom(!showCreateRoom);
   };
 
-  socket.on("getLobbies", (lobbies) => {
-    console.log(lobbies);
-  });
+  const showModalJoinLobby = async (room: Game) => {
+
+    setShowPasswordLobby(true);
+    setGameSelected(room);
+    // if (room.participants && room.max_players > room.participants.length) {
+    //   socket.emit('joinRoom', { token: token || "", roomUUID: room.uuid });
+    //   router.push("/lobby/" + room.uuid);
+    //   console.log("lobby...")
+    // }
+  };
+
+  const handleCreateRoom = () => {
+    socket.emit("setLobbies", { token: token || "", game });
+  };
+
+  const handleGameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setGame((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleChangePasswordModal = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordModal(e.target.value);
+  };
+
+  const handleJoinLobby = async () => {
+    if(!gameSelected.uuid) return;
+    console.log(passwordModal, gameSelected.password);
+    if(passwordModal == gameSelected.password) {
+      socket.emit("joinRoom", { token: token || "", roomUUID: gameSelected.uuid });
+      router.push("/lobby/" + gameSelected.uuid);
+    } else {
+      console.error("Password incorrect");
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -183,6 +201,24 @@ const GameLobby: React.FC = () => {
         level: "C2",
       },
     ]);
+
+    socket.emit("lobbie", { token: token || "" });
+
+    socket.on("getLobbies", (data) => {
+      console.log(data);
+      setWaitingRooms(data.games);
+    });
+
+    socket.on("loobbieCreated", (data) => {
+      console.log("lobby creado");
+      setWaitingRooms(data.games);
+      router.push("/lobby/" + data.gameCreated.uuid);
+
+    });
+    // Limpieza del listener al desmontar el componente
+    return () => {
+      socket.off("getLobbies");
+    };
   }, [isAuthenticated, router]);
 
   useEffect(() => {
@@ -194,22 +230,6 @@ const GameLobby: React.FC = () => {
       language_level: language,
     }));
   }, [game.id_level_language]);
-
-  useEffect(() => {
-    console.log(game);
-  }, [game]);
-
-  const handleCreateRoom = () => {
-    socket.emit("setLobbies", { token: token || "", game });
-  };
-
-  const handleGameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setGame((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   return (
     <div>
@@ -390,18 +410,18 @@ const GameLobby: React.FC = () => {
               <div className="flex flex-col md:flex-row md:justify-between">
                 <div>
                   <h2 className="text-xl font-bold">{room.name}</h2>
-                  <p className="text-indigo-300 mt-1">Game: {room.game}</p>
+                  <p className="text-indigo-300 mt-1">Max Clues: {room.max_clues}</p>
                 </div>
                 <div className="flex items-center space-x-2 mt-3 md:mt-0">
                   <div className="bg-indigo-700 px-3 py-1 rounded-full text-sm flex items-center">
                     <Users size={14} className="mr-1" />
                     <span>
-                      {room.players}/{room.maxPlayers}
+                      {room.participants?.length}/{room.max_players}
                     </span>
                   </div>
                   <div className="bg-indigo-700 px-3 py-1 rounded-full text-sm flex items-center">
                     <Star size={14} className="mr-1 text-yellow-400" />
-                    <span>{room.difficulty}</span>
+                    <span>{room.language_level.level}</span>
                   </div>
                 </div>
               </div>
@@ -409,25 +429,25 @@ const GameLobby: React.FC = () => {
               <div className="mt-4 md:mt-6 flex flex-col md:flex-row md:justify-between md:items-center">
                 <div className="flex items-center mb-4 md:mb-0">
                   <div className="w-8 text-center font-bold">
-                    #{room.host.substring(0, 2).toUpperCase()}
+                    #{room.participants?.find((p) => p.rol === 'host')?.user.name.substring(0, 2).toUpperCase()}
                   </div>
-                  <span className="ml-2 text-sm text-indigo-300">
-                    Host: {room.host}
+                  <span className="ml-3 text-sm text-indigo-300">
+                    Host: {room.participants?.find((p) => p.rol === 'host')?.user.name}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between md:space-x-4">
                   <div className="flex items-center text-pink-400">
                     <Clock size={16} className="mr-1" />
-                    <span>{room.startingIn}</span>
+                    <span>{room.max_time}s</span>
                   </div>
 
                   <button
-                    className={`px-5 py-2 rounded-lg font-medium flex items-center ${
-                      room.players === room.maxPlayers
+                    className={`px-5 py-2 rounded-lg font-medium flex items-center ${room.participants?.length === room.max_players
                         ? "bg-indigo-700/50 text-indigo-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white shadow-lg shadow-emerald-900/30"
-                    }`}
+                      }`}
+                    onClick={() => showModalJoinLobby(room)}
                   >
                     <Play size={16} className="mr-2" />
                     Join
@@ -445,6 +465,48 @@ const GameLobby: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Create Room Modal */}
+      {showPasswordLobby && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-indigo-900 rounded-xl p-6 w-full max-w-md border border-indigo-700 shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">Create Game Room</h2>
+              <button
+                onClick={() => setShowPasswordLobby(false)}
+                className="p-2 rounded-full hover:bg-indigo-800"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Password
+                </label>
+                <Input
+                  name="password"
+                  placeholder="Enter password"
+                  type="text"
+                  onChange={handleChangePasswordModal}
+                  value={passwordModal}
+                  className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              
+              <div className="pt-4">
+                <button
+                  className="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 rounded-lg font-medium transition-all shadow-lg"
+                  onClick={handleJoinLobby}
+                >
+                  Create & Start
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick Join Button (Mobile) */}
       <div className="md:hidden fixed bottom-6 right-6">
