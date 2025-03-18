@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 
 const routeApi: string =
-  (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/");
+  (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api");
 
 export async function apiRequest(
   endpoint: string,
@@ -9,10 +9,10 @@ export async function apiRequest(
   body: any = null
 ): Promise<any> {
   try {
-    let token: string | undefined = undefined;
-
-    if (typeof window !== "undefined") {
-      // Estamos en el cliente
+    let token: string | undefined;
+    
+    // Solo ejecutar js-cookie en el cliente
+    if (typeof window !== 'undefined') {
       token = Cookies.get("authToken");
     }
 
@@ -23,20 +23,14 @@ export async function apiRequest(
         Accept: "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-    //   credentials: "include",
+      //   credentials: "include",
     };
 
     if (body) {
       options.body = JSON.stringify(body);
     }
 
-    const cleanEndpoint: string = endpoint.replace(/^\/+|\/+$/g, "");
-    const url: string = `${routeApi}${cleanEndpoint}`;
-
-    console.log("URL de la solicitud:", url);
-    console.log("Opciones de la solicitud:", options);
-
-    const response = await fetch(url, options);
+    const response = await fetch(`${routeApi}${endpoint}`, options);
 
     if (!response.ok) {
       const errorData: any = await response.json().catch(() => ({}));

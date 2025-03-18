@@ -1,51 +1,45 @@
 "use client";
 
-import {createContext, ReactNode, useEffect, useState} from "react";
-import {apiRequest} from "@/services/communicationManager/apiRequest";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { apiRequest } from "@/services/communicationManager/apiRequest";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 interface User {
-    id: number;
-    name: string;
-    username: string;
-    email: string;
-    profile_pic: string;
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  profile_pic: string;
 }
 
 interface AuthenticatorContextProps {
-    user: User | null;
-    setUser: React.Dispatch<React.SetStateAction<User | null>>;
-    isAuthenticated: boolean;
-    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-    token: string | null;
-    setToken: React.Dispatch<React.SetStateAction<string | null>>;
-    authUser: (user: User, token: string) => void;
-    logout: () => void;
-    checkAuth: () => void;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  token: string | null;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+  authUser: (user: User, token: string) => void;
+  logout: () => void;
+  checkAuth: () => void;
 }
 
 export const AuthenticatorContext = createContext<AuthenticatorContextProps>({
-    user: null,
-    setUser: () => {
-    },
-    isAuthenticated: false,
-    setIsAuthenticated: () => {
-    },
-    token: null,
-    setToken: () => {
-    },
-    authUser: () => {
-    },
-    logout: () => {
-    },
-    checkAuth: () => {
-    },
+  user: null,
+  setUser: () => {},
+  isAuthenticated: false,
+  setIsAuthenticated: () => {},
+  token: null,
+  setToken: () => {},
+  authUser: () => {},
+  logout: () => {},
+  checkAuth: () => {},
 });
 
 // Define la interfaz para las props del AuthenticatorProvider
 interface AuthenticatorProviderProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export const AuthenticatorProvider: React.FC<AuthenticatorProviderProps> = ({children}) => {
@@ -80,68 +74,67 @@ export const AuthenticatorProvider: React.FC<AuthenticatorProviderProps> = ({chi
         }
     };
 
-    const checkAuth = async () => {
-        try {
-            const authToken = Cookies.get("authToken");
-            const authUserStr = Cookies.get("authUser");
+  const checkAuth = async () => {
+    try {
+      const authToken = Cookies.get("authToken");
+      const authUserStr = Cookies.get("authUser");
 
-            if (!authToken || !authUserStr) {
-                logout();
-                return;
-            }
+      if (!authToken || !authUserStr) {
+        logout();
+        return;
+      }
 
-            const user = JSON.parse(authUserStr);
+      const user = JSON.parse(authUserStr);
+      
+      if (!user || !user.id) {
+        logout();
+        return;
+      }
 
-            if (!user || !user.id) {
-                logout();
-                return;
-            }
-
-            setUser(user);
-            setToken(authToken);
-            setIsAuthenticated(true);
-        } catch (error) {
-            console.error("Error checking auth:", error);
-            logout();
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      setUser(user);
+      setToken(authToken);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Error checking auth:", error);
+      logout();
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
     useEffect(() => {
         handleGoogleAuth();
         checkAuth();
     }, []);
 
-    const authUser = async (user: User, token: string) => {
-        try {
-            setUser(user);
-            setIsAuthenticated(true);
-            setToken(token);
-            Cookies.set("authToken", token);
-            Cookies.set("authUser", JSON.stringify(user));
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const logout = () => {
-        setUser(null);
-        setIsAuthenticated(false);
-        setToken(null);
-        Cookies.remove("authToken");
-        Cookies.remove("authUser");
-        setIsLoading(false);
-    };
-
-    if (isLoading) {
-        return null; // o un componente de carga si lo prefieres
+  const authUser = async (user: User, token: string) => {
+    try {
+      setUser(user);
+      setIsAuthenticated(true);
+      setToken(token);
+      Cookies.set("authToken", token);
+      Cookies.set("authUser", JSON.stringify(user));
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-    return (
-        <AuthenticatorContext.Provider
-            value={{user, setUser, isAuthenticated, setIsAuthenticated, token, setToken, authUser, logout, checkAuth}}>
-            {children}
-        </AuthenticatorContext.Provider>
-    );
+  const logout = () => {
+    setUser(null);
+    setIsAuthenticated(false);
+    setToken(null);
+    Cookies.remove("authToken");
+    Cookies.remove("authUser");
+    setIsLoading(false);
+  };
+
+  if (isLoading) {
+    return null; // o un componente de carga si lo prefieres
+  }
+
+  return (
+    <AuthenticatorContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, token, setToken, authUser, logout, checkAuth }}>
+      {children}
+    </AuthenticatorContext.Provider>
+  );
 };

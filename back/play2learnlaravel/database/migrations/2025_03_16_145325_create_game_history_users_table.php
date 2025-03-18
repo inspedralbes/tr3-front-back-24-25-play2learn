@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('archievements_users', function (Blueprint $table) {
+        Schema::create('game_history_users', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->unsignedBigInteger('archievement_id');
-            $table->foreign('archievement_id')->references('id')->on('archievements');
-
-            $table->float('progress');
+            $table->unsignedBigInteger('game_id');
+            $table->foreign('game_id')->references('id')->on('games');
+            $table->integer('score');
+            $table->string('result');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('archievements_users');
+        Schema::dropIfExists('game_history_users');
     }
 };

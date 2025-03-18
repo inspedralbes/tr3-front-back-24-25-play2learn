@@ -88,8 +88,12 @@ class AuthenticatorController extends Controller
 
         $validator = Validator::make($request->all(), $rules);
 
+        DB::beginTransaction();
+
         if ($validator->fails()) {
             Log::error('Errores de validación:', $validator->errors()->toArray());
+
+            DB::rollBack();
 
             return response()->json([
                 'status' => 'error',
@@ -109,7 +113,9 @@ class AuthenticatorController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            $this->mailService->sendMail($user->name, $user, 'people.welcome', ['name' => $user->name]);
+            $this->mailService->sendMail($user->name, $user->email, 'people.welcome', ['name' => $user->name]);
+
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
@@ -118,6 +124,7 @@ class AuthenticatorController extends Controller
                 'message' => 'Usuario registrado exitosamente.'
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'errors' => $e->getMessage()

@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 
 // Define la interfaz para el valor del contexto
-interface AuthContextProps {
+interface NavBarContextProps {
   activeSection: string;
   setActiveSection: React.Dispatch<React.SetStateAction<string>>;
   selectedLanguage: string;
@@ -14,7 +14,7 @@ interface AuthContextProps {
 }
 
 // Crea el contexto con un valor por defecto
-export const AuthContext = createContext<AuthContextProps>({
+export const NavBarContext = createContext<NavBarContextProps>({
   activeSection: 'lobby',
   setActiveSection: () => {},
   selectedLanguage: 'Spanish',
@@ -26,19 +26,19 @@ export const AuthContext = createContext<AuthContextProps>({
 });
 
 // Define la interfaz para las props del AuthProvider
-interface AuthProviderProps {
+interface NavBarProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const NavBarProvider: React.FC<NavBarProviderProps> = ({ children }) => {
   const [activeSection, setActiveSection] = useState('lobby');
   const [selectedLanguage, setSelectedLanguage] = useState('Spanish');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <AuthContext.Provider value={{ activeSection, selectedLanguage, mobileMenuOpen, mobileSidebarOpen, setActiveSection, setSelectedLanguage, setMobileMenuOpen, setMobileSidebarOpen }}>
+    <NavBarContext.Provider value={{ activeSection, selectedLanguage, mobileMenuOpen, mobileSidebarOpen, setActiveSection, setSelectedLanguage, setMobileMenuOpen, setMobileSidebarOpen }}>
       {children}
-    </AuthContext.Provider>
+    </NavBarContext.Provider>
   );
 };

@@ -1,0 +1,24 @@
+{
+    "authenticate": {
+        "register": "S'inscrire",
+        "login": "Se connecter",
+        "login_google": "Se connecter avec Google",
+        "login_github": "Se connecter avec GitHub",
+        "forgot_password": "Mot de passe oublié",
+        "reset_password": "Réinitialiser le mot de passe",
+        "or_sign_up_with_email": "Ou inscrivez-vous avec un e-mail",
+        "password_placeholder": "Mot de passe",
+        "user_placeholder": "Nom d'utilisateur",
+        "no_account": "Vous n'avez pas de compte ?",
+        "create_account": "Créer un compte",
+        "forgot_password_question": "Mot de passe oublié ?",
+        "field_required": "Ce champ est obligatoire",
+        "logging_in": "Connexion en cours..."
+    },
+    "languages": {
+        "en": "Anglais",
+        "es": "Espagnol",
+        "fr": "Français",
+        "select_language": "Sélectionner la langue"
+    }
+}

@@ -21,12 +21,13 @@ class DatabaseSeeder extends Seeder
 //        ]);
 
         $this->call([
-            ArchievementsSeeder::class,
-            ArchievementsRewardsSeeder::class,
+            AchievementsSeeder::class,
+            AchievementsRewardsSeeder::class,
             CoinsPackSeeder::class,
             LanguageSeeder::class,
             LevelLanguageSeeder::class,
             PowerSeeder::class,
+            LevelExperienceSeeder::class,
         ]);
     }
 }

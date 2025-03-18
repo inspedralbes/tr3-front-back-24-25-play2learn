@@ -23,7 +23,7 @@
         }
 
         h1 {
-            color: #2ecc71;
+            color: #3498db;
         }
 
         p {
@@ -31,7 +31,7 @@
         }
 
         button {
-            background-color: #2ecc71;
+            background-color: #3498db;
             color: #fff;
             border: none;
             padding: 10px 20px;
@@ -41,7 +41,7 @@
         }
 
         button:hover {
-            background-color: #27ae60;
+            background-color: #2980b9;
         }
     </style>
 </head>
@@ -51,9 +51,8 @@
     <p>Estamos muy contentos de que te hayas registrado en nuestra plataforma.</p>
     <p>Play2Learn te ofrece una experiencia de aprendizaje divertida y dinámica.</p>
     <p>¡Explora nuestros cursos, gana puntos y alcanza nuevas metas!</p>
-    <!--
-    <button onclick="location.href='/dashboard'">Ir al Dashboard</button>
-    -->
+{{--    --}}
+{{--    <button onclick="location.href='/cambiar-contrasena'">Cambiar contraseña</button>--}}
 </div>
 </body>
 </html>

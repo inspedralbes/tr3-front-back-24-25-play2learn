@@ -1,7 +1,7 @@
 "use client"
 import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Bird } from 'lucide-react';
-import {AuthContext} from "@/contexts/AuthContext";
+import {AuthContext} from "@/contexts/NavBarContext";
 
 interface Obstacle {
     x: number;

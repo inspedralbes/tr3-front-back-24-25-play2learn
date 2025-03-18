@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('archievements', function (Blueprint $table) {
+        Schema::create('game_history_rounds', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('game_history_id');
+            $table->foreign('game_history_id')->references('id')->on('game_history_users');
+            $table->integer('position');
             $table->string('name');
-            $table->string('slug');
-            $table->text('description');
-            $table->enum('status', ['inactive', 'active'])->default('active');
+            $table->integer('score');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('archievements');
+        Schema::dropIfExists('game_history_rounds');
     }
 };

@@ -6,10 +6,13 @@ import Input from "@/components/ui/Input";
 import {apiRequest} from "@/services/communicationManager/apiRequest";
 import {useRouter} from "next/navigation";
 import {AuthenticatorContext} from "@/contexts/AuthenticatorContext";
+import {useTranslation} from "@/hooks/useTranslation";
+import Link from "next/link";
 
 function LoginClientComponent() {
     const router = useRouter();
     const {authUser} = useContext(AuthenticatorContext);
+    const {t} = useTranslation();
 
     interface User {
         user: string;
@@ -53,7 +56,7 @@ function LoginClientComponent() {
                 hasErrors = true;
                 setError((prev) => ({
                     ...prev,
-                    [field]: "Este campo es obligatorio",
+                    [field]: t('authenticate.field_required'),
                 }));
             } else {
                 setError((prev) => ({
@@ -113,7 +116,7 @@ function LoginClientComponent() {
                             className="w-32 mx-auto" alt="Logo" />
                     </div> */}
                     <div className="mt-12 flex flex-col items-center">
-                        <h1 className="text-2xl xl:text-3xl font-extrabold">Sign up</h1>
+                        <h1 className="text-2xl xl:text-3xl font-extrabold">{t('authenticate.login')}</h1>
                         <div className="w-full flex-1 mt-8">
                             <div className="flex flex-col items-center">
                                 <button
@@ -122,7 +125,7 @@ function LoginClientComponent() {
                                     <div className="bg-white p-1 rounded-full">
                                         <img src="/img/google.svg" alt="Google"/>
                                     </div>
-                                    <span className="ml-4">Sign Up with Google</span>
+                                    <span className="ml-4">{t('authenticate.login_google')}</span>
                                 </button>
 
                                 <button
@@ -130,14 +133,14 @@ function LoginClientComponent() {
                                     <div className="bg-white p-1 rounded-full">
                                         <img src="/img/github.svg" alt="GitHub"/>
                                     </div>
-                                    <span className="ml-4">Sign Up with GitHub</span>
+                                    <span className="ml-4">{t('authenticate.login_github')}</span>
                                 </button>
                             </div>
 
                             <div className="my-10 border-b border-indigo-700 text-center">
                                 <div
                                     className="leading-none px-2 inline-block text-sm text-white tracking-wide font-medium bg-indigo-800/60 transform translate-y-1/2">
-                                    Or sign up with e-mail
+                                    {t('authenticate.or_sign_up_with_email')}
                                 </div>
                             </div>
 
@@ -145,7 +148,7 @@ function LoginClientComponent() {
 
                                 <div className="">
                                     <Input name="user"
-                                           placeholder="User"
+                                           placeholder={t('authenticate.user_placeholder')}
                                            type="text"
                                            onChange={handleInputChange}
                                            value={user.user}
@@ -159,7 +162,7 @@ function LoginClientComponent() {
                                 )}
                                 <div className="mt-5">
                                     <Input name="password"
-                                           placeholder="Password"
+                                           placeholder={t('authenticate.password_placeholder')}
                                            type={showPassword ? "text" : "password"}
                                            onChange={handleInputChange}
                                            value={user.password}
@@ -188,25 +191,29 @@ function LoginClientComponent() {
                                         <UserPlus size={24} className="-ml-2"/>
                                     )}
                                     <span className="ml-3">
-                    {isLoading ? 'Logging in...' : 'Login'}
+                    {isLoading ? t('authenticate.logging_in') : t('authenticate.login')}
                   </span>
                                 </button>
-                                <p className="mt-6 text-xs text-gray-600 text-center">
-                                    I agree to abide by templatana's
-                                    <a
-                                        href="#"
-                                        className="border-b border-gray-500 border-dotted"
-                                    >
-                                        Terms of Service
-                                    </a>
-                                    and its
-                                    <a
-                                        href="#"
-                                        className="border-b border-gray-500 border-dotted"
-                                    >
-                                        Privacy Policy
-                                    </a>
-                                </p>
+                                <div className="mt-6 flex flex-col space-y-3">
+                                    <div
+                                        className="text-sm text-gray-600 text-center flex justify-center items-center gap-2">
+                                        <span>{t('authenticate.no_account')}</span>
+                                        <Link
+                                            href="/authenticate/register"
+                                            className="text-indigo-700 hover:text-indigo-900 font-semibold transition-colors duration-200"
+                                        >
+                                            {t('authenticate.create_account')}
+                                        </Link>
+                                    </div>
+                                    <div className="text-sm text-gray-600 text-center">
+                                        <Link
+                                            href="/authenticate/forgot-password"
+                                            className="text-indigo-700 hover:text-indigo-900 font-semibold transition-colors duration-200"
+                                        >
+                                            {t('authenticate.forgot_password_question')}
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -226,3 +233,4 @@ function LoginClientComponent() {
 }
 
 export default LoginClientComponent;
+

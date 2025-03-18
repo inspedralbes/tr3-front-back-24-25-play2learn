@@ -8,6 +8,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/languages', [\App\Http\Controllers\LanguageController::class, 'index']);
+});
 Route::prefix('/auth')->group(function () {
     Route::post('/register', [AuthenticatorController::class, 'register']);
     Route::post('/login', [AuthenticatorController::class, 'login']);
@@ -15,6 +18,13 @@ Route::prefix('/auth')->group(function () {
     Route::get('/google/callback', [AuthenticatorController::class, 'googleLogin']);
     Route::get('/google/redirect', [AuthenticatorController::class, 'googleRedirect']);
     Route::post('/google/save-password', [AuthenticatorController::class, 'saveGooglePassword']);
+});
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::prefix('/user')->group(function () {
+        Route::get('/languages', [\App\Http\Controllers\StatsUserLanguageController::class, 'getStatsLanguages']);
+        Route::get('/getUserStatsLanguage/{languageId}', [\App\Http\Controllers\StatsUserLanguageController::class, 'getUserStatsLanguage']);
+    });
 });
 
 Route::get('/test', function () {
