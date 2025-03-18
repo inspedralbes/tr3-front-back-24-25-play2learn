@@ -17,9 +17,10 @@ Route::prefix('/auth')->group(function () {
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-   Route::prefix('/user')->group(function () {
-       Route::get('/getUserStatsLanguage/{languageId}', [\App\Http\Controllers\StatsUserLanguageController::class, 'getUserStatsLanguage']);
-   });
+    Route::prefix('/user')->group(function () {
+        Route::get('/languages', [\App\Http\Controllers\StatsUserLanguageController::class, 'getStatsLanguages']);
+        Route::get('/getUserStatsLanguage/{languageId}', [\App\Http\Controllers\StatsUserLanguageController::class, 'getUserStatsLanguage']);
+    });
 });
 
 Route::get('/test', function () {

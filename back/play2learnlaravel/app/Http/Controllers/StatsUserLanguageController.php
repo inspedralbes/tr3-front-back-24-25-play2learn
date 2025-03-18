@@ -5,12 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\achievementsUser;
 use App\Models\GameHistoryUsers;
 use App\Models\StatsUserLanguage;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class StatsUserLanguageController extends Controller
 {
+    public function getStatsLanguages(){
+        $status = "success";
+        try {
+            $userId = Auth::user()->id;
+
+            $statsLanguages = StatsUserLanguage::where('user_id', $userId)
+                ->with('language')
+                ->get();
+
+            return response()->json([
+                'status' => $status,
+                'statsLanguages' => $statsLanguages,
+            ]);
+        }catch (\Exception $exception){
+            $status = "error";
+            return response()->json([
+                'status' => $status,
+                'message' => $exception->getMessage(),
+            ]);
+        }
+    }
+
     //
     public function getUserStatsLanguage($languageId)
     {

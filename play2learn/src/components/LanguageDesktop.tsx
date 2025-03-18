@@ -1,25 +1,45 @@
 "use client";
 import { Languages, ChevronRight, Sparkles, Clock } from "lucide-react";
 import { NavBarContext } from "@/contexts/NavBarContext";
-import { useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
+
+interface Language {
+  id: number;
+  name: string;
+  level: number;
+  progress: number;
+}
 
 function App() {
   const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
-  
-  const languages = [
-    { id: 1, name: "Spanish", level: 3, progress: 65 },
-    { id: 2, name: "French", level: 1, progress: 20 },
-    { id: 3, name: "German", level: 2, progress: 45 },
-  ];
+  const [languages, setLanguages] = useState<Language[]>([]);
+  // const languages = [
+  //   { id: 1, name: "Spanish", level: 3, progress: 65 }
+  // ];
 
-  // useEffect(() => {
-  //   const fetchLanguages = async () => {
-  //     const response = await apiRequest("languages");
-  //   };
-    
-  //   fetchLanguages();
-  // }, []);
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      const response = await apiRequest(`/user/languages`);
+      // console.log(response.statsLanguages);
+
+      if (response.status === "success") {
+        const fetchedLanguages: Language[] = response.statsLanguages.map(
+          (lng: any) => ({
+            id: lng.language.id,
+            name: lng.language.name,
+            level: lng.level_id,
+            progress: lng.experience,
+          })
+        );
+        // console.log(fetchedLanguages);
+        setLanguages(fetchedLanguages);
+        setSelectedLanguage(fetchedLanguages[0].name);
+      }
+    };
+
+    fetchLanguages();
+  }, []);
 
   return (
     <div className="hidden md:block md:w-64 bg-indigo-900/50 p-6 border-r border-indigo-700">

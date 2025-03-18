@@ -44,7 +44,7 @@ class UserService
         $statsUserLanguages = new StatsUserLanguage();
         $statsUserLanguages->user_id = $newUser->id;
         $statsUserLanguages->language_id = 1;
-        $statsUserLanguages->level = 0;
+        $statsUserLanguages->level_id = 1;
         $statsUserLanguages->experience = 0;
         $statsUserLanguages->total_games = 0;
         $statsUserLanguages->total_wins = 0;

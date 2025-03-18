@@ -108,7 +108,6 @@ const ProfileSection: React.FC = () => {
     }
 
     initStats();
-
   }, [isAuthenticated, router]);
 
   // const achievements = [
