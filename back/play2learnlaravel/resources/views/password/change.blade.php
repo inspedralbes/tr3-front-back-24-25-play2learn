@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido a Play2Learn</title>
+    <title>Cambiar Contraseña</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,6 +30,15 @@
             margin: 15px 0;
         }
 
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
         button {
             background-color: #3498db;
             color: #fff;
@@ -43,18 +52,20 @@
         button:hover {
             background-color: #2980b9;
         }
+
     </style>
-    <script src="{{ asset('js/google.js') }}"></script>
 </head>
 <body>
 <div class="container">
-    <h1>Bienvenido {{ $name  }} a Play2Learn</h1>
-    <p>¡Hola! Gracias por unirte a nuestra aplicación.</p>
-    <p>Como has iniciado sesión con tu cuenta de Google, hemos creado automáticamente una contraseña para ti.</p>
-    <p>Si deseas cambiarla, haz clic en el botón de abajo:</p>
-{{--    <a href="http://localhost:8000/password/change?{{ $id }}">Cambiar contraseña</a>--}}
-    <a href="{{ url('password/change?id=' . $id) }}">Cambiar contraseña</a>
-
+    <h1>Cambiar Contraseña</h1>
+    <p>Ingresa tu nueva contraseña para actualizarla.</p>
+    <form action="{{ route('change.password') }}" method="POST">
+        @csrf
+        <input type="hidden" name="id" value="{{ request()->query('id') }}">
+        <input type="password" name="new_password" placeholder="Nueva contraseña" required>
+        <input type="password" name="confirm_password" placeholder="Confirmar contraseña" required>
+        <button type="submit">Guardar Contraseña</button>
+    </form>
 </div>
 </body>
 </html>

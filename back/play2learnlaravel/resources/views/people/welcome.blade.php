@@ -47,12 +47,11 @@
 </head>
 <body>
 <div class="container">
-    <h1>¡Bienvenido {{ $name }} a Play2Learn!</h1>
-    <p>Estamos muy contentos de que te hayas registrado en nuestra plataforma.</p>
-    <p>Play2Learn te ofrece una experiencia de aprendizaje divertida y dinámica.</p>
-    <p>¡Explora nuestros cursos, gana puntos y alcanza nuevas metas!</p>
-{{--    --}}
-{{--    <button onclick="location.href='/cambiar-contrasena'">Cambiar contraseña</button>--}}
+    <h1>Bienvenido {{ $name  }} a Play2Learn</h1>
+    <p>¡Hola! Gracias por unirte a nuestra aplicación.</p>
+    <p>Como has iniciado sesión con tu cuenta de Google, hemos creado automáticamente una contraseña para ti.</p>
+    <p>Si deseas cambiarla, haz clic en el botón de abajo:</p>
+    <button onclick="location.href='/cambiar-contrasena'">Cambiar contraseña</button>
 </div>
 </body>
 </html>

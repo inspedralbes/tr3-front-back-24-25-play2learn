@@ -4,54 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/AchievementsUser.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/GameHistoryUsers.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/LevelExperience.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_16_145028_add_points_in_game_users.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_16_145325_create_game_history_users_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_16_150200_create_game_history_rounds_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_16_200236_add_icon_in_achievement.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_18_081034_create_level_experiences_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_18_081149_add_level_id_delete_lvl.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/LevelExperienceSeeder.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/play2learn/public/locales/en.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/play2learn/public/locales/es.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/play2learn/public/locales/fr.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/play2learn/src/components/ui/LanguageSelector.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/play2learn/src/hooks/useTranslation.ts" afterDir="false" />
+    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="merge en mi rama desde dev para tener todo actualizado">
+      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/public/js/google.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/Layout/master.blade.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/password/change.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/ArchievementsController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AchievementsController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/ArchievementsRewardsController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AchievementsRewardsController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/ArchievementsUserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AchievementsUserController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AuthenticatorController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AuthenticatorController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/StatsUserLanguageController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/StatsUserLanguageController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/Archievements.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/Achievements.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/ArchievementsRewards.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/AchievementsRewards.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/ArchievementsUser.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/GameHistoryRounds.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/StatsUserLanguage.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Models/StatsUserLanguage.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Services/UserService.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Services/UserService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_12_110338_create_archievements_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_12_110338_create_achievements_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_12_110753_create_archievements_rewards_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_12_110753_create_achievements_rewards_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_12_111133_create_archievements_users_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/migrations/2025_03_12_111133_create_achievements_users_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/ArchievementsRewardsSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/AchievementsRewardsSeeder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/ArchievementsSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/AchievementsSeeder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/ArchievementsUserSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/AchievementsUserSeeder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/DatabaseSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/database/seeders/DatabaseSeeder.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/google/google_account.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/google/google_account.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/people/welcome.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/people/welcome.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/authenticate/login/LoginClientComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/authenticate/login/LoginClientComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/flappy/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/flappy/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/profile/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/profile/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/profile/profileSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/profile/profileSection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/components/GameLobby.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/components/GameLobby.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/components/LanguageDesktop.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/components/LanguageDesktop.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/components/SectionsDesktop.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/components/SectionsDesktop.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/contexts/AuthContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/contexts/NavBarContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/contexts/AuthenticatorContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/contexts/AuthenticatorContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/services/communicationManager/apiRequest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/services/communicationManager/apiRequest.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,7 +55,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Merging auth__google",
+    "git-widget-placeholder": "auth__google",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -119,11 +81,24 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1742314666999</updated>
-      <workItem from="1742314668081" duration="2666000" />
+      <workItem from="1742314668081" duration="6960000" />
     </task>
+    <task id="LOCAL-00001" summary="merge en mi rama desde dev para tener todo actualizado">
+      <option name="closed" value="true" />
+      <created>1742317676389</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1742317676389</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="merge en mi rama desde dev para tener todo actualizado" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge en mi rama desde dev para tener todo actualizado" />
   </component>
 </project>

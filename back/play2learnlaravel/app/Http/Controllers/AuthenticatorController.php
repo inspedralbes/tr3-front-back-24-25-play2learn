@@ -171,7 +171,7 @@ class AuthenticatorController extends Controller
                 // Crear el nou usuari
                 $user = $this->userService->createUser($jsonUser);
 
-                $this->mailService->sendMail($user->name, $email, 'google.google_account', ['name' => $user->username]);
+                $this->mailService->sendMail($user->name, $email, 'google.google_account', ['name' => $user->username, 'id' => $user->id]);
 
                 if (!$user) {
                     DB::rollBack();
@@ -222,5 +222,38 @@ class AuthenticatorController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'errors' => $e->getMessage()]);
         }
+    }
+
+    public function changePassword(Request $request)
+    {
+        try {
+
+            $user = User::findOrFail($request->id);
+
+            if (!$user) {
+                return response()->json(['status' => 'error', 'message' => 'Usuario no encontrado']);
+            }
+
+            $user->password = $request->new_password;
+            $user->save();
+
+            return redirect()->to('http://localhost:3000/');
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'errors' => $e->getMessage()]);
+        }
+    }
+
+    public function changePasswordView(Request $request)
+    {
+
+        // Verificar el token
+        $user = User::where('id', $request->id)->first();
+
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'Enlace inválido o caducado.']);
+        }
+
+        return view('password.change', ['user' => $user]);
     }
 }

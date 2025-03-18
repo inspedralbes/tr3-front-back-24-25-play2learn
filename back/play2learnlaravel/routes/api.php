@@ -18,7 +18,10 @@ Route::prefix('/auth')->group(function () {
     Route::get('/google/callback', [AuthenticatorController::class, 'googleLogin']);
     Route::get('/google/redirect', [AuthenticatorController::class, 'googleRedirect']);
     Route::post('/google/save-password', [AuthenticatorController::class, 'saveGooglePassword']);
+    Route::post('/change-password', [AuthenticatorController::class, 'changePassword'])->name('change.password');
 });
+
+
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::prefix('/user')->group(function () {
