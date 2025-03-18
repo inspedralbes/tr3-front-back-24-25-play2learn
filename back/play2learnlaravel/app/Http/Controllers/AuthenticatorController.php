@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\MailService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
@@ -13,11 +16,12 @@ use Laravel\Socialite\Facades\Socialite;
 class AuthenticatorController extends Controller
 {
     //
-    protected $userService;
+    protected $userService, $mailService;
 
     public function __construct()
     {
         $this->userService = new UserService();
+        $this->mailService = new MailService();
     }
 
     public function login(Request $request)
@@ -99,11 +103,13 @@ class AuthenticatorController extends Controller
         $newUser = $this->userService->createUser($request->all());
 
         try {
-            if(Auth::attempt(['email'=>$newUser->email, 'password'=>$request->password])){
+            if (Auth::attempt(['email' => $newUser->email, 'password' => $request->password])) {
                 $user = Auth::user();
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
+
+            $this->mailService->sendMail($user->name, $user, 'people.welcome', ['name' => $user->name]);
 
             return response()->json([
                 'status' => 'success',
@@ -111,7 +117,7 @@ class AuthenticatorController extends Controller
                 'token' => $token,
                 'message' => 'Usuario registrado exitosamente.'
             ], 201);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $e->getMessage()
@@ -122,43 +128,58 @@ class AuthenticatorController extends Controller
 
     public function googleLogin(Request $request)
     {
-        try{
+        try {
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $googleUser = Socialite::driver('google')->user();
+            //return response()->json(['status' => 'success', 'user' => $googleUser]);
 
             Log::info('Google login attempt', ['email' => $request->input('email')]);
 
+            DB::beginTransaction();
+
             // Extreure el correu i el nom directament de l'objecte retornat
             $email = $googleUser->getEmail();
-            $name = $googleUser->getName();
 
-            if(!$email){
+            if (!$email) {
                 Log::error('Email no encontrado');
+                DB::rollBack();
                 return response()->json(['status' => 'error', 'message' => 'Email no encontrado']);
             }
 
+            // Comprovar si l'usuari ja existeix
             $user = User::where('email', $email)->first();
 
             if (!$user) {
-                // Extraer nombre y apellido del nombre completo
-                $nameParts = explode(' ', $name);
-                $firstName = $nameParts[0];
-
                 Log::info('Creating new user from Google login', ['email' => $email]);
 
-                $user = User::create([
-                    'name' => $firstName,
-                    'email' => $email,
+                // Dades del nou usuari
+                $jsonUser = [
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'profile_pic' => $googleUser->getAvatar(),
+                    'username' => $googleUser['given_name'],
                     'password' => bcrypt(uniqid() . time()),
-                ]);
+                ];
+
+                // Crear el nou usuari
+                $user = $this->userService->createUser($jsonUser);
+
+                $this->mailService->sendMail($user->name, $email, 'google.google_account', ['name' => $user->username]);
+
+                if (!$user) {
+                    DB::rollBack();
+                    return response()->json(['status' => 'error', 'message' => 'Error al crear el usuario']);
+                }
             }
 
+
+            // Iniciar sessió amb l'usuari trobat o creat
             Auth::login($user);
 
+            // Generar el token d'autenticació
             $token = $user->createToken('auth_token')->plainTextToken;
 
             Log::info('Google login successful', ['email' => $email]);
-
 
             // Crear l'objecte de dades d'usuari
             $userData = [
@@ -167,27 +188,31 @@ class AuthenticatorController extends Controller
                 'token' => $token
             ];
 
-            return redirect()->to('http://localhost:3000/login/callback?data=' . urlencode(json_encode($userData)));
+            DB::commit();
 
+            //return response()->json(['status' => 'success', 'userData' => $userData]);
 
-        }catch (\Exception $e){
+            return redirect()->to('http://localhost:3000/contexts/AuthenticatorContext?data=' . urlencode(json_encode($userData)));
 
+        } catch (\Exception $e) {
             Log::error('Google login error', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
 
+            DB::rollBack();
             return response()->json(['status' => 'error', 'errors' => $e->getMessage()]);
         }
     }
 
+
     public function googleRedirect()
     {
-        try{
+        try {
 
             return Socialite::driver('google')->stateless()->redirect();
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'errors' => $e->getMessage()]);
         }
     }

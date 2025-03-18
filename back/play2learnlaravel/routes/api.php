@@ -12,8 +12,9 @@ Route::prefix('/auth')->group(function () {
     Route::post('/register', [AuthenticatorController::class, 'register']);
     Route::post('/login', [AuthenticatorController::class, 'login']);
     Route::post('/logout', [AuthenticatorController::class, 'logout']);
-    Route::post('/google/callback', [AuthenticatorController::class, 'googleLogin']);
+    Route::get('/google/callback', [AuthenticatorController::class, 'googleLogin']);
     Route::get('/google/redirect', [AuthenticatorController::class, 'googleRedirect']);
+    Route::post('/google/save-password', [AuthenticatorController::class, 'saveGooglePassword']);
 });
 
 Route::get('/test', function () {

@@ -4,13 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="92d5fbad-bca0-4722-a1b1-f486398c3b6a" name="Changes" comment="Merge">
+    <list default="true" id="92d5fbad-bca0-4722-a1b1-f486398c3b6a" name="Changes" comment="Queda hacer que envie el servidor los datos">
+      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/google/google_account.blade.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/people/welcome.blade.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/play2learn/src/app/authenticate/google/SetPassword.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/play2learn/src/app/authenticate/google/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AuthenticatorController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AuthenticatorController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Services/UserService.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Services/UserService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/config/services.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/config/services.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/authenticate/login/LoginClientComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/authenticate/login/LoginClientComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/contexts/AuthenticatorContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/contexts/AuthenticatorContext.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +88,8 @@
       <updated>1742199477883</updated>
       <workItem from="1742199479312" duration="1173000" />
       <workItem from="1742200684037" duration="4889000" />
-      <workItem from="1742208593154" duration="3696000" />
+      <workItem from="1742208593154" duration="4330000" />
+      <workItem from="1742283601138" duration="13038000" />
     </task>
     <task id="LOCAL-00001" summary="Merge">
       <option name="closed" value="true" />
@@ -93,7 +99,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742200136392</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Queda hacer que envie el servidor los datos">
+      <option name="closed" value="true" />
+      <created>1742213358089</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1742213358089</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -101,6 +115,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Merge" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge" />
+    <MESSAGE value="Queda hacer que envie el servidor los datos" />
+    <option name="LAST_COMMIT_MESSAGE" value="Queda hacer que envie el servidor los datos" />
   </component>
 </project>
