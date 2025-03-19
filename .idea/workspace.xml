@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="Correos">
+      <change afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/TranslationGameComponent.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/google/google_account.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/google/google_account.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/people/welcome.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/resources/views/people/welcome.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AuthenticatorController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/AuthenticatorController.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +21,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -49,16 +50,21 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;auth__google&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;game__translate&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;F:\\DAW\\tr3-front-back-24-25-play2learn\\play2learn\\node_modules\\typescript\\lib&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\deray\\Documents\\Cosas\\tr3-front-back-24-25-play2learn\\play2learn\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\deray\Documents\Cosas\tr3-front-back-24-25-play2learn\play2learn\src\app\games" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

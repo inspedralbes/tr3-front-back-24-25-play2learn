@@ -104,7 +104,7 @@ const GameLobby: React.FC = () => {
     // }
   };
 
-  const handleCreateRoom = () => {
+  const   handleCreateRoom = () => {
     socket.emit("setLobbies", { token: token || "", game });
   };
 
