@@ -30,17 +30,17 @@
             margin: 15px 0;
         }
 
-        button {
+        a {
             background-color: #3498db;
-            color: #fff;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            text-decoration: none;
         }
 
-        button:hover {
+        a:hover {
             background-color: #2980b9;
         }
     </style>
@@ -53,7 +53,7 @@
     <p>Como has iniciado sesión con tu cuenta de Google, hemos creado automáticamente una contraseña para ti.</p>
     <p>Si deseas cambiarla, haz clic en el botón de abajo:</p>
 {{--    <a href="http://localhost:8000/password/change?{{ $id }}">Cambiar contraseña</a>--}}
-    <a href="{{ url('password/change?id=' . $id) }}">Cambiar contraseña</a>
+    <a href="{{ url('password/change?id=' . $id) }}" style="color: #ffffff">Cambiar contraseña</a>
 
 </div>
 </body>

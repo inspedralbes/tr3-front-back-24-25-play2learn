@@ -30,28 +30,28 @@
             margin: 15px 0;
         }
 
-        button {
+        #linkGame {
             background-color: #3498db;
-            color: #fff;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            text-decoration: none;
         }
 
-        button:hover {
+        #linkGame:hover {
             background-color: #2980b9;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Bienvenido {{ $name  }} a Play2Learn</h1>
-    <p>¡Hola! Gracias por unirte a nuestra aplicación.</p>
-    <p>Como has iniciado sesión con tu cuenta de Google, hemos creado automáticamente una contraseña para ti.</p>
-    <p>Si deseas cambiarla, haz clic en el botón de abajo:</p>
-    <button onclick="location.href='/cambiar-contrasena'">Cambiar contraseña</button>
+    <h1>¡Bienvenido {{ $name }} a Play2Learn!</h1>
+    <p>Estamos muy contentos de que te hayas registrado en nuestra plataforma.</p>
+    <p>Play2Learn te ofrece una experiencia de aprendizaje divertida y dinámica.</p>
+    <p>¡Explora nuestros cursos, gana puntos y alcanza nuevas metas!</p>
+    <a id="linkGame" href="http://localhost:3000/" style="color: #ffffff">Ir a Play2Learn</a>
 </div>
 </body>
 </html>
