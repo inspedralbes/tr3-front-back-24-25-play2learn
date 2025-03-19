@@ -53,7 +53,7 @@
     <p>Como has iniciado sesión con tu cuenta de Google, hemos creado automáticamente una contraseña para ti.</p>
     <p>Si deseas cambiarla, haz clic en el botón de abajo:</p>
 {{--    <a href="http://localhost:8000/password/change?{{ $id }}">Cambiar contraseña</a>--}}
-    <a href="{{ url('password/change?id=' . $id) }}" style="color: #ffffff">Cambiar contraseña</a>
+    <a href="{{ route('view.change', ['uuid'=>$uuid]) }}" style="color: #ffffff">Cambiar contraseña</a>
 
 </div>
 </body>

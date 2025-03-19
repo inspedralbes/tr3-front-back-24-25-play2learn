@@ -170,8 +170,10 @@ class AuthenticatorController extends Controller
 
                 // Crear el nou usuari
                 $user = $this->userService->createUser($jsonUser);
+                $user->uuid = uuid_create();
+                $user->save();
 
-                $this->mailService->sendMail($user->name, $email, 'google.google_account', ['name' => $user->username, 'id' => $user->id]);
+                $this->mailService->sendMail($user->name, $email, 'google.google_account', ['name' => $user->username, 'uuid' => $user->uuid]);
 
                 if (!$user) {
                     DB::rollBack();
@@ -228,7 +230,7 @@ class AuthenticatorController extends Controller
     {
         try {
 
-            $user = User::findOrFail($request->id);
+            $user = User::where('uuid', $request->uuid)->first();
 
             if (!$user) {
                 return response()->json(['status' => 'error', 'message' => 'Usuario no encontrado']);
@@ -237,7 +239,26 @@ class AuthenticatorController extends Controller
             $user->password = $request->new_password;
             $user->save();
 
-            return redirect()->to('http://localhost:3000/');
+            // Iniciar sessió amb l'usuari trobat o creat
+            Auth::login($user);
+
+            // Generar el token d'autenticació
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            // Crear l'objecte de dades d'usuari
+            $userData = [
+                'status' => 'success',
+                'user' => $user,
+                'token' => $token
+            ];
+
+//            DB::commit();
+
+            //return response()->json(['status' => 'success', 'userData' => $userData]);
+
+            return redirect()->to('http://localhost:3000/contexts/AuthenticatorContext?data=' . urlencode(json_encode($userData)));
+
+//            return redirect()->to('http://localhost:3000/');
 
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'errors' => $e->getMessage()]);
@@ -248,7 +269,7 @@ class AuthenticatorController extends Controller
     {
 
         // Verificar el token
-        $user = User::where('id', $request->id)->first();
+        $user = User::where('uuid', $request->uuid)->first();
 
         if (!$user) {
             return response()->json(['status' => 'error', 'message' => 'Enlace inválido o caducado.']);

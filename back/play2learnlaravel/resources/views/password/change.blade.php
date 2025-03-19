@@ -61,7 +61,7 @@
     <p>Ingresa tu nueva contraseña para actualizarla.</p>
     <form action="{{ route('change.password') }}" method="POST">
         @csrf
-        <input type="hidden" name="id" value="{{ request()->query('id') }}">
+        <input type="hidden" name="uuid" value="{{ $user->uuid }}">
         <input type="password" name="new_password" placeholder="Nueva contraseña" required>
         <input type="password" name="confirm_password" placeholder="Confirmar contraseña" required>
         <button type="submit">Guardar Contraseña</button>

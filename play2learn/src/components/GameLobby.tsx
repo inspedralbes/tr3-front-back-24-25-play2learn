@@ -71,8 +71,8 @@ const GameLobby: React.FC = () => {
   });
 
   const router = useRouter();
-  const { selectedLanguage } = useContext(AuthContext);
-  const { user, isAuthenticated } = useContext(AuthenticatorContext);
+  const { selectedLanguage } = useContext(NavBarContext);
+  const { user, isAuthenticated, token } = useContext(AuthenticatorContext);
 
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,7 +80,9 @@ const GameLobby: React.FC = () => {
   const [gameSelected, setGameSelected] = useState<Game>({} as Game);
   const [passwordModal, setPasswordModal] = useState<string>("");
   const [containerLobbies, setContainerLobbies] = useState(false);
-
+  const [showPasswordLobby, setShowPasswordLobby] = useState(false);
+  const [languageLevels, setLanguageLevels] = useState<LanguageLevel[]>([]);
+  
   const filteredRooms = waitingRooms.filter(
     (room) =>
       room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
