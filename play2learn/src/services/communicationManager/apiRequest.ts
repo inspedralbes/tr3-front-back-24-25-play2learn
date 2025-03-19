@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 
 const routeApi: string =
-  (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api");
+  (process.env.API_LARAVEL_URL || "http://127.0.0.1:8000/api");
 
 export async function apiRequest(
   endpoint: string,
