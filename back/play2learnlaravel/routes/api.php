@@ -28,6 +28,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/languages', [\App\Http\Controllers\StatsUserLanguageController::class, 'getStatsLanguages']);
         Route::get('/getUserStatsLanguage/{languageId}', [\App\Http\Controllers\StatsUserLanguageController::class, 'getUserStatsLanguage']);
     });
+
+   Route::prefix('/games')->group(function () {
+       Route::get('/', [\App\Http\Controllers\GameController::class, 'getList']);
+       Route::post('/store', [\App\Http\Controllers\GameController::class, 'store']);
+       Route::get('/{gameUUID}', [\App\Http\Controllers\GameController::class, 'getGame']);
+       Route::get('/join/{gameUUID}', [\App\Http\Controllers\GameController::class, 'join']);
+   });
 });
 
 Route::get('/test', function () {
