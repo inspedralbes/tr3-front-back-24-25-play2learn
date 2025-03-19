@@ -1,26 +1,12 @@
-import Cookies from "js-cookie";
+const routeApi = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 
-const routeApi: string =
-  (process.env.API_LARAVEL_URL || "http://127.0.0.1:8000/api");
-
-export async function apiRequest(
-  endpoint: string,
-  method: string = "GET",
-  body: any = null
-): Promise<any> {
+async function apiRequest(endpoint, token = null, method = "GET", body = null) {
   try {
-    let token: string | undefined;
-    
-    // Solo ejecutar js-cookie en el cliente
-    if (typeof window !== 'undefined') {
-      token = Cookies.get("authToken");
-    }
-
-    const options: RequestInit = {
+    const options = {
       method,
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
+        "Accept": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       //   credentials: "include",
@@ -33,13 +19,15 @@ export async function apiRequest(
     const response = await fetch(`${routeApi}${endpoint}`, options);
 
     if (!response.ok) {
-      const errorData: any = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `Error en la respuesta: ${response.status}`);
     }
 
     return await response.json();
-  } catch (error: any) {
+  } catch (error) {
     console.error(`Error en la petición a ${endpoint}:`, error.message);
     throw error;
   }
 }
+
+module.exports = apiRequest

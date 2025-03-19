@@ -24,6 +24,7 @@ class UserService
         $newUser = new User();
         $newUser->name = $user['name'];
         $newUser->email = $user['email'];
+        $newUser->profile_pic = $user['profile_pic'] ?? null;
         $newUser->username = $user['username'];
         $newUser->password = $user['password'];
         $newUser->save();
