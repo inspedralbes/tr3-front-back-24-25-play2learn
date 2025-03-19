@@ -3,6 +3,8 @@ import { Languages, ChevronRight, Sparkles, Clock } from "lucide-react";
 import { NavBarContext } from "@/contexts/NavBarContext";
 import { useState, useContext, useEffect } from "react";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
+import { useRouter } from "next/navigation";
+import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 
 interface Language {
   id: number;
@@ -14,11 +16,18 @@ interface Language {
 function App() {
   const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
   const [languages, setLanguages] = useState<Language[]>([]);
+  const { isAuthenticated } = useContext(AuthenticatorContext);
+  const router = useRouter();
   // const languages = [
   //   { id: 1, name: "Spanish", level: 3, progress: 65 }
   // ];
 
   useEffect(() => {
+
+    if (!isAuthenticated) {
+      router.push("/authenticate/login");
+      return;
+    }
     const fetchLanguages = async () => {
       const response = await apiRequest(`/user/languages`);
       // console.log(response.statsLanguages);
@@ -39,7 +48,7 @@ function App() {
     };
 
     fetchLanguages();
-  }, []);
+  }, [isAuthenticated, router]);
 
   return (
     <div className="hidden md:block md:w-64 bg-indigo-900/50 p-6 border-r border-indigo-700">

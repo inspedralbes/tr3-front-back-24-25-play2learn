@@ -82,7 +82,7 @@ const GameLobby: React.FC = () => {
   const [containerLobbies, setContainerLobbies] = useState(false);
   const [showPasswordLobby, setShowPasswordLobby] = useState(false);
   const [languageLevels, setLanguageLevels] = useState<LanguageLevel[]>([]);
-  
+
   const filteredRooms = waitingRooms.filter(
     (room) =>
       room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -211,6 +211,7 @@ const GameLobby: React.FC = () => {
     // Limpieza del listener al desmontar el componente
     return () => {
       socket.off("getLobbies");
+      socket.off("loobbieCreated");
     };
   }, [isAuthenticated, router]);
 
