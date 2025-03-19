@@ -42,11 +42,11 @@ jobs:
       - name: Verificar contenid del directori descarregat
         run: ls -la websockets || echo "⚠️ No s'ha descarregat res a 'websockets'!"
 
-      - name: scp a produccio
+      - name: rsync a producción
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/prod_key.pem
           chmod 600 ~/prod_key.pem
-          scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" websockets ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/backend/socket
+          rsync -avz --exclude=node_modules -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/prod_key.pem" websockets/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/backend/socket
           rm ~/prod_key.pem
 
       - run: echo "🍏 This job's status is ${{ job.status }}."
