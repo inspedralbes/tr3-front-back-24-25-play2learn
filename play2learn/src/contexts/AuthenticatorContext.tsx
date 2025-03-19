@@ -4,6 +4,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { getDefaultAutoSelectFamilyAttemptTimeout } from "net";
 
 interface User {
   id: number;
@@ -42,37 +43,46 @@ interface AuthenticatorProviderProps {
   children: ReactNode;
 }
 
-export const AuthenticatorProvider: React.FC<AuthenticatorProviderProps> = ({children}) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [token, setToken] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const router = useRouter();
+export const AuthenticatorProvider: React.FC<AuthenticatorProviderProps> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-    // Mètode per processar la URL i autenticar si troba dades
-    const handleGoogleAuth = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const data = urlParams.get("data");
+  // Mètode per processar la URL i autenticar si troba dades
+  const handleGoogleAuth = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const data = urlParams.get("data");
 
-        if (data) {
-            try {
-                const parsedData = JSON.parse(decodeURIComponent(data));
-                const {user, token} = parsedData;
+    if (data) {
+      try {
+        const parsedData = JSON.parse(decodeURIComponent(data));
+        const { user, token } = parsedData;
 
-                if (user && token) {
-                    authUser(user, token);
+        if (user && token) {
+          authUser(user, token);
 
-                    // Eliminar el fragment URL per netejar
-                    window.history.replaceState({}, document.title, window.location.pathname);
+          // Eliminar el fragment URL per netejar
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
 
-                    //Redirigir a la pagina principal
-                    router.push('/');
-                }
-            } catch (error) {
-                console.error("Error en la deserialització de les dades d'autenticació:", error);
-            }
+          //Redirigir a la pagina principal
+          router.push("/");
         }
-    };
+      } catch (error) {
+        console.error(
+          "Error en la deserialització de les dades d'autenticació:",
+          error
+        );
+      }
+    }
+  };
 
   const checkAuth = async () => {
     try {
@@ -85,11 +95,13 @@ export const AuthenticatorProvider: React.FC<AuthenticatorProviderProps> = ({chi
       }
 
       const user = JSON.parse(authUserStr);
-      
+
       if (!user || !user.id) {
         logout();
         return;
       }
+
+      await apiRequest(`/checkAuth`);
 
       setUser(user);
       setToken(authToken);
@@ -102,10 +114,10 @@ export const AuthenticatorProvider: React.FC<AuthenticatorProviderProps> = ({chi
     }
   };
 
-    useEffect(() => {
-        handleGoogleAuth();
-        checkAuth();
-    }, []);
+  useEffect(() => {
+    handleGoogleAuth();
+    checkAuth();
+  }, []);
 
   const authUser = async (user: User, token: string) => {
     try {
@@ -133,7 +145,19 @@ export const AuthenticatorProvider: React.FC<AuthenticatorProviderProps> = ({chi
   }
 
   return (
-    <AuthenticatorContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated, token, setToken, authUser, logout, checkAuth }}>
+    <AuthenticatorContext.Provider
+      value={{
+        user,
+        setUser,
+        isAuthenticated,
+        setIsAuthenticated,
+        token,
+        setToken,
+        authUser,
+        logout,
+        checkAuth,
+      }}
+    >
       {children}
     </AuthenticatorContext.Provider>
   );

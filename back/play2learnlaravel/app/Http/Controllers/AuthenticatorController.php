@@ -66,6 +66,20 @@ class AuthenticatorController extends Controller
         ], 201);
     }
 
+    public function checkAuth()
+    {
+        if(Auth::check()) {
+            return response()->json([
+                'status' => 'success',
+                'user' => Auth::user()
+            ]);
+        }else{
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Usuario no autenticado.'
+            ]);
+        }
+    }
 
     public function logout(Request $request)
     {
@@ -173,6 +187,7 @@ class AuthenticatorController extends Controller
                 $user->uuid = uuid_create();
                 $user->save();
 
+
                 $this->mailService->sendMail($user->name, $email, 'google.google_account', ['name' => $user->username, 'uuid' => $user->uuid]);
 
                 if (!$user) {
@@ -237,10 +252,13 @@ class AuthenticatorController extends Controller
             }
 
             $user->password = $request->new_password;
+            $user->uuid = null;
             $user->save();
 
             // Iniciar sessió amb l'usuari trobat o creat
             Auth::login($user);
+
+            $user->tokens()->delete();
 
             // Generar el token d'autenticació
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -270,7 +288,6 @@ class AuthenticatorController extends Controller
 
         // Verificar el token
         $user = User::where('uuid', $request->uuid)->first();
-
         if (!$user) {
             return response()->json(['status' => 'error', 'message' => 'Enlace inválido o caducado.']);
         }
