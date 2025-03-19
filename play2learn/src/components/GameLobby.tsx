@@ -219,11 +219,13 @@ const GameLobby: React.FC = () => {
     const language = languageLevels.find(
       (level) => level.id === game.id_level_language
     );
-    setGame((prev) => ({
-      ...prev,
-      language_level: language,
-    }));
-  }, [game.id_level_language]);
+    if (language) {
+      setGame((prev) => ({
+        ...prev,
+        language_level: language,
+      }));
+    }
+  }, [game.id_level_language, languageLevels]);
 
   return (
     <div>

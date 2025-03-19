@@ -1,7 +1,7 @@
 "use client"
 import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Bird } from 'lucide-react';
-import {AuthContext} from "@/contexts/NavBarContext";
+import {NavBarContext} from "@/contexts/NavBarContext";
 
 interface Obstacle {
     x: number;
@@ -10,7 +10,7 @@ interface Obstacle {
 }
 
 function loading() {
-    const { selectedLanguage, setActiveSection } = useContext(AuthContext);
+    const { selectedLanguage, setActiveSection } = useContext(NavBarContext);
       
     const [isPlaying, setIsPlaying] = useState(false);
     const [gameOver, setGameOver] = useState(false);

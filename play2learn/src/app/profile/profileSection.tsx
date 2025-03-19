@@ -69,6 +69,7 @@ const ProfileSection: React.FC = () => {
     max_clues: number;
     max_time: number;
     status: string;
+    created_at: string;
   }
 
   interface GameRound {

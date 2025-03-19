@@ -12,6 +12,7 @@ interface User {
   username: string;
   email: string;
   profile_pic: string;
+  created_at: string;
 }
 
 interface AuthenticatorContextProps {
