@@ -6,7 +6,11 @@ class SocketController {
 
         io.on('connection', (socket) => {
             console.log('A user connected');
-            
+            socket.on('test', () => {
+                console.log('testeando');
+                socket.emit('test', 'Hello World');
+            });
+
             socket.on('setLobbies', async ({token, game})=>{
                 const response = await apiRequest('/games/store', token, "POST", game);
                 console.log(response);

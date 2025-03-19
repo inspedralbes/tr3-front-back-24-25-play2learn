@@ -12,7 +12,7 @@ interface LobbyProps {
   players: Player[];
   n_rounds: number;
   n_round_actual: number;
-  max_clues: number;
+  max_powers: number;
   max_guesses: number;
   max_time: number;
 }
@@ -26,7 +26,7 @@ export default function Home() {
     ],
     n_rounds: 5,
     n_round_actual: 1,
-    max_clues: 3,
+    max_powers: 3,
     max_guesses: 6,
     max_time: 60,
   });

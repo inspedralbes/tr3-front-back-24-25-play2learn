@@ -1,6 +1,10 @@
 "use client";
-import React, { use } from "react";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
+import socket from "@/services/websockets/socket";
+import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 
 interface Player {
   id: number;
@@ -12,7 +16,7 @@ interface LobbyProps {
   players: Player[];
   n_rounds: number;
   n_round_actual: number;
-  max_clues: number;
+  max_powers: number;
   max_guesses: number;
   max_time: number;
 }
@@ -32,10 +36,13 @@ const WORDS = [
 ];
 
 const Hangman: React.FC<HangmanProps> = ({ lobbyProps }) => {
+  const { isAuthenticated } = useContext(AuthenticatorContext);
+  const router = useRouter();
+
   const [word, setWord] = useState<string>("");
   const [guessedWord, setGuessedWord] = useState<string>("");
   const [guesses, setGuesses] = useState<number>(0);
-  const [clues, setClues] = useState<number>(0);
+  const [powers, setPowers] = useState<number>(0);
   const [time, setTime] = useState<number>(0);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
@@ -51,12 +58,12 @@ const Hangman: React.FC<HangmanProps> = ({ lobbyProps }) => {
     } else {
       setGuesses((prevGuesses) => prevGuesses + 1);
     }
-  }
+  };
 
   useEffect(() => {
     setWord(WORDS[Math.floor(Math.random() * WORDS.length)]);
     setTime(lobbyProps.max_time);
-    setClues(lobbyProps.max_clues);
+    setPowers(lobbyProps.max_powers);
   }, []);
 
   useEffect(() => {
@@ -85,17 +92,38 @@ const Hangman: React.FC<HangmanProps> = ({ lobbyProps }) => {
     }
   }, [time]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/authenticate/login");
+      return;
+    }
+
+    socket.emit('test');
+    socket.on('test', () => {
+      console.log('OK');
+    });
+
+    return () => {
+      socket.off();
+  };
+  }, [isAuthenticated, router]);
+
   return (
     <div>
       <h1 className="text-center">Hangman Game</h1>
-      <h2 className="text-right">{ time }</h2>
-      <p className="text-center">{ guessedWord.split("").join(" ") }</p>
+      <h2 className="text-right">{time}</h2>
+      <p className="text-center">{guessedWord.split("").join(" ")}</p>
 
       <div className="grid grid-cols-7 gap-2">
         {Array.from("abcdefghijklmnopqrstuvwxyz").map((letter) => (
-          <button key={letter} onClick={()=> {
-            tryGuess(letter);
-          }}>{ letter }</button>
+          <button
+            key={letter}
+            onClick={() => {
+              tryGuess(letter);
+            }}
+          >
+            {letter}
+          </button>
         ))}
       </div>
     </div>
