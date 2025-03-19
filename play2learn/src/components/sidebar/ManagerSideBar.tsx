@@ -19,7 +19,7 @@ export default function ManagerSideBar({
   return (
     <>
       {!hideSidebar && (
-        <div className="fixed top-0 left-0 flex flex-row">
+        <div className="fixed top-0 left-0 h-full flex flex-row">
           {/* <NavBarMovile/> */}
           <Secciones />
           <Idiomas />
