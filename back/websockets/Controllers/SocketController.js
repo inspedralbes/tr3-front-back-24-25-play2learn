@@ -1,4 +1,4 @@
-const apiRequest  = require("../apiRequest");
+const apiRequest = require("../apiRequest");
 
 class SocketController {
     static initialize(io) {
@@ -6,8 +6,8 @@ class SocketController {
 
         io.on('connection', (socket) => {
             console.log('A user connected');
-            
-            socket.on('setLobbies', async ({token, game})=>{
+
+            socket.on('setLobbies', async ({token, game}) => {
                 const response = await apiRequest('/games/store', token, "POST", game);
                 console.log(response);
                 // Crear y unirse a la sala con el UUID del juego
@@ -18,6 +18,14 @@ class SocketController {
                 // Emitir al socket actual con datos personalizados
                 socket.emit('loobbieCreated', response);
 
+            });
+
+            socket.on('startGame', async ({token, roomUUID}) => {
+                console.log("Token", token);
+                console.log("Sala UUID", roomUUID)
+                const response = await apiRequest('/games/start', token, "POST" , {roomUUID});
+                console.log("LARAVEL", response);
+                io.to(roomUUID).emit('gameStarted', response);
             });
 
             socket.on('joinRoom', async ({token, roomUUID}) => {

@@ -1,19 +1,18 @@
-
 "use client"
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useContext } from "react";
-import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
+import {useParams} from "next/navigation";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
+import {useContext} from "react";
+import {AuthenticatorContext} from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
 import AvatarUserProfile from "@/components/ui/AvatarUserProfile";
 
 export default function LobbyGameClient() {
     const params = useParams<{ uuid: string }>();
-    const { isAuthenticated } = useContext(AuthenticatorContext);
+    const {isAuthenticated} = useContext(AuthenticatorContext);
     const router = useRouter();
-    const { token } = useContext(AuthenticatorContext);
+    const {token} = useContext(AuthenticatorContext);
 
     interface Language {
         id: number;
@@ -55,24 +54,36 @@ export default function LobbyGameClient() {
     }
 
     const [participants, setParticipants] = useState<Participant[]>([]);
-    
+
     useEffect(() => {
         if (!isAuthenticated) {
             router.push("/authenticate/login");
             return;
         }
 
-        socket.emit('getGame', { token: token || "", roomUUID: params.uuid });
+        socket.emit('getGame', {token: token || "", roomUUID: params.uuid});
 
         socket.on('playerJoined', (data) => {
             console.log(data);
             setParticipants(data.game.participants || []);
         });
 
+        socket.on('gameStarted', (data) => {
+            console.log("Socket", data);
+            console.log("Socket uuid", data.game.uuid)
+            router.push(`/games/translation/${data.game.uuid}`);
+        });
+
         return () => {
             socket.off('playerJoined');
         };
     }, [isAuthenticated, router]);
+
+
+
+    function goToTranslate() {
+        socket.emit('startGame', {token: token || "", roomUUID: params.uuid});
+    }
 
     return (
         <div>
@@ -86,6 +97,7 @@ export default function LobbyGameClient() {
                     />
                 ))}
             </div>
+            <button className="mt-5" onClick={goToTranslate}>Start Game</button>
         </div>
     );
 }
