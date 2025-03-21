@@ -1,19 +1,20 @@
-
 "use client"
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
 import AvatarUserProfile from "@/components/ui/AvatarUserProfile";
+
 
 export default function LobbyGameClient() {
     const params = useParams<{ uuid: string }>();
     const { isAuthenticated } = useContext(AuthenticatorContext);
     const router = useRouter();
     const { token } = useContext(AuthenticatorContext);
+
 
     interface Language {
         id: number;
@@ -55,7 +56,13 @@ export default function LobbyGameClient() {
     }
 
     const [participants, setParticipants] = useState<Participant[]>([]);
-    
+
+    const handleLeaveGame = () => {
+        socket.emit('leaveGame', { token: token || "", roomUUID: params.uuid });
+        router.push("/");
+    };
+
+
     useEffect(() => {
         if (!isAuthenticated) {
             router.push("/authenticate/login");
@@ -65,14 +72,21 @@ export default function LobbyGameClient() {
         socket.emit('getGame', { token: token || "", roomUUID: params.uuid });
 
         socket.on('playerJoined', (data) => {
-            console.log(data);
             setParticipants(data.game.participants || []);
         });
 
+        socket.on('gameDeleted', (data) => {
+            setParticipants([]);
+            router.push("/");
+        });
+
+        // Limpiar event listeners
         return () => {
             socket.off('playerJoined');
+            socket.off('gameDeleted');
         };
     }, [isAuthenticated, router]);
+
 
     return (
         <div>
@@ -86,6 +100,7 @@ export default function LobbyGameClient() {
                     />
                 ))}
             </div>
+            <button onClick={handleLeaveGame} className="bg-red-500 text-white px-4 py-2 rounded">Leave Game</button>
         </div>
     );
 }

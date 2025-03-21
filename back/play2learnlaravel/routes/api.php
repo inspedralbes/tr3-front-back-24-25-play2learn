@@ -35,6 +35,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
        Route::post('/store', [\App\Http\Controllers\GameController::class, 'store']);
        Route::get('/{gameUUID}', [\App\Http\Controllers\GameController::class, 'getGame']);
        Route::get('/join/{gameUUID}', [\App\Http\Controllers\GameController::class, 'join']);
+       Route::get('/leave/{gameUUID}', [\App\Http\Controllers\GameController::class, 'leaveGame']);
    });
 });
 
