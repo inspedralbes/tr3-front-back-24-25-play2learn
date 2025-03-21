@@ -5,14 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="Creacion de socker para iniciar la partida a todos los de la sala. Modificacion de eloquent para recibir la informacion de la sala.">
+      <change afterPath="$PROJECT_DIR$/play2learn/src/app/api/openai-translate/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/play2learn/src/app/api/openai/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/play2learn/src/app/games/WordChain.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/play2learn/src/app/games/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/GameController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/GameController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/translation/TranslationGameComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/translation/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/loading.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/play2learn/src/app/lobby/[uuid]/LobbyGameClient.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/lobby/[uuid]/LobbyGameClient.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/components/sidebar/ManagerSideBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/components/sidebar/ManagerSideBar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/components/GameLobby.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/components/GameLobby.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,12 +41,12 @@
     &quot;assignee&quot;: &quot;Deraybcbc&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/inspedralbes/tr3-front-back-24-25-play2learn.git",
-    "accountId": "5f08f5cb-ec5a-4cbd-8ef2-ef507e329ed6"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/inspedralbes/tr3-front-back-24-25-play2learn.git&quot;,
+    &quot;accountId&quot;: &quot;5f08f5cb-ec5a-4cbd-8ef2-ef507e329ed6&quot;
   }
-}]]></component>
+}</component>
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\xampp\php\php.exe" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
@@ -55,14 +60,14 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "game__translate",
+    "git-widget-placeholder": "Merging game__translate",
     "last_opened_file_path": "C:/Users/deray/Documents/Cosas/tr3-front-back-24-25-play2learn/play2learn/src/app/games/translation/[uuid]",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "C:\\Users\\deray\\Documents\\Cosas\\tr3-front-back-24-25-play2learn\\play2learn\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "F:\\DAW\\tr3-front-back-24-25-play2learn\\play2learn\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
