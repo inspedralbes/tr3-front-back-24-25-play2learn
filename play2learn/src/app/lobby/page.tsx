@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import Hangman from "@/app/games/hangman/game";
+import Hangman from "@/app/games/hangman/[uuid]/game";
 
 interface Player {
   id: number;

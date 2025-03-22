@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class GameController extends Controller
 {
@@ -102,7 +103,7 @@ class GameController extends Controller
     {
         try{
             $games = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
-                ->where('status', 'pending')
+                ->whereIn('status', ['pending', 'in_progress'])
                 ->where('uuid', $gameUUID)
                 ->first();
 
@@ -144,6 +145,37 @@ class GameController extends Controller
                 'game' => $game
             ]);
 
+        }catch (\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function startRoom(Request $request)
+    {
+        // dd($request->all());
+        try{
+            DB::beginTransaction();
+            $game = Game::where('uuid', $request->input('roomUUID'))->first();
+
+            if (!$game) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Game not found'
+                ]);
+            }
+            $game->status = 'in_progress';
+            $game->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Game started'
+            ]);
         }catch (\Exception $e){
             return response()->json([
                 'status' => 'error',

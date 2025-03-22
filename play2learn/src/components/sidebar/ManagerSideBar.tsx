@@ -4,7 +4,7 @@ import Idiomas from "@/components/LanguageDesktop";
 import Secciones from "@/components/SectionsDesktop";
 import { usePathname } from "next/navigation";
 
-const hiddenSidebarPaths = ["/authenticate/login", "/authenticate/register", "/lobby"];
+const hiddenSidebarPaths = ["/authenticate/login", "/authenticate/register", "/lobby", "/games"];
 
 export default function ManagerSideBar({
   children,

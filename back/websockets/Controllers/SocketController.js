@@ -6,9 +6,10 @@ class SocketController {
 
         io.on('connection', (socket) => {
             console.log('A user connected');
-            socket.on('test', () => {
-                console.log('testeando');
-                socket.emit('test', 'Hello World');
+            users.push({ id: socket.id, room: null });
+            socket.on('startGame', async ({token, roomUUID}) => {
+                const response = await apiRequest('/games/start', token, "POST", {roomUUID});
+                io.to(roomUUID).emit('gameStarted', response);
             });
 
             socket.on('setLobbies', async ({token, game})=>{
@@ -17,6 +18,7 @@ class SocketController {
                 // Crear y unirse a la sala con el UUID del juego
                 const roomUUID = response.gameCreated.uuid;
                 socket.join(roomUUID);
+                users.find(user => user.id === socket.id).room = roomUUID;
                 // Emitir a todos los demás clientes
                 socket.broadcast.emit('getLobbies', response);
                 // Emitir al socket actual con datos personalizados
@@ -26,6 +28,7 @@ class SocketController {
 
             socket.on('joinRoom', async ({token, roomUUID}) => {
                 socket.join(roomUUID);
+                users.find(user => user.id === socket.id).room = roomUUID;
                 const response = await apiRequest('/games/join/' + roomUUID, token, "GET");
                 console.log(response);
                 io.to(roomUUID).emit('playerJoined', response);
@@ -34,6 +37,7 @@ class SocketController {
 
             socket.on('getGame', async ({token, roomUUID}) => {
                 socket.join(roomUUID);
+                users.find(user => user.id === socket.id).room = roomUUID;
 
                 const response = await apiRequest('/games/' + roomUUID, token, "GET");
                 console.log(response);
@@ -47,6 +51,11 @@ class SocketController {
 
             socket.on('disconnect', () => {
                 console.log('User disconnected');
+                const user = users.find(user => user.id === socket.id);
+                if (user.room) {
+                    io.to(user.room).emit('playerLeft', { id: socket.id });
+                    socket.leave(user.room);
+                }
             });
         });
     }

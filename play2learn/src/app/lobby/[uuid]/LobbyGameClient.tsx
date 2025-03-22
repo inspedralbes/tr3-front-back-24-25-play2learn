@@ -56,6 +56,10 @@ export default function LobbyGameClient() {
 
     const [participants, setParticipants] = useState<Participant[]>([]);
     
+    const handleStartGame = () => {
+        socket.emit('startGame', { token , roomUUID: params.uuid });
+    };
+
     useEffect(() => {
         if (!isAuthenticated) {
             router.push("/authenticate/login");
@@ -67,6 +71,11 @@ export default function LobbyGameClient() {
         socket.on('playerJoined', (data) => {
             console.log(data);
             setParticipants(data.game.participants || []);
+        });
+        socket.on('gameStarted', (data) => {
+            if (data.status === 'success') {
+                router.push(`/games/hangman/${params.uuid}`);
+            }
         });
 
         return () => {
@@ -86,6 +95,7 @@ export default function LobbyGameClient() {
                     />
                 ))}
             </div>
+            <button onClick={handleStartGame} >Start</button>
         </div>
     );
 }
