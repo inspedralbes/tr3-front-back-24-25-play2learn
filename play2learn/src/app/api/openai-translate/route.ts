@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Falta el parámetro 'word' o 'language'" }, { status: 400 });
     }
 
-    const prompt = `Dime si la palabra "${word}" existe en ${language}. Responde solo en formato JSON: {"exists": true} o {"exists": false}.`;
+    const prompt = `Traduce la palabra "${word}" al idioma ${language}. Responde solo en formato JSON: {"word_translate": "traducción"}. Si no existe traducción, responde {"exists": false}.`;
 
     try {
         const response = await openai.chat.completions.create({

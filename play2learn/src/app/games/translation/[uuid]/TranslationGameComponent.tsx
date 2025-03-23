@@ -95,12 +95,29 @@ function TranslationGameComponent() {
         console.log("Room actualizado:", room);
     }, [room]);
 
-    const inputResolve = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        console.log("Hola")
-        if (e.key === "Enter") {
-            if (respuesta.toLowerCase() === "aleatorio")
-                setAcertado(true);
+    const inputResolve = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+        console.log("Hola");
+        console.log("WORD", respuesta.toLowerCase())
+        const language = "ingles"
+        try {
+            const responseApi = await fetch(`/api/openai-translate?word=${respuesta.toLowerCase()}&language=${language}`);
+            const data = await responseApi.json();
+            console.log("Respuestas Api", data);
+
+            if (e.key === "Enter") {
+                // Comprova si la resposta conté la traducció
+                if (data.word_translate && data.word_translate.toLowerCase() === "hello") {
+                    setAcertado(true);
+                    console.log("¡Acertado!");
+                } else {
+                    console.log("Respuesta incorrecta o palabra no encontrada");
+                }
+            }
+
+        } catch (error) {
+            console.error("Error al obtener la traducción:", error);
         }
+
     };
 
 
@@ -135,9 +152,9 @@ function TranslationGameComponent() {
 
                 <section>
                     <h2 className="text-2xl font-bold mb-4">Palabra a resolver</h2>
-                    <p>Aleatorio</p>
+                    <p>Hello</p>
 
-                    <p>{acertado ? "Aleatorio" : "______"}</p>
+                    <p>{acertado ? "Hello" : "______"}</p>
 
                 </section>
 
@@ -145,7 +162,8 @@ function TranslationGameComponent() {
                     <h2 className="text-2xl font-bold mb-4">Chat</h2>
                     <input className="rounded" value={respuesta}
                            onChange={(e) => setRespuesta(e.target.value)} type="text"
-                           placeholder="Escribe la traducción" onKeyDown={inputResolve}/>
+                           placeholder="Escribe la traducción"/>
+                    <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={inputResolve}>Enviar</button>
                 </section>
 
             </div>
