@@ -158,7 +158,9 @@ class GameController extends Controller
         // dd($request->all());
         try{
             DB::beginTransaction();
-            $game = Game::where('uuid', $request->input('roomUUID'))->first();
+            $game = Game::with('participants')
+                ->where('uuid', $request->input('roomUUID'))
+                ->first();
 
             if (!$game) {
                 DB::rollBack();
@@ -174,7 +176,8 @@ class GameController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Game started'
+                'message' => 'Game started',
+                'data' => $game
             ]);
         }catch (\Exception $e){
             return response()->json([
