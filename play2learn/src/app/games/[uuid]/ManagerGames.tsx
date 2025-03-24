@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
 import { useState } from "react";
+import WordChain from "../WordChain";
 
 export default function ManagerGames() {
   const params = useParams<{ uuid: string }>();
@@ -51,7 +52,7 @@ export default function ManagerGames() {
     participants: Participant[] | null;
   }
 
-  const [game, setGame] = useState<Game | null>(null);
+  const [game, setGame] = useState<Game>({} as Game);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [randomGame, setRandomGame] = useState<number | null>(null);
   useEffect(() => {
@@ -63,7 +64,7 @@ export default function ManagerGames() {
     socket.emit("getGame", { token: token || "", roomUUID: params.uuid });
 
     socket.on("inGame", (data) => {
-      setGame(data.game);
+      setGame(data.game || {} as Game);
       setParticipants(data.game.participants || []);
       setRandomGame(data.game_num_random);
     });
@@ -72,11 +73,17 @@ export default function ManagerGames() {
     return () => {
       socket.off("inGame");
     };
-  }, [isAuthenticated, router, params.uuid, token]);
+  }, [isAuthenticated, router]);
 
-  return (
-    <>
-    hola
-    </>
-  );
+  useEffect(()=>{
+    console.log(participants)
+  },[participants])
+
+
+  if (!game.id || participants.length === 0) {
+    return <div>Loading...</div>;
+  } else {
+    return <WordChain participants={participants} game={game} />;
+  }
+  
 }

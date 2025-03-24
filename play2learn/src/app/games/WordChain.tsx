@@ -17,6 +17,7 @@ interface Participant {
 interface Player extends Participant {
     isActive: boolean;
     word: string;
+    localPoints: number;
 }
 
 interface User {
@@ -66,17 +67,18 @@ export default function WordChain({ participants, game }: { participants: Partic
         setPlayers(participants.map(participant => ({
             ...participant,
             isActive: false,
-            word: ''
+            word: '',
+            localPoints: 0
         })));
 
+        console.log(participants)
+        // async function checkWordExists(word: string, language: string) {
+        //     const response = await fetch(`/api/openai?word=${word}&language=${language}`);
+        //     const data = await response.json();
+        //     console.log(data); // { exists: true } o { exists: false }
+        // }
 
-        async function checkWordExists(word: string, language: string) {
-            const response = await fetch(`/api/openai?word=${word}&language=${language}`);
-            const data = await response.json();
-            console.log(data); // { exists: true } o { exists: false }
-        }
-
-        checkWordExists("arbol", "Español");
+        // checkWordExists("arbol", "Español");
         // Limpiar event listeners
         return () => {
 
@@ -151,6 +153,11 @@ export default function WordChain({ participants, game }: { participants: Partic
 
         setLastWord(currentWord);
         setCurrentWord('');
+        setPlayers(prevPlayers =>
+            prevPlayers.map(player =>
+                player.isActive ? { ...player, localPoints: player.localPoints + 1 } : player
+            )
+        );
         nextPlayer();
     };
 
