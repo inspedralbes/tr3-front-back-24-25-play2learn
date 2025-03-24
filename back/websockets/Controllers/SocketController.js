@@ -122,6 +122,23 @@ class SocketController {
         socket.emit("getLobbies", response);
       });
 
+      socket.on("leaveGame", async ({ token, roomUUID }) => {
+        socket.leave(roomUUID);
+        const response = await apiRequest(
+          "/games/leave/" + roomUUID,
+          token,
+          "GET"
+        );
+        console.log(response);
+        if (response.game) {
+          io.to(roomUUID).emit("playerJoined", response);
+          io.emit("getLobbies", response);
+        } else {
+          io.to(roomUUID).emit("gameDeleted", { game: null });
+          io.emit("getLobbies", response);
+        }
+      });
+
       socket.on("getWordHangman", async ({ roomUUID }) => {
         const game = confGame.find((game) => game.room === roomUUID);
         if (!game) {
@@ -172,7 +189,7 @@ class SocketController {
         }
 
         socket.broadcast.to(roomUUID).emit("letter", letter);
-        
+
         game.turn++;
         io.to(roomUUID).emit("turn", {
           turn: getTurnGame(roomUUID),
