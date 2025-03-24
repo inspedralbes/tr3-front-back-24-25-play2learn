@@ -21,6 +21,11 @@ Route::prefix('/auth')->group(function () {
     Route::post('/change-password', [AuthenticatorController::class, 'changePassword'])->name('change.password');
 });
 
+Route::prefix('/lara')->group(function () {
+    Route::get('/languages', [\App\Http\Controllers\Translation::class, 'getLanguages']);
+    Route::post('/translate', [\App\Http\Controllers\Translation::class, 'translate']);
+});
+
 
 
 Route::group(['middleware' => ['auth:sanctum']], function () {

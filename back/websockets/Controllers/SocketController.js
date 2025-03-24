@@ -20,7 +20,7 @@ class SocketController {
             socket.on('startGame', async ({token, roomUUID}) => {
                 console.log("Token", token);
                 console.log("Sala UUID", roomUUID)
-                const response = await apiRequest('/games/start', token, "POST" , {roomUUID});
+                const response = await apiRequest('/games/start', token, "POST", {roomUUID});
                 console.log("LARAVEL", response);
                 io.to(roomUUID).emit('gameStarted', response);
             });
@@ -32,14 +32,19 @@ class SocketController {
                 io.emit('getLobbies', response)
             });
 
+            socket.on('randomWord', async (data) => {
+                console.log("Front", data);
+                io.to(data.uuid).emit('wordRoom', data);
+            });
+
             socket.on('leaveGame', async ({token, roomUUID}) => {
                 socket.leave(roomUUID);
                 const response = await apiRequest('/games/leave/' + roomUUID, token, "GET");
                 console.log(response);
-                if(response.game){
+                if (response.game) {
                     io.to(roomUUID).emit('playerJoined', response);
                     io.emit('getLobbies', response)
-                }else{
+                } else {
                     io.to(roomUUID).emit('gameDeleted', {game: null});
                     io.emit('getLobbies', response)
                 }

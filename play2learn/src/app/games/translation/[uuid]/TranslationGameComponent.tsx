@@ -7,6 +7,7 @@ import {useParams, useRouter} from "next/navigation";
 import {useTranslation} from "@/hooks/useTranslation";
 import socket from "@/services/websockets/socket";
 import {apiRequest} from "@/services/communicationManager/apiRequest";
+import {auto} from "openai/_shims/registry";
 
 interface Language {
     id: number;
@@ -62,7 +63,7 @@ function TranslationGameComponent() {
     const [room, setRoom] = useState<Room[]>([])
     const [acertado, setAcertado] = useState(false);
     const [respuesta, setRespuesta] = useState("");
-
+    const [palabraActual, setPalabraActual] = useState('');
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -85,9 +86,16 @@ function TranslationGameComponent() {
         }
 
         fetchRoom();
+        getRandomWord();
+
+
+        socket.on('wordRoom', (data) => {
+            console.log("Socket serve", data);
+            setPalabraActual(data.word);
+        });
 
         return () => {
-
+            socket.off('wordRoom');
         };
     }, [isAuthenticated, router]);
 
@@ -98,15 +106,26 @@ function TranslationGameComponent() {
     const inputResolve = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         console.log("Hola");
         console.log("WORD", respuesta.toLowerCase())
-        const language = "ingles"
+        const language = "de"
         try {
-            const responseApi = await fetch(`/api/openai-translate?word=${respuesta.toLowerCase()}&language=${language}`);
-            const data = await responseApi.json();
-            console.log("Respuestas Api", data);
+            //const responseApi = await fetch(`/api/openai-translate?word=${respuesta.toLowerCase()}&language=${language}`);
+            const jsonData = {
+                word: respuesta.toLowerCase(),
+                source: auto,
+                target: language,
+            }
 
-            if (e.key === "Enter") {
+            const response = await apiRequest('/lara/translate', "POST", jsonData);
+
+            const data = await response.result;
+            console.log("Respuestas Api", data);
+            console.log("Respuestas traduce", data.translation);
+
+            if (response.status !== 'success') {
+                console.log("Error ")
+            } else {
                 // Comprova si la resposta conté la traducció
-                if (data.word_translate && data.word_translate.toLowerCase() === "hello") {
+                if (data.translation && data.translation.toLowerCase() === palabraActual) {
                     setAcertado(true);
                     console.log("¡Acertado!");
                 } else {
@@ -120,6 +139,29 @@ function TranslationGameComponent() {
 
     };
 
+    function getRandomWord() {
+        const jsonDE = {
+            "palabras": [
+                "hallo",
+                "bitte",
+                "danke",
+                "entschuldigung",
+                "ja",
+                "nein",
+                "freund",
+                "liebe",
+                "essen",
+                "trinken"
+            ]
+        };
+        const randomIndex = Math.floor(Math.random() * jsonDE.palabras.length);
+        const jsonData = {
+            uudi: params.uuid,
+            word: jsonDE.palabras[randomIndex],
+        }
+
+        socket.emit('randomWord', jsonData);
+    }
 
     return (
         <div>
@@ -152,9 +194,11 @@ function TranslationGameComponent() {
 
                 <section>
                     <h2 className="text-2xl font-bold mb-4">Palabra a resolver</h2>
-                    <p>Hello</p>
+                    <p>{palabraActual}</p>
 
-                    <p>{acertado ? "Hello" : "______"}</p>
+                    <h4>Traduccion</h4>
+                    <p>{acertado ? palabraActual + ' = ' + respuesta.toLowerCase() : "______"}</p>
+
 
                 </section>
 
