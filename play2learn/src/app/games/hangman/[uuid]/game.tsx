@@ -32,38 +32,37 @@ const Hangman: React.FC = () => {
   const [lobbyProps, setLobbyProps] = useState<LobbyProps | null>(null);
   const [inputLetter, setInputLetter] = useState<string>("");
   const [inputWord, setInputWord] = useState<string>("");
+  const [lastGuess, setLastGuess] = useState<boolean>(true);
   // const [gameStatus, setStatus] = useState<string>("iniciado"); //se puede usar para marcar el final con un useEffect
   // const [spectators, setSpectators] = useState<number[]>([]); //mejora para spectators (funcionalidad extra)
 
   const letterGuess = () => {
-    let acierto = true;
-
+    setLastGuess(true);
+    let newGuessedWord = guessedWord;
     if (!guessedWord.includes(inputLetter) && word.includes(inputLetter)) {
-      const newGuessedWord = word
+      newGuessedWord = word
         .split("")
         .map((letter, index) =>
           letter === inputLetter ? letter : guessedWord[index]
         )
         .join("");
-
-      setGuessedWord(newGuessedWord);
     } else {
-      acierto = false;
+      setLastGuess(false);
     }
+    setGuessedWord(newGuessedWord);
     setInputLetter("");
-    socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto, letter: inputLetter });
   };
 
   const wordGuess = () => {
-    let acierto = true;
-
+    setLastGuess(true);
+    let newGuessedWord = guessedWord;
     if (word === inputWord) {
-      setGuessedWord(word);
+      newGuessedWord = inputWord;
     } else {
-      acierto = false;
+      setLastGuess(false);
     }
+    setGuessedWord(newGuessedWord);
     setInputWord("");
-    socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto });
   };
 
   const formatTime = (seconds: number) => {
@@ -87,6 +86,26 @@ const Hangman: React.FC = () => {
       </div>
     );
   };
+
+//   const drawHangman = (attempts: number) => {
+//     const parts = [
+//       "  O  ",
+//       " /|\\",
+//       " / \\"
+//     ];
+
+//     return (
+//       <pre className="font-mono text-4xl whitespace-pre">
+//         {`
+//   +---+
+//   |   |
+// ${attempts == 6 ? parts[0] : '     '}
+// ${attempts == 5 ? parts[1] : '     '}
+// ${attempts == 3 ? parts[2] : '     '}
+// =========`}
+//       </pre>
+//     );
+//   };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -130,6 +149,7 @@ const Hangman: React.FC = () => {
 
     socket.emit("getTurn", { roomUUID: params.uuid });
     socket.on("turn", (data) => {
+      console.log(data);
       setTurno(data.turn.user_id);
       setGuesses(data.errors);
     });
@@ -154,6 +174,12 @@ const Hangman: React.FC = () => {
       setTime(time);
     });
 
+    socket.on("newGuessedWord", (data) => {
+      if (data.guessedWord) {
+        setGuessedWord(data.guessedWord);
+      }
+    });
+
     socket.on("letter", (newLetter) => {
       // alert(`La letra ${newLetter} está en la palabra`); //esto si que llega
 
@@ -173,6 +199,16 @@ const Hangman: React.FC = () => {
   useEffect(() => {
     setGuessedWord("_".repeat(word.length));
   }, [word]);
+
+  useEffect(() => {
+    if (guessedWord === "") return;
+
+    socket.emit("nextTurn", {
+      roomUUID: params.uuid,
+      acierto: lastGuess,
+      guessedWord: guessedWord,
+    });
+  }, [guessedWord]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 text-white p-8">

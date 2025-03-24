@@ -155,14 +155,16 @@ class SocketController {
         });
       });
 
-      socket.on("nextTurn", ({ roomUUID, acierto, letter }) => {
+      socket.on("nextTurn", ({ roomUUID, acierto, guessedWord }) => {
         const game = confGame.find((game) => game.room === roomUUID);
         if (!game) {
           console.error("Room not found");
           return;
         }
 
+        console.log("Next turn:", acierto, guessedWord);
         if (!acierto) {
+          console.log("Sumando errores ------------------");  
           game.guessesErrors++;
         }
 
@@ -171,7 +173,7 @@ class SocketController {
           game.timer = null;
         }
 
-        socket.broadcast.to(roomUUID).emit("letter", letter);
+        socket.broadcast.to(roomUUID).emit("newGuessedWord", {guessedWord});
         
         game.turn++;
         io.to(roomUUID).emit("turn", {
