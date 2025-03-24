@@ -83,7 +83,7 @@ export default function LobbyGameClient() {
 
     socket.on("gameStarted", (data) => {
       if (data.status === "success") {
-        router.push(`/games/hangman/${params.uuid}`);
+        router.push(`/games/${params.uuid}`);
       }
     });
 

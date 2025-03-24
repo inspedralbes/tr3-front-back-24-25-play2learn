@@ -77,6 +77,7 @@ class SocketController {
           turn: 1,
           players: sortedTurns,
           guessesErrors: 0,
+          game_num_random: Math.floor(Math.random() * 10),
         });
 
         io.to(roomUUID).emit("gameStarted", response);
@@ -114,8 +115,13 @@ class SocketController {
 
         const response = await apiRequest("/games/" + roomUUID, token, "GET");
         // console.log(response);
+        const filterGame = confGame.find((game) => game.room === roomUUID);
+        if (filterGame) {
+          response.game_num_random = filterGame.game_num_random;
+        }
         io.to(roomUUID).emit("playerJoined", response);
-      });
+        io.to(roomUUID).emit("inGame", response);
+    });
 
       socket.on("lobbie", async ({ token }) => {
         const response = await apiRequest("/games", token);
