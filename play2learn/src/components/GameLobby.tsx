@@ -202,7 +202,7 @@ const GameLobby: React.FC = () => {
     // Limpieza del listener al desmontar el componente
     return () => {
       socket.off("getLobbies");
-      socket.off("loobbieCreated");
+      socket.off("lobbieCreated");
     };
   }, [isAuthenticated, router]);
 
