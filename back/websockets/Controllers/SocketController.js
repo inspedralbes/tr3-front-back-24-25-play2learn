@@ -22,6 +22,46 @@ class SocketController {
       return game.players[(game.turn - 1) % game.players.length];
     }
 
+    function startTurnTimer(roomUUID, maxTime) {
+      const game = confGame.find((game) => game.room === roomUUID);
+      if (!game) {
+        console.error("Room not found");
+        return;
+      }
+
+      // Si existe un timer anterior, lo detenemos
+      if (game.timer) {
+        clearInterval(game.timer);
+        game.timer = null;
+      }
+
+      let remainingTime = maxTime;
+      // Notificar el tiempo inicial
+      io.to(roomUUID).emit("timerTick", remainingTime);
+
+      game.timer = setInterval(() => {
+        remainingTime--;
+
+        if (remainingTime <= 0) {
+          clearInterval(game.timer);
+          game.timer = null;
+          io.to(roomUUID).emit("timerEnded");
+
+          // Avanza al siguiente turno
+          game.turn++;
+          io.to(roomUUID).emit("turn", {
+            turn: getTurnGame(roomUUID),
+            errors: game.guessesErrors,
+          });
+
+          // Reiniciamos el timer para el nuevo turno
+          startTurnTimer(roomUUID, maxTime);
+        } else {
+          io.to(roomUUID).emit("timerTick", remainingTime);
+        }
+      }, 1000);
+    }
+
     io.on("connection", (socket) => {
       console.log("A user connected");
       users.push({ id: socket.id, room: null });
@@ -32,14 +72,19 @@ class SocketController {
         const sortedTurns = response.data.participants.sort(
           () => Math.random() - 0.5
         );
-        confGame.push({ room: roomUUID, turn: 1, players: sortedTurns });
+        confGame.push({
+          room: roomUUID,
+          turn: 1,
+          players: sortedTurns,
+          guessesErrors: 0,
+        });
 
         io.to(roomUUID).emit("gameStarted", response);
       });
 
       socket.on("setLobbies", async ({ token, game }) => {
         const response = await apiRequest("/games/store", token, "POST", game);
-        console.log(response);
+        // console.log(response);
         // Crear y unirse a la sala con el UUID del juego
         const roomUUID = response.gameCreated.uuid;
         socket.join(roomUUID);
@@ -58,7 +103,7 @@ class SocketController {
           token,
           "GET"
         );
-        console.log(response);
+        // console.log(response);
         io.to(roomUUID).emit("playerJoined", response);
         io.emit("getLobbies", response);
       });
@@ -68,7 +113,7 @@ class SocketController {
         users.find((user) => user.id === socket.id).room = roomUUID;
 
         const response = await apiRequest("/games/" + roomUUID, token, "GET");
-        console.log(response);
+        // console.log(response);
         io.to(roomUUID).emit("playerJoined", response);
       });
 
@@ -98,8 +143,54 @@ class SocketController {
       });
 
       socket.on("getTurn", ({ roomUUID }) => {
-        const turn = getTurnGame(roomUUID);
-        socket.emit("turn", turn);
+        const game = confGame.find((game) => game.room === roomUUID);
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+
+        io.to(roomUUID).emit("turn", {
+          turn: getTurnGame(roomUUID),
+          errors: game.guessesErrors,
+        });
+      });
+
+      socket.on("nextTurn", ({ roomUUID, acierto, letter }) => {
+        const game = confGame.find((game) => game.room === roomUUID);
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+
+        if (!acierto) {
+          game.guessesErrors++;
+        }
+
+        if (game.timer) {
+          clearInterval(game.timer);
+          game.timer = null;
+        }
+
+        socket.broadcast.to(roomUUID).emit("letter", letter);
+        
+        game.turn++;
+        io.to(roomUUID).emit("turn", {
+          turn: getTurnGame(roomUUID),
+          errors: game.guessesErrors,
+        });
+
+        startTurnTimer(roomUUID, game.time);
+      });
+
+      socket.on("startTimer", ({ roomUUID, maxTime }) => {
+        const game = confGame.find((game) => game.room === roomUUID);
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+        // Guarda el tiempo máximo en el juego para usarlo luego
+        game.time = maxTime;
+        startTurnTimer(roomUUID, maxTime);
       });
 
       socket.on("disconnect", () => {
