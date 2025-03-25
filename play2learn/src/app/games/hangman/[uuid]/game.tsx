@@ -153,25 +153,39 @@ const Hangman: React.FC = () => {
     socket.on("timerTick", (time) => {
       setTime(time);
     });
-
-    socket.on("letter", (newLetter) => {
-      // alert(`La letra ${newLetter} está en la palabra`); //esto si que llega
-
-      if (!guessedWord.includes(newLetter) && word.includes(newLetter)) {
-        const newGuessedWord = word
-          .split("")
-          .map((letter, index) =>
-            letter === newLetter ? letter : guessedWord[index]
-          )
-          .join("");
-
-        setGuessedWord(newGuessedWord);
-      }
-    });
+    
+    return () => {
+      socket.off("turn");
+      socket.off("wordHangman");
+      socket.off("timerTick");
+    }
   }, [lobbyProps]);
 
   useEffect(() => {
     setGuessedWord("_".repeat(word.length));
+
+    socket.on("letter", (data) => {
+      // alert(`La letra ${data.newLetter} está en la palabra`); //esto si que llega
+
+      console.log(data);
+      console.log("letter: " + data.letter);	
+      console.log("word: " + word);
+      console.log(word.includes(data.letter));
+      if (word.includes(data.newLetter)) {
+        const newGuessedWord = word
+          .split("")
+          .map((letter, index) =>
+            letter === data.newLetter ? letter : guessedWord[index]
+          );  
+          // .join("");
+          console.log("Word: " + newGuessedWord);
+        // setGuessedWord(newGuessedWord);
+      }
+    });
+
+    return () => {
+      socket.off("letter");
+    }
   }, [word]);
 
   return (

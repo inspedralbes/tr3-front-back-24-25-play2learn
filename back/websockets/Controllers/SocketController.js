@@ -171,7 +171,7 @@ class SocketController {
           game.timer = null;
         }
 
-        socket.broadcast.to(roomUUID).emit("letter", letter);
+        socket.broadcast.to(roomUUID).emit("letter", {letter});
         
         game.turn++;
         io.to(roomUUID).emit("turn", {
