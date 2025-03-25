@@ -72,6 +72,7 @@ class SocketController {
         const sortedTurns = response.data.participants.sort(
           () => Math.random() - 0.5
         );
+        console.log(sortedTurns);
         confGame.push({
           room: roomUUID,
           turn: 1,
@@ -176,6 +177,25 @@ class SocketController {
           turn: getTurnGame(roomUUID),
           errors: game.guessesErrors,
         });
+      });
+
+      socket.on("nextTurnGeneral", ({ roomUUID, user_id, points }) => {
+        const game = confGame.find((game) => game.room === roomUUID);
+
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+
+        game.turn++;
+        game.players.find((player) => player.user_id === user_id).points += points;
+
+        io.to(roomUUID).emit("turn", {
+          turn: getTurnGame(roomUUID),
+          errors: game.guessesErrors,
+        });
+
+        startTurnTimer(roomUUID, game.max_time);
       });
 
       socket.on("nextTurn", ({ roomUUID, acierto, letter }) => {

@@ -6,9 +6,11 @@ import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import AvatarUserProfile from "@/components/ui/AvatarUserProfile";
 import { Clock3, ArrowRight } from "lucide-react";
+import socket from "@/services/websockets/socket";
 
 interface Participant {
     id: number;
+    user_id: number;
     user: User;
     rol: string;
     points: number;
@@ -55,9 +57,16 @@ interface Game {
 export default function WordChain({ participants, game }: { participants: Participant[]; game: Game }) {
     const { isAuthenticated } = useContext(AuthenticatorContext);
     const router = useRouter();
-    const { token } = useContext(AuthenticatorContext);
-
-
+    const { token, user } = useContext(AuthenticatorContext);
+    const [currentWord, setCurrentWord] = useState('');
+    const [timer, setTimer] = useState(15);
+    const [gameStarted, setGameStarted] = useState(false);
+    const [lastWord, setLastWord] = useState('');
+    const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [isMyTurn, setIsMyTurn] = useState(false);
+    const [localPlayer, setLocalPlayer] = useState<Player>({} as Player);
+    
     useEffect(() => {
         if (!isAuthenticated) {
             router.push("/authenticate/login");
@@ -71,7 +80,26 @@ export default function WordChain({ participants, game }: { participants: Partic
             localPoints: 0
         })));
 
-        console.log(participants)
+        setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
+
+        startGame();
+
+        socket.on('turn', data => {
+            const {turn, errors} = data;
+
+            setPlayers(prevPlayers =>
+                prevPlayers.map((player) => ({
+                    ...player,
+                    isActive: player.user_id === turn.user_id
+                }))
+            );
+
+            setIsMyTurn(false);
+            if(turn.user_id === user?.id){
+                setIsMyTurn(true);
+            }
+        });
+
         // async function checkWordExists(word: string, language: string) {
         //     const response = await fetch(`/api/openai?word=${word}&language=${language}`);
         //     const data = await response.json();
@@ -81,26 +109,15 @@ export default function WordChain({ participants, game }: { participants: Partic
         // checkWordExists("arbol", "Español");
         // Limpiar event listeners
         return () => {
-
+            socket.off('turn');
         };
     }, [isAuthenticated, router]);
 
-    const [currentWord, setCurrentWord] = useState('');
-    const [timer, setTimer] = useState(15);
-    const [gameStarted, setGameStarted] = useState(false);
-    const [lastWord, setLastWord] = useState('');
-    const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
-    const [players, setPlayers] = useState<Player[]>([]);
+   
 
     // Start game with random player
     const startGame = () => {
-        const randomIndex = Math.floor(Math.random() * players.length);
-        setPlayers(prevPlayers =>
-            prevPlayers.map((player, index) => ({
-                ...player,
-                isActive: index === randomIndex
-            }))
-        );
+        socket.emit('getTurn', ({ roomUUID:game.uuid }));
         setGameStarted(true);
     };
 
@@ -117,15 +134,7 @@ export default function WordChain({ participants, game }: { participants: Partic
     }, [gameStarted, timer]);
 
     const nextPlayer = () => {
-        setPlayers(prevPlayers => {
-            const currentPlayerIndex = prevPlayers.findIndex(p => p.isActive);
-            const nextPlayerIndex = (currentPlayerIndex + 1) % prevPlayers.length;
-
-            return prevPlayers.map((player, index) => ({
-                ...player,
-                isActive: index === nextPlayerIndex
-            }));
-        });
+        socket.emit('nextTurnGeneral', { roomUUID: game.uuid, user_id: localPlayer.user_id, points: localPlayer.localPoints });
         setTimer(15);
     };
 
@@ -147,17 +156,17 @@ export default function WordChain({ participants, game }: { participants: Partic
         setUsedWords(prev => new Set(prev).add(normalizedWord));
         setPlayers(prevPlayers =>
             prevPlayers.map(player =>
-                player.isActive ? { ...player, word: currentWord } : player
+                player.isActive ? { ...player, word: currentWord, localPoints: player.localPoints + 1 } : player
             )
         );
 
+        setLocalPlayer(prev => ({
+            ...prev,
+            localPoints: prev.localPoints + 1
+        }));
+
         setLastWord(currentWord);
         setCurrentWord('');
-        setPlayers(prevPlayers =>
-            prevPlayers.map(player =>
-                player.isActive ? { ...player, localPoints: player.localPoints + 1 } : player
-            )
-        );
         nextPlayer();
     };
 
@@ -194,7 +203,7 @@ export default function WordChain({ participants, game }: { participants: Partic
                 {/* Game title */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-16 text-white text-center">
                     <h1 className="text-4xl font-bold mb-2">Palabras Encadenadas</h1>
-                    {!gameStarted && (
+                    {gameStarted && localPlayer.rol === 'host' && (
                         <button
                             onClick={startGame}
                             className="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-opacity-90 transition-all"
@@ -206,7 +215,7 @@ export default function WordChain({ participants, game }: { participants: Partic
 
                 {/* Timer in top right corner */}
                 {gameStarted && (
-                    <div className="absolute top-0 right-0 -translate-y-16 flex items-center gap-2 text-white bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                    <div className="absolute top-0 right-0 -translate-y-16 flex items-center gap-2 text-black bg-white bg-opacity-20 px-4 py-2 rounded-full">
                         <Clock3 className="w-6 h-6" />
                         <span className="text-2xl font-bold">{timer}s</span>
                     </div>
