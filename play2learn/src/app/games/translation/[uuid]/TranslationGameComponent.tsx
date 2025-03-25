@@ -64,6 +64,8 @@ function TranslationGameComponent() {
     const [acertado, setAcertado] = useState(false);
     const [respuesta, setRespuesta] = useState("");
     const [palabraActual, setPalabraActual] = useState('');
+    const [wordTranslate, setWordTranslate] = useState('');
+    const [wordGenerated, setWordGenerated] = useState(false);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -86,22 +88,40 @@ function TranslationGameComponent() {
         }
 
         fetchRoom();
-        getRandomWord();
-
 
         socket.on('wordRoom', (data) => {
-            console.log("Socket serve", data);
+            console.log("SOCKET: ", data);
             setPalabraActual(data.word);
         });
 
+        socket.on('translateClient', (data) => {
+            console.log("Chat", data);
+            if (data.word_translate && data.word_translate.toLowerCase() === data.word) {
+                setAcertado(true);
+                setWordTranslate(data.word_translate);
+                console.log("¡Acertado!");
+            } else {
+                console.log("Respuesta incorrecta o palabra no encontrada");
+            }
+        });
+
+
         return () => {
             socket.off('wordRoom');
+            socket.off('translateClient');
         };
+
     }, [isAuthenticated, router]);
 
+
     useEffect(() => {
-        console.log("Room actualizado:", room);
-    }, [room]);
+        const host = participant.find(p => p.rol === 'host');
+        if (host) {
+            // Llamar a la función que debe ejecutar el host
+            getRandomWord();
+            setWordGenerated(true)
+        }
+    }, [participant]);
 
     const inputResolve = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         console.log("Hola");
@@ -121,17 +141,13 @@ function TranslationGameComponent() {
             console.log("Respuestas Api", data);
             console.log("Respuestas traduce", data.translation);
 
-            if (response.status !== 'success') {
-                console.log("Error ")
-            } else {
-                // Comprova si la resposta conté la traducció
-                if (data.translation && data.translation.toLowerCase() === palabraActual) {
-                    setAcertado(true);
-                    console.log("¡Acertado!");
-                } else {
-                    console.log("Respuesta incorrecta o palabra no encontrada");
-                }
+            const jsonSocket = {
+                uuid: params.uuid,
+                word: palabraActual,
+                word_translate: data.translation,
             }
+
+            socket.emit('chatTranslate', (jsonSocket));
 
         } catch (error) {
             console.error("Error al obtener la traducción:", error);
@@ -156,9 +172,11 @@ function TranslationGameComponent() {
         };
         const randomIndex = Math.floor(Math.random() * jsonDE.palabras.length);
         const jsonData = {
-            uudi: params.uuid,
+            uuid: params.uuid,
             word: jsonDE.palabras[randomIndex],
         }
+
+        console.log("json enviar", jsonData);
 
         socket.emit('randomWord', jsonData);
     }
@@ -194,10 +212,14 @@ function TranslationGameComponent() {
 
                 <section>
                     <h2 className="text-2xl font-bold mb-4">Palabra a resolver</h2>
-                    <p>{palabraActual}</p>
+                    {palabraActual ? (
+                        <p>{palabraActual}</p>
+                    ) : (
+                        <p>Cargando palabra...</p>
+                    )}
 
                     <h4>Traduccion</h4>
-                    <p>{acertado ? palabraActual + ' = ' + respuesta.toLowerCase() : "______"}</p>
+                    <p>{acertado ? palabraActual + ' = ' + wordTranslate : "______"}</p>
 
 
                 </section>

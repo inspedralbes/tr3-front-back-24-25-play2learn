@@ -91,6 +91,7 @@ export default function LobbyGameClient() {
         return () => {
             socket.off('playerJoined');
             socket.off('gameDeleted');
+            socket.off('gameStarted');
         };
     }, [isAuthenticated, router]);
 

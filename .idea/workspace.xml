@@ -5,16 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="Merge con rama de create-palabras-encadenadas y pruebas para poder hacer salas">
-      <change afterPath="$PROJECT_DIR$/play2learn/src/app/api/openai-translate/routeMiio.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/config/services.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/config/services.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/GameController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/GameController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/api/openai-translate/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/api/openai-translate/route.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/lobby/[uuid]/LobbyGameClient.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/lobby/[uuid]/LobbyGameClient.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

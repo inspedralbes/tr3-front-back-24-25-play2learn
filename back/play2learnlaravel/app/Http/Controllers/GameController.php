@@ -127,7 +127,7 @@ class GameController extends Controller
             //dd($request->uuid);
 
             DB::beginTransaction();
-            $game = Game::where('uuid', $request->roomUUID)->first();
+            $game = Game::with('participants')->where('uuid', $request->roomUUID)->first();
 
             if(!$game){
                 DB::rollBack();
