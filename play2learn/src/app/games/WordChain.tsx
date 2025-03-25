@@ -98,8 +98,15 @@ export default function WordChain({ participants, game }: { participants: Partic
             if(turn.user_id === user?.id){
                 setIsMyTurn(true);
             }
+            setTimer(15);
+            
         });
 
+        socket.on('word', data => {
+            const {word} = data;
+            setLastWord(word);
+            setCurrentWord('');
+        });
         // async function checkWordExists(word: string, language: string) {
         //     const response = await fetch(`/api/openai?word=${word}&language=${language}`);
         //     const data = await response.json();
@@ -110,6 +117,7 @@ export default function WordChain({ participants, game }: { participants: Partic
         // Limpiar event listeners
         return () => {
             socket.off('turn');
+            socket.off('word');
         };
     }, [isAuthenticated, router]);
 
@@ -128,13 +136,29 @@ export default function WordChain({ participants, game }: { participants: Partic
                 setTimer((prev) => prev - 1);
             }, 1000);
         } else if (timer === 0) {
-            nextPlayer();
+            if(currentWord.length > 0){
+                nextPlayer();
+            }else{
+                setPlayers(prevPlayers =>
+                    prevPlayers.map(player =>
+                        ({ ...player, word: "" })
+                    )
+                );
+
+                setPlayers(prevPlayers =>
+                    prevPlayers.map(player =>
+                        player.isActive ? { ...player, localPoints: player.localPoints - 1 } : player
+                    )
+                );
+                nextPlayer();
+            }
         }
         return () => clearInterval(interval);
     }, [gameStarted, timer]);
 
     const nextPlayer = () => {
         socket.emit('nextTurnGeneral', { roomUUID: game.uuid, user_id: localPlayer.user_id, points: localPlayer.localPoints });
+        socket.emit('lastWord', { roomUUID: game.uuid, word: currentWord });
         setTimer(15);
     };
 
@@ -165,8 +189,7 @@ export default function WordChain({ participants, game }: { participants: Partic
             localPoints: prev.localPoints + 1
         }));
 
-        setLastWord(currentWord);
-        setCurrentWord('');
+        
         nextPlayer();
     };
 
@@ -201,7 +224,7 @@ export default function WordChain({ participants, game }: { participants: Partic
         <div className="min-h-screen flex items-center justify-center">
             <div className="relative w-[500px] h-[500px]">
                 {/* Game title */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-16 text-white text-center">
+                {/* <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-16 text-white text-center">
                     <h1 className="text-4xl font-bold mb-2">Palabras Encadenadas</h1>
                     {gameStarted && localPlayer.rol === 'host' && (
                         <button
@@ -211,7 +234,7 @@ export default function WordChain({ participants, game }: { participants: Partic
                             Comenzar Juego
                         </button>
                     )}
-                </div>
+                </div> */}
 
                 {/* Timer in top right corner */}
                 {gameStarted && (
@@ -254,7 +277,7 @@ export default function WordChain({ participants, game }: { participants: Partic
                                         onKeyPress={(e) => e.key === 'Enter' && handleSubmitWord()}
                                         className="px-4 py-2 rounded-full bg-white text-purple-600 placeholder-purple-400 outline-none border-2 border-white shadow-lg w-48 font-medium"
                                         placeholder="Escribe una palabra..."
-                                        autoFocus
+                                        {...(isMyTurn ? { autoFocus: true, disabled: false } : { disabled: true })}
                                     />
                                 </div>
                             )}

@@ -7,6 +7,7 @@ import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
 import { useState } from "react";
 import WordChain from "../WordChain";
+import LeaderGame from "../LeaderGame";
 
 export default function ManagerGames() {
   const params = useParams<{ uuid: string }>();
@@ -55,6 +56,8 @@ export default function ManagerGames() {
   const [game, setGame] = useState<Game>({} as Game);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [randomGame, setRandomGame] = useState<number | null>(null);
+  const [leaderView, setLeaderView] = useState<boolean>(false);
+
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/authenticate/login");
@@ -69,9 +72,26 @@ export default function ManagerGames() {
       setRandomGame(data.game_num_random);
     });
 
+    socket.on('chargeGame', (data) => {
+      if(data.game_num_random !== null){
+        setGame(data.game || {} as Game);
+        setParticipants(data.game.participants || []);
+        setRandomGame(data.game_num_random);
+        setLeaderView(false);
+      }else{
+        router.push(`/games/${params.uuid}/finished`)
+      }
+    });
+
+    socket.on('leader', (data) => {
+      setLeaderView(true);
+    })
+
     // Limpiar event listeners
     return () => {
       socket.off("inGame");
+      socket.off("chargeGame");
+      socket.off("leader");
     };
   }, [isAuthenticated, router]);
 
@@ -82,7 +102,9 @@ export default function ManagerGames() {
 
   if (!game.id || participants.length === 0) {
     return <div>Loading...</div>;
-  } else {
+  } else if (leaderView) {
+    return <LeaderGame game={game} participants={participants} />;
+  }else {
     return <WordChain participants={participants} game={game} />;
   }
   

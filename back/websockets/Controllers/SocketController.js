@@ -65,6 +65,7 @@ class SocketController {
     io.on("connection", (socket) => {
       console.log("A user connected");
       users.push({ id: socket.id, room: null });
+
       socket.on("startGame", async ({ token, roomUUID }) => {
         const response = await apiRequest("/games/start", token, "POST", {
           roomUUID,
@@ -79,6 +80,8 @@ class SocketController {
           players: sortedTurns,
           guessesErrors: 0,
           game_num_random: Math.floor(Math.random() * 10),
+          game_num_rounds: 1,
+          game: response.data,
         });
 
         io.to(roomUUID).emit("gameStarted", response);
@@ -198,6 +201,46 @@ class SocketController {
         startTurnTimer(roomUUID, game.max_time);
       });
 
+      socket.on('nextGame', ({ roomUUID }) => {
+        const game = confGame.find((game) => game.room === roomUUID);
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+
+        if(game.game_num_rounds === game.game.n_rounds){
+          //logic for update and insert result games
+
+
+          game.game_num_random = null;
+          io.to(roomUUID).emit("chargeGame", game);
+          return;
+        }
+        let num = Math.floor(Math.random() * 10);
+        if(num === game.game_num_random){
+          if(num === 10){
+            num = 0;
+          }else{
+            num++;
+          }
+        }
+
+        game.game_num_random = num;
+
+        io.to(roomUUID).emit("chargeGame", game);
+      });
+
+      socket.on('showLeader', ({ roomUUID }) => {
+        const game = confGame.find((game) => game.room === roomUUID);
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+        console.log("showLeader")
+
+        io.to(roomUUID).emit("leader", game );
+      });
+
       socket.on("nextTurn", ({ roomUUID, acierto, letter }) => {
         const game = confGame.find((game) => game.room === roomUUID);
         if (!game) {
@@ -224,6 +267,17 @@ class SocketController {
 
         startTurnTimer(roomUUID, game.time);
       });
+
+      //game sockets
+      socket.on('lastWord', ({ roomUUID, word }) => {
+        const game = confGame.find((game) => game.room === roomUUID);
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+
+        io.to(roomUUID).emit('word', { word });
+      })
 
       socket.on("startTimer", ({ roomUUID, maxTime }) => {
         const game = confGame.find((game) => game.room === roomUUID);

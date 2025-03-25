@@ -224,6 +224,8 @@ class GameController extends Controller
 
             DB::commit();
 
+            $game->load('participants', 'participants.user', 'language_level', 'language_level.language');
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Game started',
