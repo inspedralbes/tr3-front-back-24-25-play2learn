@@ -167,10 +167,8 @@ const Hangman: React.FC = () => {
       setTime(time);
     });
 
-
     return () => {
       socket.off("timerTick");
-    };
     };
   }, [lobbyProps]);
 
@@ -276,16 +274,6 @@ const Hangman: React.FC = () => {
       </div>
     </div>
   );
-  //   return (
-  //     <div>
-  //       <div>Time: {time}</div>
-  //       <div>Turno User ID: {turnUserId}</div>
-  //       <div>Errores: {guesses}</div>
-  //       <div>{drawHangman(0)}</div>
-  //       <div>{word}</div>
-  //       <div>{guessedWord.split("").join(" ")}</div>
-  //     </div>
-  //   );
 };
 
 export default Hangman;
