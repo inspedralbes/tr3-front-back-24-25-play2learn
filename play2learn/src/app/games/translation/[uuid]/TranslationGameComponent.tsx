@@ -82,6 +82,9 @@ function TranslationGameComponent() {
                 setLanguage(response.game.language_level);
                 setRoom(response.game);
 
+                console.log("Solicitando palabra actual...");
+                socket.emit("getCurrentWord", {uuid: params.uuid});
+
             } catch (error) {
                 console.log("Error ", error)
             }
@@ -90,8 +93,17 @@ function TranslationGameComponent() {
         fetchRoom();
 
         socket.on('wordRoom', (data) => {
-            console.log("SOCKET: ", data);
-            setPalabraActual(data.word);
+            console.log("Evento wordRoom recibido con:", data);
+            if (data && data.word) {
+                setPalabraActual(prev => {
+                    console.log("Palabra actual antes de actualizar:", prev);
+                    console.log("Nueva palabra recibida:", data.word);
+                    return data.word;
+                });
+                //setPalabraActual(data.word);
+            } else {
+                console.warn("No se recibió una palabra válida.");
+            }
         });
 
         socket.on('translateClient', (data) => {
@@ -99,7 +111,10 @@ function TranslationGameComponent() {
             if (data.word_translate && data.word_translate.toLowerCase() === data.word) {
                 setAcertado(true);
                 setWordTranslate(data.word_translate);
+                setRespuesta('');
                 console.log("¡Acertado!");
+                socket.emit('randomWord', {uuid: params.uuid})
+                setAcertado(false)
             } else {
                 console.log("Respuesta incorrecta o palabra no encontrada");
             }
@@ -116,12 +131,18 @@ function TranslationGameComponent() {
 
     useEffect(() => {
         const host = participant.find(p => p.rol === 'host');
-        if (host) {
+        if (host && !palabraActual) {
             // Llamar a la función que debe ejecutar el host
-            getRandomWord();
+
+            console.log("No hay palabra actual, generando una nueva...");
+            console.log("Emitiendo evento randomWord al servidor...");
+            console.log("Host detectado, generando nueva palabra...");
+
+            socket.emit('randomWord', {uuid: params.uuid});
+            //getRandomWord();
             setWordGenerated(true)
         }
-    }, [participant]);
+    }, [participant, palabraActual]);
 
     const inputResolve = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         console.log("Hola");
@@ -178,63 +199,74 @@ function TranslationGameComponent() {
 
         console.log("json enviar", jsonData);
 
-        socket.emit('randomWord', jsonData);
     }
 
     return (
-        <div>
-            <h1 className="text-4xl text-center font-bold mb-5">Juego de traducciones</h1>
+        <div className="min-h-screen flex flex-col items-center p-4">
+            <h1 className="text-4xl text-center font-bold mb-6 text-blue-600">
+                Juego de Traducciones
+            </h1>
 
-            <div>
-
-                <section>
-                    <h2 className="text-2xl font-bold mb-4">Participantes</h2>
-                    {participant && participant.length > 0 ? (
-                        <ul className="space-y-2">
-                            {participant.map((participant: Participant) => (
+            <div className="w-full max-w-3xl border border-white p-6 rounded-lg shadow-lg">
+                {/* Sección de Participantes */}
+                <section className="mb-6">
+                    <h2 className="text-2xl font-semibold mb-4 text-blakc-800">Participantes</h2>
+                    {participant.length > 0 ? (
+                        <ul className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {participant.map((p: Participant) => (
                                 <li
-                                    key={participant.id}
-                                    className="flex items-center rounded-lg p-2 shadow-md"
-                                >
+                                    key={p.id}
+                                    className="flex items-center bg-blue-800 rounded-lg p-3 shadow-sm">
                                     <img
-                                        src={participant.user.profile_pic}
-                                        alt={participant.user.name}
-                                        className="w-12 h-12 rounded-full mr-4"
+                                        src={p.user.profile_pic}
+                                        alt={p.user.name}
+                                        className="w-12 h-12 rounded-full mr-3"
                                     />
-                                    <span className="text-lg font-semibold">{participant.user.name}</span>
+                                    <span className="text-lg font-medium">{p.user.username}</span>
                                 </li>
                             ))}
                         </ul>
                     ) : (
-                        <p>No hay participantes.</p>
+                        <p className="text-gray-500">No hay participantes.</p>
                     )}
                 </section>
 
-                <section>
-                    <h2 className="text-2xl font-bold mb-4">Palabra a resolver</h2>
-                    {palabraActual ? (
-                        <p>{palabraActual}</p>
-                    ) : (
-                        <p>Cargando palabra...</p>
-                    )}
+                {/* Sección de Palabra a Resolver */}
+                <section className="mb-6">
+                    <h2 className="text-2xl font-semibold mb-4 text-white-50">Palabra a Resolver</h2>
+                    <div className="bg-blue-100 text-blue-800 p-4 text-xl font-semibold text-center rounded-lg shadow">
+                        {palabraActual ? palabraActual : "Cargando palabra..."}
+                    </div>
 
-                    <h4>Traduccion</h4>
-                    <p>{acertado ? palabraActual + ' = ' + wordTranslate : "______"}</p>
-
-
+                    <h4 className="text-lg font-semibold mt-4">Traducción</h4>
+                    <p className="text-lg font-semibold text-center bg-green-100 text-green-800 p-2 rounded-lg shadow">
+                        {acertado ? `${palabraActual} = ${wordTranslate}` : "______"}
+                    </p>
                 </section>
 
+                {/* Sección de Chat */}
                 <section>
-                    <h2 className="text-2xl font-bold mb-4">Chat</h2>
-                    <input className="rounded" value={respuesta}
-                           onChange={(e) => setRespuesta(e.target.value)} type="text"
-                           placeholder="Escribe la traducción"/>
-                    <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={inputResolve}>Enviar</button>
+                    <h2 className="text-2xl font-semibold mb-4 text-white-50">Chat</h2>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <input
+                            className="flex-1 px-4 py-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={respuesta}
+                            onChange={(e) => setRespuesta(e.target.value)}
+                            type="text"
+                            placeholder="Escribe la traducción"
+                        />
+                        <button
+                            className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition"
+                            onClick={inputResolve}
+                        >
+                            Enviar
+                        </button>
+                    </div>
                 </section>
-
             </div>
         </div>
-    )
+    );
+
 
 }
 

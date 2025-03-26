@@ -4,6 +4,18 @@ class SocketController {
     static initialize(io) {
         let users = [];
         let confGame = [];
+        let words = [
+            "hallo",
+            "bitte",
+            "danke",
+            "entschuldigung",
+            "ja",
+            "nein",
+            "freund",
+            "liebe",
+            "essen",
+            "trinken"
+        ]
 
         function getTurnGame(roomUUID) {
             const game = confGame.find((game) => game.room === roomUUID);
@@ -91,8 +103,33 @@ class SocketController {
             });
 
             socket.on('randomWord', async (data) => {
-                console.log("Front", data);
-                io.to(data.uuid).emit('wordRoom', {word: data.word});
+                let game = confGame.find((game) => game.room === data.uuid);
+                if (!game) {
+                    console.log("Game not found");
+                    return;
+                }
+
+                const randomIndex = Math.floor(Math.random() * words.length);
+                const word = words[randomIndex];
+
+                // Guarda la palabra en la configuración de la partida
+                game.currentWord = word;
+
+                console.log(`Nueva palabra para la sala ${data.uuid}: ${word}`);
+
+                io.to(data.uuid).emit('wordRoom', { word });
+            });
+
+            socket.on('getCurrentWord', async (data) => {
+                let game = confGame.find((game) => game.room === data.uuid);
+                if (!game || !game.currentWord) {
+                    console.log("No hay palabra actual en la sala:", data.uuid);
+                    return;
+                }
+
+                console.log(`Enviando palabra actual a ${data.uuid}: ${game.currentWord}`);
+
+                io.to(data.uuid).emit('wordRoom', { word: game.currentWord });
             });
 
             socket.on('chatTranslate', (data) => {
