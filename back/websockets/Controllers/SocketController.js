@@ -19,6 +19,7 @@ class SocketController {
       const game = confGame.find((game) => game.room === roomUUID);
       if (!game) return null;
 
+      console.log("pleyeerTurn: ", game.players[(game.turn - 1) % game.players.length]);
       return game.players[(game.turn - 1) % game.players.length];
     }
 
@@ -139,6 +140,7 @@ class SocketController {
         } while (game.historyWords.includes(word));
 
         game.historyWords.push(word);
+        // console.log("Generated word: ", word);
         io.to(roomUUID).emit("wordHangman", word);
       });
 
@@ -155,7 +157,7 @@ class SocketController {
         });
       });
 
-      socket.on("nextTurn", ({ roomUUID, acierto, letter }) => {
+      socket.on("nextTurn", ({ roomUUID, acierto, word }) => {
         const game = confGame.find((game) => game.room === roomUUID);
         if (!game) {
           console.error("Room not found");
@@ -171,9 +173,12 @@ class SocketController {
           game.timer = null;
         }
 
-        socket.broadcast.to(roomUUID).emit("letter", {letter});
+        console.log("Next turn", game.turn);
+        console.log(word);
+        socket.broadcast.to(roomUUID).emit("setWord", {word});
         
         game.turn++;
+        console.log("Next turn", game.turn);
         io.to(roomUUID).emit("turn", {
           turn: getTurnGame(roomUUID),
           errors: game.guessesErrors,
