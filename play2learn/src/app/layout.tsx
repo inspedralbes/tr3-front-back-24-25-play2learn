@@ -36,7 +36,7 @@ export default function RootLayout({
       >
         <AuthenticatorProvider>
           <NavBarProvider>
-            <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white">
+            <div className="min-h-screen h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white">
               <ManagerSideBar>
                 {children}
               </ManagerSideBar>

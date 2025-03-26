@@ -194,7 +194,8 @@ const GameLobby: React.FC = () => {
       setContainerLobbies(true);
     });
 
-    socket.on("loobbieCreated", (data) => {
+    socket.on("lobbieCreated", (data) => {
+      console.log("escuchando");
       setWaitingRooms(data.games);
       router.push("/lobby/" + data.gameCreated.uuid);
 
@@ -202,7 +203,7 @@ const GameLobby: React.FC = () => {
     // Limpieza del listener al desmontar el componente
     return () => {
       socket.off("getLobbies");
-      socket.off("loobbieCreated");
+      socket.off("lobbieCreated");
     };
   }, [isAuthenticated, router]);
 

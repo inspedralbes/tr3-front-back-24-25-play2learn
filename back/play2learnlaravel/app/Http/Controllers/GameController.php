@@ -9,14 +9,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use PHPUnit\Exception;
 
 class GameController extends Controller
 {
     //
     public function getList()
     {
-        try {
+        try{
             $games = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
                 ->where('status', 'pending')
                 ->get();
@@ -26,7 +25,7 @@ class GameController extends Controller
                 'message' => 'Games list',
                 'games' => $games
             ]);
-        } catch (\Exception $e) {
+        }catch (\Exception $e){
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -59,7 +58,7 @@ class GameController extends Controller
             ], 422);
         }
 
-        try {
+        try{
             //create game with game setting
             $game = new Game();
             $game->id_level_language = $request->input('id_level_language');
@@ -92,7 +91,7 @@ class GameController extends Controller
                 'gameCreated' => $game,
                 'games' => $gameList
             ]);
-        } catch (\Exception $e) {
+        }catch (\Exception $e){
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -102,7 +101,7 @@ class GameController extends Controller
 
     public function getGame($gameUUID)
     {
-        try {
+        try{
             $games = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
                 ->whereIn('status', ['pending', 'in_progress'])
                 ->where('uuid', $gameUUID)
@@ -113,7 +112,7 @@ class GameController extends Controller
                 'status' => 'success',
                 'game' => $games
             ]);
-        } catch (\Exception $e) {
+        }catch (\Exception $e){
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -121,38 +120,9 @@ class GameController extends Controller
         }
     }
 
-    public function startRoom(Request $request)
-    {
-        try {
-            //dd($request->uuid);
-
-            DB::beginTransaction();
-            $game = Game::with('participants')->where('uuid', $request->roomUUID)->first();
-
-            if(!$game){
-                DB::rollBack();
-                return response()->json(['status' => 'error', 'message' => 'Game not found']);
-            }
-
-            $game->status = 'in_progress';
-
-            $game->save();
-
-
-            DB::commit();
-
-            return response()->json(['status' => 'success', 'game' => $game]);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
-        }
-
-    }
-
     public function join($gameUUID)
     {
-        try {
+        try{
             $game = Game::where('uuid', $gameUUID)->first();
 
             $gameUser = new GameUser();
@@ -175,7 +145,7 @@ class GameController extends Controller
                 'game' => $game
             ]);
 
-        } catch (\Exception $e) {
+        }catch (\Exception $e){
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -224,6 +194,42 @@ class GameController extends Controller
                 'status' => 'success',
                 'games' => $gameList,
                 'game' => $game
+            ]);
+        }catch (\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function startRoom(Request $request)
+    {
+        // dd($request->all());
+        try{
+            DB::beginTransaction();
+            $game = Game::with('participants')
+                ->where('uuid', $request->input('roomUUID'))
+                ->first();
+
+            if (!$game) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Game not found'
+                ]);
+            }
+            $game->status = 'in_progress';
+            $game->save();
+
+            DB::commit();
+
+            $game->load('participants', 'participants.user', 'language_level', 'language_level.language');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Game started',
+                'data' => $game
             ]);
         }catch (\Exception $e){
             return response()->json([

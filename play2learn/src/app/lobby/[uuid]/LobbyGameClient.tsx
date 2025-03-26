@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
@@ -13,7 +13,7 @@ export default function LobbyGameClient() {
     const params = useParams<{ uuid: string }>();
     const { isAuthenticated } = useContext(AuthenticatorContext);
     const router = useRouter();
-    const { token } = useContext(AuthenticatorContext);
+    const { user, token } = useContext(AuthenticatorContext);
 
 
     interface Language {
@@ -57,10 +57,14 @@ export default function LobbyGameClient() {
 
     const [participants, setParticipants] = useState<Participant[]>([]);
 
-    const handleLeaveGame = () => {
-        socket.emit('leaveGame', { token: token || "", roomUUID: params.uuid });
-        router.push("/");
-    };
+  const handleStartGame = () => {
+    socket.emit("startGame", { token, roomUUID: params.uuid });
+  };
+
+  const handleLeaveGame = () => {
+    socket.emit("leaveGame", { token: token || "", roomUUID: params.uuid });
+    router.push("/");
+  };
 
 
     useEffect(() => {
@@ -72,7 +76,6 @@ export default function LobbyGameClient() {
         socket.emit('getGame', { token: token || "", roomUUID: params.uuid });
 
         socket.on('playerJoined', (data) => {
-            console.log(data);
             setParticipants(data.game.participants || []);
         });
 
@@ -81,40 +84,47 @@ export default function LobbyGameClient() {
             router.push("/");
         });
 
-        // Limpiar event listeners
-        socket.on('gameStarted', (data) => {
-            console.log("Socket", data);
-            console.log("Socket uuid", data.game.uuid)
-            router.push(`/games/translation/${data.game.uuid}`);
-        });
+    socket.on("gameStarted", (data) => {
+      if (data.status === "success") {
+        router.push(`/games/${params.uuid}`);
+      }
+    });
 
-        return () => {
-            socket.off('playerJoined');
-            socket.off('gameDeleted');
-            socket.off('gameStarted');
-        };
-    }, [isAuthenticated, router]);
-
-
+    // Limpiar event listeners
+    return () => {
+      socket.off("playerJoined");
+      socket.off("gameDeleted");
+      socket.off("gameStarted");
+    };
+  }, [isAuthenticated, router]);
 
     function goToTranslate() {
         socket.emit('startGame', {token: token || "", roomUUID: params.uuid});
     }
 
-    return (
-        <div>
-            <h1>Lobby Game Client {params.uuid}</h1>
-            <div className="flex gap-4">
-                {participants.map((participant) => (
-                    <AvatarUserProfile
-                        key={participant.id}
-                        name={participant.user.name}
-                        profile_pic={participant.user.profile_pic}
-                    />
-                ))}
-            </div>
-            <button onClick={handleLeaveGame} className="bg-red-500 text-white px-4 py-2 rounded">Leave Game</button>
-            <button className="mt-5" onClick={goToTranslate}>Start Game</button>
-        </div>
-    );
+  return (
+    <div>
+      <h1>Lobby Game Client {params.uuid}</h1>
+      <div className="flex gap-4">
+        {participants.map((participant) => (
+          <AvatarUserProfile
+            key={participant.id}
+            name={participant.user.name}
+            profile_pic={participant.user.profile_pic}
+          />
+        ))}
+      </div>
+      <button
+        onClick={handleLeaveGame}
+        className="bg-red-500 text-white px-4 py-2 rounded"
+      >
+        Leave Game
+      </button>
+
+      {participants.some(
+        (participant) =>
+          participant.user.id === user?.id && participant.rol === "host"
+      ) && <button onClick={handleStartGame}>Start</button>}
+    </div>
+  );
 }

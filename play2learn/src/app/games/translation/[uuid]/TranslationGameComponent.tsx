@@ -29,43 +29,49 @@ interface User {
 
 interface Participant {
     id: number;
+    user_id: number
     user: User;
     rol: string;
     points: number;
 }
 
-interface Room {
-    id: number,
-    id_level_language: number,
-    participants: Participant
-    max_clues: number,
-    max_players: number,
-    max_time: 10,
-    n_rounds: number,
-    language_level: LanguageLevel
-    name: string,
-    password: number,
-    status: string,
-    uudi: number,
-    updated_at: string,
-    created_at: string
+interface Player extends Participant {
+    isActive: boolean;
+    localPoints: number;
 }
 
-function TranslationGameComponent() {
+interface Game {
+    id: number;
+    id_level_language: number;
+    language_level: LanguageLevel;
+    uuid: string;
+    password: string;
+    name: string;
+    n_rounds: number;
+    max_clues: number;
+    max_time: number;
+    max_players: number;
+    participants: Participant[] | null;
+}
 
-    const {authUser} = useContext(AuthenticatorContext);
+
+function TranslationGameComponent({participants, game}: { participants: Participant[]; game: Game }) {
+
     const router = useRouter();
     const {t} = useTranslation();
     const params = useParams<{ uuid: string }>();
-    const {isAuthenticated, token} = useContext(AuthenticatorContext);
-    const [participant, setParticipant] = useState<Participant[]>([]);
+    const {isAuthenticated, token, user} = useContext(AuthenticatorContext);
+    const [players, setPlayers] = useState<Player[]>([]);
     const [language, setLanguage] = useState<LanguageLevel[]>([])
-    const [room, setRoom] = useState<Room[]>([])
+    const [room, setRoom] = useState<Game>()
     const [acertado, setAcertado] = useState(false);
     const [respuesta, setRespuesta] = useState("");
     const [palabraActual, setPalabraActual] = useState('');
     const [wordTranslate, setWordTranslate] = useState('');
     const [wordGenerated, setWordGenerated] = useState(false);
+    const [canWrite, setCanWrite] = useState(false); // Si el usuario puede escribir
+    const [localPlayer, setLocalPlayer] = useState<Player>({} as Player);
+
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -73,24 +79,36 @@ function TranslationGameComponent() {
             return;
         }
 
-        async function fetchRoom() {
-            try {
+        setPlayers(participants.map(participant => ({
+            ...participant,
+            isActive: false,
+            localPoints: 0
+        })));
 
-                const response = await apiRequest(`/games/${params.uuid}`, "GET");
-                console.log("JUEGO", response);
-                setParticipant(response.game.participants);
-                setLanguage(response.game.language_level);
-                setRoom(response.game);
 
-                console.log("Solicitando palabra actual...");
-                socket.emit("getCurrentWord", {uuid: params.uuid});
+        setRoom(game);
 
-            } catch (error) {
-                console.log("Error ", error)
+        setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
+
+
+        socket.emit('getTurn', {roomUUID: params.uuid});
+
+        socket.on('turn', (data) => {
+            console.log("TURNOS", data);
+            const {turn, errors} = data;
+
+            setPlayers(prevPlayers =>
+                prevPlayers.map((player) => ({
+                    ...player,
+                    isActive: player.user_id === turn.user_id
+                }))
+            );
+
+            setCanWrite(false);
+            if (turn.user_id === user?.id) {
+                setCanWrite(true);
             }
-        }
-
-        fetchRoom();
+        });
 
         socket.on('wordRoom', (data) => {
             console.log("Evento wordRoom recibido con:", data);
@@ -113,7 +131,30 @@ function TranslationGameComponent() {
                 setWordTranslate(data.word_translate);
                 setRespuesta('');
                 console.log("¡Acertado!");
-                socket.emit('randomWord', {uuid: params.uuid})
+
+                socket.emit('randomWord', {uuid: params.uuid});
+
+                let points;
+                let user_id;
+
+                // Buscar al jugador activo
+                const activePlayer = players.find((p) => p.isActive);
+
+                console.log("Player activo: ", activePlayer);
+
+
+                if (activePlayer) {
+                    user_id = activePlayer.user_id;
+                    points = activePlayer.localPoints;
+                }
+
+                console.log("ID USER: ", user_id);
+                console.log("POINTS: ", points)
+
+                socket.emit('nextTurnGeneral', {
+                    roomUUID: params.uuid, user_id: user_id, points: points
+                })
+
                 setAcertado(false)
             } else {
                 console.log("Respuesta incorrecta o palabra no encontrada");
@@ -130,22 +171,14 @@ function TranslationGameComponent() {
 
 
     useEffect(() => {
-        const host = participant.find(p => p.rol === 'host');
+        const host = players.find(p => p.rol === 'host');
         if (host && !palabraActual) {
-            // Llamar a la función que debe ejecutar el host
-
-            console.log("No hay palabra actual, generando una nueva...");
-            console.log("Emitiendo evento randomWord al servidor...");
-            console.log("Host detectado, generando nueva palabra...");
-
             socket.emit('randomWord', {uuid: params.uuid});
-            //getRandomWord();
             setWordGenerated(true)
         }
-    }, [participant, palabraActual]);
+    }, [players, palabraActual]);
 
     const inputResolve = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-        console.log("Hola");
         console.log("WORD", respuesta.toLowerCase())
         const language = "de"
         try {
@@ -168,6 +201,20 @@ function TranslationGameComponent() {
                 word_translate: data.translation,
             }
 
+            const person = players.find((p) => p.isActive);
+            console.log("Person", person)
+
+            setPlayers(prevPlayers =>
+                prevPlayers.map(player =>
+                    player.isActive ? {...player, localPoints: player.localPoints + 1} : player
+                )
+            );
+
+            setLocalPlayer(prev => ({
+                ...prev,
+                localPoints: prev.localPoints + 1
+            }));
+
             socket.emit('chatTranslate', (jsonSocket));
 
         } catch (error) {
@@ -175,31 +222,6 @@ function TranslationGameComponent() {
         }
 
     };
-
-    function getRandomWord() {
-        const jsonDE = {
-            "palabras": [
-                "hallo",
-                "bitte",
-                "danke",
-                "entschuldigung",
-                "ja",
-                "nein",
-                "freund",
-                "liebe",
-                "essen",
-                "trinken"
-            ]
-        };
-        const randomIndex = Math.floor(Math.random() * jsonDE.palabras.length);
-        const jsonData = {
-            uuid: params.uuid,
-            word: jsonDE.palabras[randomIndex],
-        }
-
-        console.log("json enviar", jsonData);
-
-    }
 
     return (
         <div className="min-h-screen flex flex-col items-center p-4">
@@ -211,9 +233,9 @@ function TranslationGameComponent() {
                 {/* Sección de Participantes */}
                 <section className="mb-6">
                     <h2 className="text-2xl font-semibold mb-4 text-blakc-800">Participantes</h2>
-                    {participant.length > 0 ? (
+                    {players.length > 0 ? (
                         <ul className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {participant.map((p: Participant) => (
+                            {players.map((p: Participant) => (
                                 <li
                                     key={p.id}
                                     className="flex items-center bg-blue-800 rounded-lg p-3 shadow-sm">
@@ -254,10 +276,12 @@ function TranslationGameComponent() {
                             onChange={(e) => setRespuesta(e.target.value)}
                             type="text"
                             placeholder="Escribe la traducción"
+                            {...(canWrite ? {autoFocus: true, disabled: false} : {disabled: true})}
                         />
                         <button
                             className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition"
                             onClick={inputResolve}
+                            {...(canWrite ? {autoFocus: true, disabled: false} : {disabled: true})}
                         >
                             Enviar
                         </button>
