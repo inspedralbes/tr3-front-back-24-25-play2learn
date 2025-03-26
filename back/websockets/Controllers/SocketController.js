@@ -48,6 +48,7 @@ class SocketController {
       const game = confGame.find((game) => game.room === roomUUID);
       if (!game) return null;
 
+      console.log("pleyeerTurn: ", game.players[(game.turn - 1) % game.players.length]);
       return game.players[(game.turn - 1) % game.players.length];
     }
 
@@ -193,6 +194,7 @@ class SocketController {
         // socket.broadcast.to(roomUUID).emit("letter", { letter });
 
         game.turn++;
+        console.log("Next turn", game.turn);
         io.to(roomUUID).emit("turn", {
           turn: getTurnGame(roomUUID),
           errors: game.guessesErrors,

@@ -167,8 +167,10 @@ const Hangman: React.FC = () => {
       setTime(time);
     });
 
+
     return () => {
       socket.off("timerTick");
+    };
     };
   }, [lobbyProps]);
 
