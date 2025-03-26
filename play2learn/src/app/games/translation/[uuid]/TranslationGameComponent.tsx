@@ -8,6 +8,7 @@ import {useTranslation} from "@/hooks/useTranslation";
 import socket from "@/services/websockets/socket";
 import {apiRequest} from "@/services/communicationManager/apiRequest";
 import {auto} from "openai/_shims/registry";
+import {Clock3} from "lucide-react";
 
 interface Language {
     id: number;
@@ -62,7 +63,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     const params = useParams<{ uuid: string }>();
     const {isAuthenticated, token, user} = useContext(AuthenticatorContext);
     const [players, setPlayers] = useState<Player[]>([]);
-    const [language, setLanguage] = useState<LanguageLevel[]>([])
     const [room, setRoom] = useState<Game>()
     const [acertado, setAcertado] = useState(false);
     const [respuesta, setRespuesta] = useState("");
@@ -71,6 +71,34 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     const [wordGenerated, setWordGenerated] = useState(false);
     const [canWrite, setCanWrite] = useState(false); // Si el usuario puede escribir
     const [localPlayer, setLocalPlayer] = useState<Player>({} as Player);
+    const [timer, setTimer] = useState(15);
+    const [gameStarted, setGameStarted] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    function nextPlayer() {
+        const currentIndex = players.findIndex(p => p.isActive);
+        if (currentIndex === -1) {
+            console.warn("No se encontró un jugador activo para calcular el siguiente turno.");
+            return;
+        }
+        // Calcula el índice del siguiente jugador (rotación circular)
+        const nextIndex = (currentIndex + 1) % players.length;
+        const nextPlayer = players[nextIndex];
+
+        console.log("Turno pasado a:", nextPlayer);
+
+        socket.emit('nextTurnGeneral', {
+            roomUUID: game.uuid,
+            user_id: nextPlayer.user_id,
+            points: nextPlayer.localPoints
+        });
+        setTimer(15);
+    };
+
+    const startGame = () => {
+        socket.emit('getTurn', ({roomUUID: params.uuid}));
+        setGameStarted(true);
+    };
 
 
     useEffect(() => {
@@ -89,9 +117,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
         setRoom(game);
 
         setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
-
-
-        socket.emit('getTurn', {roomUUID: params.uuid});
+        startGame();
 
         socket.on('turn', (data) => {
             console.log("TURNOS", data);
@@ -104,10 +130,12 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 }))
             );
 
+
             setCanWrite(false);
             if (turn.user_id === user?.id) {
                 setCanWrite(true);
             }
+            setTimer(15)
         });
 
         socket.on('wordRoom', (data) => {
@@ -134,29 +162,28 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
                 socket.emit('randomWord', {uuid: params.uuid});
 
-                let points;
-                let user_id;
+                // Actualización de puntos y siguiente turno
+                setPlayers(prevPlayers =>
+                    prevPlayers.map(player =>
+                        player.isActive ? {...player, localPoints: player.localPoints + 1} : player
+                    )
+                );
 
-                // Buscar al jugador activo
-                const activePlayer = players.find((p) => p.isActive);
-
-                console.log("Player activo: ", activePlayer);
-
-
-                if (activePlayer) {
-                    user_id = activePlayer.user_id;
-                    points = activePlayer.localPoints;
-                }
-
-                console.log("ID USER: ", user_id);
-                console.log("POINTS: ", points)
-
-                socket.emit('nextTurnGeneral', {
-                    roomUUID: params.uuid, user_id: user_id, points: points
-                })
+                setLocalPlayer(prev => ({
+                    ...prev,
+                    localPoints: prev.localPoints + 1
+                }));
 
                 setAcertado(false)
             } else {
+                // Add error message when translation is incorrect
+                setErrorMessage("¡Te has equivocado! Intenta de nuevo.");
+
+                // Clear error message after 3 seconds
+                setTimeout(() => {
+                    setErrorMessage(null);
+                }, 3000);
+
                 console.log("Respuesta incorrecta o palabra no encontrada");
             }
         });
@@ -165,6 +192,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
         return () => {
             socket.off('wordRoom');
             socket.off('translateClient');
+            socket.off('turn')
         };
 
     }, [isAuthenticated, router]);
@@ -177,6 +205,35 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             setWordGenerated(true)
         }
     }, [players, palabraActual]);
+
+    useEffect(() => {
+
+        let interval: NodeJS.Timeout;
+        if (gameStarted && timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1);
+            }, 1000);
+        } else if (timer === 0) {
+            if (palabraActual.length > 0) {
+                nextPlayer();
+            } else {
+                setPlayers(prevPlayers =>
+                    prevPlayers.map(player =>
+                        ({...player, word: ""})
+                    )
+                );
+
+                setPlayers(prevPlayers =>
+                    prevPlayers.map(player =>
+                        player.isActive ? {...player, localPoints: player.localPoints - 1} : player
+                    )
+                );
+                nextPlayer();
+            }
+        }
+
+        return () => clearInterval(interval);
+    }, [gameStarted, timer, palabraActual])
 
     const inputResolve = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         console.log("WORD", respuesta.toLowerCase())
@@ -201,9 +258,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 word_translate: data.translation,
             }
 
-            const person = players.find((p) => p.isActive);
-            console.log("Person", person)
-
             setPlayers(prevPlayers =>
                 prevPlayers.map(player =>
                     player.isActive ? {...player, localPoints: player.localPoints + 1} : player
@@ -215,7 +269,9 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 localPoints: prev.localPoints + 1
             }));
 
+
             socket.emit('chatTranslate', (jsonSocket));
+
 
         } catch (error) {
             console.error("Error al obtener la traducción:", error);
@@ -223,8 +279,41 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
     };
 
+
     return (
         <div className="min-h-screen flex flex-col items-center p-4">
+
+
+            <div>
+                <Clock3 className="w-6 h-6"/>
+                <span className="text-2xl font-bold">{timer}s</span>
+            </div>
+
+            {/* Turn Messaging */}
+            {players.map(player => (
+                player.isActive ? (
+                    player.user_id === user?.id ? (
+                        <div key={player.id} className="text-center mb-4">
+                            <span className="text-2xl font-bold text-green-600">¡Es tu turno!</span>
+                        </div>
+                    ) : (
+                        <div key={player.id} className="text-center mb-4">
+                            <span className="text-2xl font-bold text-blue-600">Turno de {player.user.name}</span>
+                        </div>
+                    )
+                ) : null
+            ))}
+
+
+            {/* Error Message Section */}
+            {errorMessage && (
+                <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50
+                    bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg
+                    animate-bounce">
+                    {errorMessage}
+                </div>
+            )}
+
             <h1 className="text-4xl text-center font-bold mb-6 text-blue-600">
                 Juego de Traducciones
             </h1>
