@@ -2,9 +2,9 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
+import socket from "@/services/websockets/socket";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { Clock, Heart, Keyboard, User, Clock3 } from "lucide-react";
-import socket from "@/services/websockets/socket";
 
 interface Player {
   id: number;
@@ -24,20 +24,55 @@ const Hangman: React.FC = () => {
   const router = useRouter();
   const { user, isAuthenticated } = useContext(AuthenticatorContext);
 
-  const [lobbyProps, setLobbyProps] = useState<LobbyProps | null>(null);
   const [word, setWord] = useState<string>("");
   const [guessedWord, setGuessedWord] = useState<string>("");
-  const [turnUserId, setTurn] = useState<number>(0);
   const [guesses, setGuesses] = useState<number>(0);
-  const [time, setTime] = useState<number>(0);
+  const [time, setTime] = useState<number | null>(null);
+  const [turno, setTurno] = useState<number | null>();
+  const [lobbyProps, setLobbyProps] = useState<LobbyProps | null>(null);
   const [inputLetter, setInputLetter] = useState<string>("");
   const [inputWord, setInputWord] = useState<string>("");
+  // const [gameStatus, setStatus] = useState<string>("iniciado"); //se puede usar para marcar el final con un useEffect
+  // const [spectators, setSpectators] = useState<number[]>([]); //mejora para spectators (funcionalidad extra)
+
+  const letterGuess = () => {
+    let acierto = true;
+
+    if (!guessedWord.includes(inputLetter) && word.includes(inputLetter)) {
+      const newGuessedWord = word
+        .split("")
+        .map((letter, index) =>
+          letter === inputLetter ? letter : guessedWord[index]
+        )
+        .join("");
+
+      setGuessedWord(newGuessedWord);
+    } else {
+      acierto = false;
+    }
+    setInputLetter("");
+    socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto, letter: inputLetter });
+  };
+
+  const wordGuess = () => {
+    let acierto = true;
+
+    if (word === inputWord) {
+      setGuessedWord(word);
+    } else {
+      acierto = false;
+    }
+    setInputWord("");
+    socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto });
+  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+
+  const isMyTurn = turno === user?.id;
 
   const getUsername = (id: number) => {
     const player = lobbyProps?.players.find((player) => player.id === id);
@@ -51,45 +86,6 @@ const Hangman: React.FC = () => {
         <p>muñeco</p>
       </div>
     );
-  };
-
-  const hostPlayer = lobbyProps?.players.find(
-    (player) => player.rol === "host"
-  );
-
-  const isMyTurn = turnUserId === user?.id;
-
-  const letterGuess = () => {
-    let acierto = true;
-    let newGuessedWord = "";
-    if (!guessedWord.includes(inputLetter) && word.includes(inputLetter)) {
-        newGuessedWord = word
-        .split("")
-        .map((letter, index) =>
-          letter === inputLetter ? letter : guessedWord[index]
-        )
-        .join("");
-
-      setGuessedWord(newGuessedWord);
-    } else {
-      acierto = false;
-    }
-    setInputLetter("");
-    socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto, newGuessedWord: newGuessedWord });
-  };
-
-  const wordGuess = () => {
-    let acierto = true;
-    let newGuessedWord = "";
-
-    if (word === inputWord) {
-      setGuessedWord(inputWord);
-      newGuessedWord = inputWord;
-    } else {
-      acierto = false;
-    }
-    setInputWord("");
-    socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto, newGuessedWord: newGuessedWord });
   };
 
   useEffect(() => {
@@ -115,6 +111,7 @@ const Hangman: React.FC = () => {
           })
         );
 
+        // console.log(p); // participantes, roles, etc
         setLobbyProps({
           id_language_level: data.id_level_language,
           players: p,
@@ -125,52 +122,71 @@ const Hangman: React.FC = () => {
         console.error(error);
       }
     };
-
     fetchGameData();
-
-    socket.emit("getWordHangman", { roomUUID: params.uuid });
-    socket.emit("getTurn", { roomUUID: params.uuid });
-
-    socket.on("wordHangman", ({ newWord }) => {
-      if (newWord && newWord.length > 0) {
-        setWord(newWord);
-        setGuessedWord("_".repeat(newWord.length));
-      }
-    });
-    socket.on("turn", ({ turn, errors }) => {
-      setTurn(turn.user_id);
-      setGuesses(errors);
-    });
-    socket.on("newGuessedWord", ({ newGuessedWord }) => {
-      console.log("newGuessedWord", newGuessedWord);
-      setGuessedWord(newGuessedWord);
-    });
-
-    return () => {
-      socket.off("wordHangman");
-      socket.off("turn");
-      socket.off("newGuessedWord");
-    };
   }, [isAuthenticated, router]);
 
   useEffect(() => {
     if (lobbyProps === null) return;
 
-    if (hostPlayer?.id === user?.id)
+    socket.emit("getTurn", { roomUUID: params.uuid });
+    socket.on("turn", (data) => {
+      setTurno(data.turn.user_id);
+      setGuesses(data.errors);
+    });
+
+    socket.on("wordHangman", (word) => {
+      setWord(word);
+    });
+
+    const hostPlayer = lobbyProps.players.find(
+      (player) => player.rol === "host"
+    );
+
+    if (hostPlayer?.id === user?.id) {
+      socket.emit("getWordHangman", { roomUUID: params.uuid });
       socket.emit("startTimer", {
         roomUUID: params.uuid,
         maxTime: lobbyProps.max_time,
       });
+    }
 
-    socket.on("timerTick", ({ time }) => {
-      console.log(time);
+    socket.on("timerTick", (time) => {
       setTime(time);
+    });
+    
+    return () => {
+      socket.off("turn");
+      socket.off("wordHangman");
+      socket.off("timerTick");
+    }
+  }, [lobbyProps]);
+
+  useEffect(() => {
+    setGuessedWord("_".repeat(word.length));
+
+    socket.on("letter", (data) => {
+      // alert(`La letra ${data.newLetter} está en la palabra`); //esto si que llega
+
+      console.log(data);
+      console.log("letter: " + data.letter);	
+      console.log("word: " + word);
+      console.log(word.includes(data.letter));
+      if (word.includes(data.newLetter)) {
+        const newGuessedWord = word
+          .split("")
+          .map((letter, index) =>
+            letter === data.newLetter ? letter : guessedWord[index]
+          );  
+          // .join("");
+          console.log("Word: " + newGuessedWord);
+        // setGuessedWord(newGuessedWord);
+      }
     });
 
     return () => {
-      socket.off("timerTick");
-    };
-  }, [lobbyProps]);
+      socket.off("letter");
+    }
+  }, [word]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 text-white p-8">
@@ -201,9 +217,7 @@ const Hangman: React.FC = () => {
           >
             <Clock3 className="w-5 h-5" />
             <span>
-              {isMyTurn
-                ? "Tu turno"
-                : `Turno de ${getUsername(turnUserId ?? 0)}`}
+              {isMyTurn ? "Tu turno" : `Turno de ${getUsername(turno ?? 0)}`}
             </span>
           </div>
         </div>
@@ -274,16 +288,6 @@ const Hangman: React.FC = () => {
       </div>
     </div>
   );
-  //   return (
-  //     <div>
-  //       <div>Time: {time}</div>
-  //       <div>Turno User ID: {turnUserId}</div>
-  //       <div>Errores: {guesses}</div>
-  //       <div>{drawHangman(0)}</div>
-  //       <div>{word}</div>
-  //       <div>{guessedWord.split("").join(" ")}</div>
-  //     </div>
-  //   );
 };
 
 export default Hangman;
