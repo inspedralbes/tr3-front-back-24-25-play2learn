@@ -3,13 +3,18 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
-import { Clock, Heart, Keyboard, User, Clock3 } from "lucide-react";
+import { Clock, X, Keyboard, User, Clock3 } from "lucide-react";
 import socket from "@/services/websockets/socket";
 
-interface Player {
+interface Participant {
   id: number;
   username: string;
   rol: string;
+  totalPoints: number;
+}
+
+interface Player extends Participant {
+  points: number;
 }
 
 interface LobbyProps {
@@ -18,6 +23,12 @@ interface LobbyProps {
   max_powers: number;
   max_time: number;
 }
+
+const POINTS_PER_CORRECT_LETTER = 50;
+const POINTS_PER_CORRECT_WORD = 250;
+const POINTS_PENALTY_LETTER = -25;
+const POINTS_PENALTY_WORD = -150;
+const POINTS_PENALTY_NO_RESPONSE = -5;
 
 const Hangman: React.FC = () => {
   const params = useParams<{ uuid: string }>();
@@ -39,8 +50,12 @@ const Hangman: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const getPlayer = (id: number) => {
+    return lobbyProps?.players.find((player) => player.id === id);
+  }
+
   const getUsername = (id: number) => {
-    const player = lobbyProps?.players.find((player) => player.id === id);
+    const player = getPlayer(id);
 
     return player?.username || "Desconocido";
   };
@@ -59,6 +74,15 @@ const Hangman: React.FC = () => {
 
   const isMyTurn = turnUserId === user?.id;
 
+  const setPointsUsers = (points: number) => {
+    const player = getPlayer(turnUserId);
+    
+    console.log(player);
+    if (player) {
+      player.points += points;
+    }else console.log("no se encontro el jugador");
+  };
+
   const letterGuess = () => {
     let acierto = true;
     let newGuessedWord = "";
@@ -69,12 +93,16 @@ const Hangman: React.FC = () => {
           letter === inputLetter ? letter : guessedWord[index]
         )
         .join("");
-
+      
+      setPointsUsers(POINTS_PER_CORRECT_LETTER);
       setGuessedWord(newGuessedWord);
     } else {
+      setPointsUsers(POINTS_PENALTY_LETTER);
       acierto = false;
     }
+    
     setInputLetter("");
+    console.log(`roomUUID: ${params.uuid}, acierto: ${acierto}, newGuessedWord: ${newGuessedWord}`);
     socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto, newGuessedWord: newGuessedWord });
   };
 
@@ -83,11 +111,14 @@ const Hangman: React.FC = () => {
     let newGuessedWord = "";
 
     if (word === inputWord) {
+      setPointsUsers(POINTS_PER_CORRECT_WORD);
       setGuessedWord(inputWord);
       newGuessedWord = inputWord;
     } else {
+      setPointsUsers(POINTS_PENALTY_WORD);
       acierto = false;
     }
+
     setInputWord("");
     socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto, newGuessedWord: newGuessedWord });
   };
@@ -108,10 +139,12 @@ const Hangman: React.FC = () => {
             user_id: number;
             user: { username: string };
             rol: string;
+            points: number;
           }) => ({
             id: player.user_id,
             username: player.user.username,
             rol: player.rol,
+            points: 0,
           })
         );
 
@@ -142,9 +175,9 @@ const Hangman: React.FC = () => {
       setGuesses(errors);
     });
     socket.on("newGuessedWord", ({ newGuessedWord }) => {
-      console.log("newGuessedWord", newGuessedWord);
       setGuessedWord(newGuessedWord);
     });
+    
 
     return () => {
       socket.off("wordHangman");
@@ -163,12 +196,29 @@ const Hangman: React.FC = () => {
       });
 
     socket.on("timerTick", ({ time }) => {
-      console.log(time);
+      // console.log(time);
       setTime(time);
+    });
+    socket.on("timeOut", () =>{
+      // const p = lobbyProps?.players.find(
+      //   (player) => player.rol === "host"
+      // );
+      lobbyProps?.players.forEach((player) => {
+        if (player.id) {
+          player.points += POINTS_PENALTY_NO_RESPONSE;
+        }
+      });
+    });
+    socket.on("gameOver", () => {
+      const player = getPlayer(user?.id || 0);
+      console.log(player);
+      router.push(`/`);
     });
 
     return () => {
       socket.off("timerTick");
+      socket.off("timeOut");
+      socket.off("gameOver");
     };
   }, [lobbyProps]);
 
@@ -187,7 +237,7 @@ const Hangman: React.FC = () => {
               <span className="text-xl">{formatTime(time ?? 0)}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Heart className="w-6 h-6" />
+              <X className="w-6 h-6" />
               <span className="text-xl">{guesses} errores</span>
             </div>
           </div>

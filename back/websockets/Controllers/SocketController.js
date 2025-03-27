@@ -15,6 +15,16 @@ class SocketController {
       "grape",
     ];
 
+    function shouldGenerateWordHangman(roomUUID) {
+      const game = confGame.find((game) => game.room === roomUUID);
+      if (!game) {
+        console.error("Room not found");
+        return;
+      }
+
+      return game.historyWords.length < game.players.length;
+    }
+
     function generateWordHangman(roomUUID) {
       const game = confGame.find((game) => game.room === roomUUID);
       if (!game) {
@@ -32,6 +42,8 @@ class SocketController {
       } while (game.historyWords.includes(word));
 
       game.historyWords.push(word);
+
+      return word;
     }
 
     function getWordHangman(roomUUID) {
@@ -48,7 +60,6 @@ class SocketController {
       const game = confGame.find((game) => game.room === roomUUID);
       if (!game) return null;
 
-      console.log("pleyeerTurn: ", game.players[(game.turn - 1) % game.players.length]);
       return game.players[(game.turn - 1) % game.players.length];
     }
 
@@ -75,7 +86,8 @@ class SocketController {
         if (remainingTime <= 0) {
           clearInterval(game.timer);
           game.timer = null;
-          io.to(roomUUID).emit("timerEnded");
+
+          io.to(roomUUID).emit("timeOut");
 
           // Avanza al siguiente turno
           game.turn++;
@@ -87,7 +99,7 @@ class SocketController {
           // Reiniciamos el timer para el nuevo turno
           startTurnTimer(roomUUID, maxTime);
         } else {
-          console.log("Time remaining: " + remainingTime);
+          // console.log("Time remaining: " + remainingTime);
           io.to(roomUUID).emit("timerTick", {time: remainingTime});
         }
       }, 1000);
@@ -95,7 +107,8 @@ class SocketController {
 
     io.on("connection", (socket) => {
       console.log("A user connected");
-      users.push({ id: socket.id, room: null });
+      // console.log(socket);
+      users.push({ id: socket.id, socket: socket, room: null });
       socket.on("startGame", async ({ token, roomUUID }) => {
         const response = await apiRequest("/games/start", token, "POST", {
           roomUUID,
@@ -119,8 +132,13 @@ class SocketController {
         // console.log(response);
         // Crear y unirse a la sala con el UUID del juego
         const roomUUID = response.gameCreated.uuid;
-        socket.join(roomUUID);
-        users.find((user) => user.id === socket.id).room = roomUUID;
+
+        if (!socket.rooms.has(roomUUID)) {
+          socket.join(roomUUID);
+          const user = users.find((user) => user.id === socket.id);
+          user ? (user.room = roomUUID) : users.push({ id: socket.id, socket: socket, room: roomUUID });
+        }
+
         // Emitir a todos los demás clientes
         socket.broadcast.emit("getLobbies", response);
         // Emitir al socket actual con datos personalizados
@@ -128,8 +146,12 @@ class SocketController {
       });
 
       socket.on("joinRoom", async ({ token, roomUUID }) => {
-        socket.join(roomUUID);
-        users.find((user) => user.id === socket.id).room = roomUUID;
+        if (!socket.rooms.has(roomUUID)) {
+          socket.join(roomUUID);
+          const user = users.find((user) => user.id === socket.id);
+          user ? (user.room = roomUUID) : users.push({ id: socket.id, socket: socket, room: roomUUID });
+        }
+
         const response = await apiRequest(
           "/games/join/" + roomUUID,
           token,
@@ -141,8 +163,11 @@ class SocketController {
       });
 
       socket.on("getGame", async ({ token, roomUUID }) => {
-        socket.join(roomUUID);
-        users.find((user) => user.id === socket.id).room = roomUUID;
+        if (!socket.rooms.has(roomUUID)) {
+          socket.join(roomUUID);
+          const user = users.find((user) => user.id === socket.id);
+          user ? (user.room = roomUUID) : users.push({ id: socket.id, socket: socket, room: roomUUID });
+        }
 
         const response = await apiRequest("/games/" + roomUUID, token, "GET");
         // console.log(response);
@@ -155,7 +180,11 @@ class SocketController {
       });
 
       socket.on("getWordHangman", async ({ roomUUID }) => {
-        socket.join(roomUUID);
+        if (!socket.rooms.has(roomUUID)) {
+          socket.join(roomUUID);
+          const user = users.find((user) => user.id === socket.id);
+          user ? (user.room = roomUUID) : users.push({ id: socket.id, socket: socket, room: roomUUID });
+        }
 
         const newWord = getWordHangman(roomUUID);
         io.to(roomUUID).emit("wordHangman", { newWord: newWord });
@@ -191,10 +220,18 @@ class SocketController {
         }
 
         if (newGuessedWord !== "") socket.broadcast.to(roomUUID).emit("newGuessedWord", { newGuessedWord: newGuessedWord });
-        // socket.broadcast.to(roomUUID).emit("letter", { letter });
+        if (newGuessedWord == getWordHangman(roomUUID)) {
+          if (shouldGenerateWordHangman(roomUUID)) {
+            const word = generateWordHangman(roomUUID);
+            io.to(roomUUID).emit("wordHangman", { newWord: word });
+          }else{
+            io.to(roomUUID).emit("gameOver");
+            return;
+          }
+        }
 
         game.turn++;
-        console.log("Next turn", game.turn);
+
         io.to(roomUUID).emit("turn", {
           turn: getTurnGame(roomUUID),
           errors: game.guessesErrors,
@@ -211,7 +248,9 @@ class SocketController {
         }
         // Guarda el tiempo máximo en el juego para usarlo luego
         game.time = maxTime;
-        startTurnTimer(roomUUID, maxTime);
+        if (!game.timer) {          
+          startTurnTimer(roomUUID, maxTime);
+        }
       });
 
       socket.on("disconnect", () => {
