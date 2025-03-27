@@ -220,6 +220,8 @@ class SocketController {
                 console.log("FRONT TURN",{roomUUID, user_id, points} );
                 const game = confGame.find((game) => game.room === roomUUID);
 
+                console.log("GAME: ", game)
+
                 if (!game) {
                     console.error("Room not found");
                     return;
@@ -227,6 +229,8 @@ class SocketController {
 
                 game.turn++;
                 game.players.find((player) => player.user_id === user_id).points += points;
+
+                console.log("TURNOS SOCKET: ", getTurnGame(roomUUID))
 
                 io.to(roomUUID).emit("turn", {
                     turn: getTurnGame(roomUUID),
