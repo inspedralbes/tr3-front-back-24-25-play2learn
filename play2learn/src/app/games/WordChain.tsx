@@ -60,6 +60,7 @@ export default function WordChain({ participants, game }: { participants: Partic
     const { token, user } = useContext(AuthenticatorContext);
     const [currentWord, setCurrentWord] = useState('');
     const [timer, setTimer] = useState(15);
+    const [timeGame, setTimeGame] = useState(game.max_time);
     const [gameStarted, setGameStarted] = useState(false);
     const [lastWord, setLastWord] = useState('');
     const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
@@ -107,6 +108,12 @@ export default function WordChain({ participants, game }: { participants: Partic
             setLastWord(word);
             setCurrentWord('');
         });
+
+        socket.on('timeWordChain', data =>{
+            const {remainingTime} = data;
+            setTimeGame(remainingTime);
+        });
+
         // async function checkWordExists(word: string, language: string) {
         //     const response = await fetch(`/api/openai?word=${word}&language=${language}`);
         //     const data = await response.json();
@@ -126,6 +133,7 @@ export default function WordChain({ participants, game }: { participants: Partic
     // Start game with random player
     const startGame = () => {
         socket.emit('getTurn', ({ roomUUID:game.uuid }));
+        socket.emit('initTimeWordChain', { roomUUID: game.uuid });
         setGameStarted(true);
     };
 
@@ -156,6 +164,9 @@ export default function WordChain({ participants, game }: { participants: Partic
         return () => clearInterval(interval);
     }, [gameStarted, timer]);
 
+    // useEffect(()=>{
+        
+    // })
     const nextPlayer = () => {
         socket.emit('nextTurnGeneral', { roomUUID: game.uuid, user_id: localPlayer.user_id, points: localPlayer.localPoints });
         socket.emit('lastWord', { roomUUID: game.uuid, word: currentWord });

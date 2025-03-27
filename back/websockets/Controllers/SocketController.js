@@ -81,6 +81,7 @@ class SocketController {
           guessesErrors: 0,
           game_num_random: Math.floor(Math.random() * 10),
           game_num_rounds: 1,
+          game_time_max: response.data.max_time,
           game: response.data,
         });
 
@@ -268,7 +269,7 @@ class SocketController {
         startTurnTimer(roomUUID, game.time);
       });
 
-      //game sockets
+      //game sockets cadenas encadenas-------------------------------
       socket.on('lastWord', ({ roomUUID, word }) => {
         const game = confGame.find((game) => game.room === roomUUID);
         if (!game) {
@@ -277,7 +278,46 @@ class SocketController {
         }
 
         io.to(roomUUID).emit('word', { word });
-      })
+      });
+
+      socket.on('initTimeWordChain', ({ roomUUID }) => {
+        const game = confGame.find((game) => game.room === roomUUID);
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+
+        let remainingTime = game.game_time_max;
+
+        game.game_time_max = setInterval(() => {
+          remainingTime--;
+  
+          if (remainingTime <= 0) {
+            clearInterval(game.game_time_max);
+            game.game_time_max = null;
+  
+            // Reiniciamos el timer para el nuevo turno
+          } else {
+            io.to(roomUUID).emit("timeWordChain", {remainingTime});
+          }
+        }, 1000);
+        
+      });
+
+      socket.on('getTimeWordChain', ({ roomUUID }) => {
+        const game = confGame.find((game) => game.room === roomUUID);
+        if (!game) {
+          console.error("Room not found");
+          return;
+        }
+        
+        if (!game.game_time_max) {
+          return;
+        }
+        
+        io.to(roomUUID).emit("timeWordChain", {remainingTime: game.game_time_max});
+      });
+      //game sockets cadenas encadenas--------------------------------
 
       socket.on("startTimer", ({ roomUUID, maxTime }) => {
         const game = confGame.find((game) => game.room === roomUUID);
