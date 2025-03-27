@@ -95,10 +95,6 @@ export default function ManagerGames() {
     };
   }, [isAuthenticated, router]);
 
-  useEffect(()=>{
-    console.log(participants)
-  },[participants])
-
 
   if (!game.id || participants.length === 0) {
     return <div>Loading...</div>;
