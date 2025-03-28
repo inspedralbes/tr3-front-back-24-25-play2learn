@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
 import { useState } from "react";
+import Hangman from "@/app/games/hangman/[uuid]/game";
 import WordChain from "../WordChain";
 import LeaderGame from "../LeaderGame";
 
@@ -101,7 +102,8 @@ export default function ManagerGames() {
   } else if (leaderView) {
     return <LeaderGame game={game} participants={participants} />;
   }else {
-    return <WordChain participants={participants} game={game} />;
+    // return <WordChain participants={participants} game={game} />;
+    return <Hangman />;
   }
   
 }

@@ -108,7 +108,7 @@ class SocketController {
     io.on("connection", (socket) => {
       console.log("A user connected");
       // console.log(socket);
-      users.push({ id: socket.id, socket: socket, room: null });
+      users.push({ id: socket.id, room: null });
       socket.on("startGame", async ({ token, roomUUID }) => {
         const response = await apiRequest("/games/start", token, "POST", {
           roomUUID,
