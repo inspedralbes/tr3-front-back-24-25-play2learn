@@ -153,6 +153,56 @@ class GameController extends Controller
         }
     }
 
+    public function leaveGame($gameUUID)
+    {
+        try{
+            $game = Game::where('uuid', $gameUUID)->first();
+
+            $gameUser = GameUser::where('user_id', Auth::user()->id)
+                ->where('game_id', $game->id)
+                ->first();
+
+            if($gameUser->rol === "host"){
+                $gameUsers = GameUser::where('game_id', $game->id)
+                    ->get();
+
+                foreach($gameUsers as $gameUser){
+                    $gameUser->delete();
+                }
+
+                $game->delete();
+
+                $gameList = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
+                    ->where('status', 'pending')
+                    ->get();
+
+                return response()->json([
+                    'status' => 'success',
+                    'games' => $gameList,
+                ]);
+            }
+
+            $gameUser->delete();
+
+            $game->load('participants', 'participants.user', 'language_level', 'language_level.language');
+
+            $gameList = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
+                ->where('status', 'pending')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'games' => $gameList,
+                'game' => $game
+            ]);
+        }catch (\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
     public function startRoom(Request $request)
     {
         // dd($request->all());
@@ -173,6 +223,8 @@ class GameController extends Controller
             $game->save();
 
             DB::commit();
+
+            $game->load('participants', 'participants.user', 'language_level', 'language_level.language');
 
             return response()->json([
                 'status' => 'success',

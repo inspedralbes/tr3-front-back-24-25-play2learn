@@ -94,14 +94,8 @@ const GameLobby: React.FC = () => {
   };
 
   const showModalJoinLobby = async (room: Game) => {
-
     setShowPasswordLobby(true);
     setGameSelected(room);
-    // if (room.participants && room.max_players > room.participants.length) {
-    //   socket.emit('joinRoom', { token: token || "", roomUUID: room.uuid });
-    //   router.push("/lobby/" + room.uuid);
-    //   console.log("lobby...")
-    // }
   };
 
   const handleCreateRoom = () => {
@@ -122,7 +116,6 @@ const GameLobby: React.FC = () => {
 
   const handleJoinLobby = async () => {
     if (!gameSelected.uuid) return;
-    console.log(passwordModal, gameSelected.password);
     if (passwordModal == gameSelected.password) {
       socket.emit("joinRoom", { token: token || "", roomUUID: gameSelected.uuid });
       router.push("/lobby/" + gameSelected.uuid);
@@ -197,13 +190,12 @@ const GameLobby: React.FC = () => {
     socket.emit("lobbie", { token: token || "" });
 
     socket.on("getLobbies", (data) => {
-      console.log(data);
       setWaitingRooms(data.games);
       setContainerLobbies(true);
     });
 
     socket.on("lobbieCreated", (data) => {
-      console.log("lobby creado");
+      console.log("escuchando");
       setWaitingRooms(data.games);
       router.push("/lobby/" + data.gameCreated.uuid);
 

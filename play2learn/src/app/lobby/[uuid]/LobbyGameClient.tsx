@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
@@ -59,6 +59,11 @@ export default function LobbyGameClient() {
     socket.emit("startGame", { token, roomUUID: params.uuid });
   };
 
+  const handleLeaveGame = () => {
+    socket.emit("leaveGame", { token: token || "", roomUUID: params.uuid });
+    router.push("/");
+  };
+
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/authenticate/login");
@@ -68,17 +73,25 @@ export default function LobbyGameClient() {
     socket.emit("getGame", { token: token || "", roomUUID: params.uuid });
 
     socket.on("playerJoined", (data) => {
-      console.log(data);
       setParticipants(data.game.participants || []);
     });
+
+    socket.on("gameDeleted", (data) => {
+      setParticipants([]);
+      router.push("/");
+    });
+
     socket.on("gameStarted", (data) => {
       if (data.status === "success") {
-        router.push(`/games/hangman/${params.uuid}`);
+        router.push(`/games/${params.uuid}`);
       }
     });
 
+    // Limpiar event listeners
     return () => {
       socket.off("playerJoined");
+      socket.off("gameDeleted");
+      socket.off("gameStarted");
     };
   }, [isAuthenticated, router]);
 
@@ -94,6 +107,13 @@ export default function LobbyGameClient() {
           />
         ))}
       </div>
+      <button
+        onClick={handleLeaveGame}
+        className="bg-red-500 text-white px-4 py-2 rounded"
+      >
+        Leave Game
+      </button>
+
       {participants.some(
         (participant) =>
           participant.user.id === user?.id && participant.rol === "host"
