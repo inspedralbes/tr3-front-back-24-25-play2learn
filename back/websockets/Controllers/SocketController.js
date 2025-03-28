@@ -210,9 +210,12 @@ class SocketController {
                     return;
                 }
 
+                console.log("GET TURN: ", game);
+
                 io.to(roomUUID).emit("turn", {
                     turn: getTurnGame(roomUUID),
                     errors: game.guessesErrors,
+                    game: game.game
                 });
             });
 
@@ -220,7 +223,6 @@ class SocketController {
                 console.log("FRONT TURN",{roomUUID, user_id, points} );
                 const game = confGame.find((game) => game.room === roomUUID);
 
-                console.log("GAME: ", game)
 
                 if (!game) {
                     console.error("Room not found");
@@ -230,11 +232,12 @@ class SocketController {
                 game.turn++;
                 game.players.find((player) => player.user_id === user_id).points += points;
 
-                console.log("TURNOS SOCKET: ", getTurnGame(roomUUID))
+                console.log("TURNOS SOCKET NUEVO: ", getTurnGame(roomUUID))
 
                 io.to(roomUUID).emit("turn", {
                     turn: getTurnGame(roomUUID),
                     errors: game.guessesErrors,
+                    game: game.game
                 });
 
                 startTurnTimer(roomUUID, game.max_time);

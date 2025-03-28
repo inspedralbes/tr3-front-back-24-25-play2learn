@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="Falra reloj y temas turnos den la sala">
+    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="arreglar puntos">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" afterDir="false" />
@@ -46,21 +46,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;game__translate&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/deray/Documents/Cosas/tr3-front-back-24-25-play2learn/play2learn/src/app/games/translation/[uuid]&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\deray\\Documents\\Cosas\\tr3-front-back-24-25-play2learn\\play2learn\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "game__translate",
+    "last_opened_file_path": "C:/Users/deray/Documents/Cosas/tr3-front-back-24-25-play2learn/play2learn/src/app/games/translation/[uuid]",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "F:\\DAW\\tr3-front-back-24-25-play2learn\\play2learn\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\deray\Documents\Cosas\tr3-front-back-24-25-play2learn\play2learn\src\app\games\translation\[uuid]" />
@@ -108,6 +108,7 @@
     <MESSAGE value="merge en mi rama desde dev para tener todo actualizado" />
     <MESSAGE value="Correos" />
     <MESSAGE value="Creacion de socker para iniciar la partida a todos los de la sala. Modificacion de eloquent para recibir la informacion de la sala." />
-    <option name="LAST_COMMIT_MESSAGE" value="Creacion de socker para iniciar la partida a todos los de la sala. Modificacion de eloquent para recibir la informacion de la sala." />
+    <MESSAGE value="arreglar puntos" />
+    <option name="LAST_COMMIT_MESSAGE" value="arreglar puntos" />
   </component>
 </project>

@@ -77,6 +77,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     const [gameStarted, setGameStarted] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [correctMessage, setCorrectMessage] = useState<string | null>(null);
+    const [myTurn, setMyTurn] = useState(false);
 
     function nextPlayer() {
         const currentIndex = players.find(p => p.isActive);
@@ -88,15 +89,28 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             return;
         }
 
+        setMyTurn(currentIndex.user_id == user?.id);
+
+        console.log("Enviando nextTurnGeneral a backend con:", {
+            roomUUID: game.uuid,
+            user_id: currentIndex?.user_id,
+            points: currentIndex?.points
+        });
+
         socket.emit('nextTurnGeneral', {
             roomUUID: game.uuid,
             user_id: currentIndex?.user_id,
             points: currentIndex?.points
         });
-        setTimer(15);
+
+        console.log("NEXTPLAYER");
+        console.table(game)
+
+        setTimer(timer);
     };
 
     const startGame = () => {
+
         socket.emit('getTurn', ({roomUUID: params.uuid}));
         setGameStarted(true);
         randomWord();
@@ -115,15 +129,14 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             localPoints: prev.localPoints + 1
         }));
         setOldWord(null);
-        nextPlayer();
     }
 
-    function randomWord(){
+    function randomWord() {
         setWordTranslate("");
         socket.emit('randomWord', {uuid: params.uuid});
     }
 
-    function restaPointsPlayer(){
+    function restaPointsPlayer() {
         setPlayers(prevPlayers =>
             prevPlayers.map(player =>
                 ({...player})
@@ -136,7 +149,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             )
         );
 
-        nextPlayer();
     }
 
 
@@ -146,21 +158,26 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             return;
         }
 
-        setPlayers(participants.map(participant => ({
-            ...participant,
-            isActive: false,
-            localPoints: 0
-        })));
-
-
         setRoom(game);
 
-        setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
 
-        startGame();
+        if (!gameStarted) {
+
+            console.log("EMPEZO")
+            startGame();
+
+            setPlayers(participants.map(participant => ({
+                ...participant,
+                isActive: false,
+                localPoints: 0
+            })));
+
+            setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
+        }
 
         socket.on('turn', (data) => {
-            console.log("TURNOS", data);
+            console.log("--------------------TURNO DE--------------------")
+            console.table(data.turn.user); // Muestra los datos en formato de tabla
             const {turn, errors} = data;
 
             setPlayers(prevPlayers =>
@@ -170,11 +187,13 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 }))
             );
 
+            setMyTurn(turn.user_id === user?.id)
+
             setCanWrite(false);
             if (turn.user_id === user?.id) {
                 setCanWrite(true);
             }
-            setTimer(15)
+            setTimer(data.game.max_time)
         });
 
         socket.on('wordRoom', (data) => {
@@ -233,7 +252,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     }, [isAuthenticated, router]);
 
 
-
     useEffect(() => {
 
         let interval: NodeJS.Timeout;
@@ -243,12 +261,16 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 setTimer((prev) => prev - 1);
             }, 1000);
         } else if (timer === 0) {
-            restaPointsPlayer();
+            console.log("SE ACABO CRACK")
+
+            if (myTurn) {
+                nextPlayer();
+            }
         }
 
         return () => clearInterval(interval);
 
-    }, [gameStarted, timer, palabraActual])
+    }, [gameStarted, timer])
 
     const inputResolve = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         const language = "de"
@@ -278,11 +300,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 }
 
                 console.log("wolrd antiguo", oldWord);
-
-                if(data.translation === oldWord) {
-                    console.log("ACERTAOD DESDE UNA FUNCION")
-                    sumaPointPlayer();
-                }
 
                 socket.emit('chatTranslate', (jsonSocket));
 
