@@ -29,6 +29,7 @@ export default function LobbyGameClient() {
   interface User {
     id: number;
     name: string;
+    username: string;
     profile_pic: string;
   }
 
@@ -102,7 +103,7 @@ export default function LobbyGameClient() {
         {participants.map((participant) => (
           <AvatarUserProfile
             key={participant.id}
-            name={participant.user.name}
+            name={participant.user.username}
             profile_pic={participant.user.profile_pic}
           />
         ))}
