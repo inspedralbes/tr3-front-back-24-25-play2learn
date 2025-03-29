@@ -70,21 +70,30 @@ export default function ManagerGames() {
       setGame(data.game || {} as Game);
       setParticipants(data.game.participants || []);
       setRandomGame(data.game_num_random);
+
+      setLeaderView(data.showLeader);
     });
 
     socket.on('chargeGame', (data) => {
-      if(data.game_num_random !== null){
+      console.log(data.game_num_rounds)
+      if (data.game_num_rounds !== null) {
         setGame(data.game || {} as Game);
         setParticipants(data.game.participants || []);
         setRandomGame(data.game_num_random);
-        setLeaderView(false);
-      }else{
+        setLeaderView(data.showLeader);
+
+      } else {
         router.push(`/games/${params.uuid}/finished`)
       }
     });
 
+    socket.on('participantsLoaders', (data) => {
+      setParticipants(data.game.participants || []);
+    });
+
     socket.on('leader', (data) => {
-      setLeaderView(true);
+      setLeaderView(data.showLeader);
+
     })
 
     // Limpiar event listeners
@@ -100,8 +109,8 @@ export default function ManagerGames() {
     return <div>Loading...</div>;
   } else if (leaderView) {
     return <LeaderGame game={game} participants={participants} />;
-  }else {
+  } else {
     return <WordChain participants={participants} game={game} />;
   }
-  
+
 }

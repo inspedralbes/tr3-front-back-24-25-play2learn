@@ -85,6 +85,7 @@ class SocketController {
           game_num_rounds: 1,
           game_time_max: response.data.max_time,
           game: response.data,
+          showLeader: false
         });
 
         io.to(roomUUID).emit("gameStarted", response);
@@ -125,7 +126,9 @@ class SocketController {
         const filterGame = confGame.find((game) => game.room === roomUUID);
         if (filterGame) {
           response.game_num_random = filterGame.game_num_random;
+          response.showLeader = filterGame.showLeader;
         }
+        
         io.to(roomUUID).emit("playerJoined", response);
         io.to(roomUUID).emit("inGame", response);
       });
@@ -209,14 +212,20 @@ class SocketController {
           return;
         }
 
-        if (game.game_num_rounds === game.game.n_rounds) {
-          //logic for update and insert result games
+        game.showLeader = false;
 
+        if (game.game_num_rounds === game.game.n_rounds || game.game_num_rounds > game.game.n_rounds) {
+          //logic for update and insert result games finish
 
+          console.log("se termino la partida")
           game.game_num_random = null;
+          game.game_num_rounds = null;
           io.to(roomUUID).emit("chargeGame", game);
           return;
+        }else{
+          game.game_num_rounds++;
         }
+
         let num = Math.floor(Math.random() * 10);
         if (num === game.game_num_random) {
           if (num === 10) {
@@ -231,15 +240,19 @@ class SocketController {
         io.to(roomUUID).emit("chargeGame", game);
       });
 
-      socket.on('showLeader', ({ roomUUID }) => {
+      socket.on('showLeader', async({ token, roomUUID }) => {
         const game = confGame.find((game) => game.room === roomUUID);
         if (!game) {
           console.error("Room not found");
           return;
         }
         console.log("showLeader")
+        game.showLeader = true;
 
+        const response = await apiRequest("/games/" + roomUUID, token, "GET");
+        
         io.to(roomUUID).emit("leader", game);
+        io.to(roomUUID).emit("participantsLoaders", response);
       });
 
       socket.on("nextTurn", ({ roomUUID, acierto, letter }) => {

@@ -38,6 +38,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
        Route::get('/leave/{gameUUID}', [\App\Http\Controllers\GameController::class, 'leaveGame']);
        Route::post('/start', [\App\Http\Controllers\GameController::class, 'startRoom']);
    });
+
+   Route::post('/game/store/stats', [\App\Http\Controllers\GameController::class, 'storeStats']);
 });
 
 Route::get('/test', function () {

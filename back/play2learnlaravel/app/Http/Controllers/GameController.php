@@ -238,4 +238,31 @@ class GameController extends Controller
             ]);
         }
     }
+
+    public function storeStats(Request $request)
+    {
+        Log::info($request);
+        try{
+            $players = $request->players;
+
+            foreach ($players as $player) {
+                $gameUser = GameUser::findOrFail($player["id"]);
+                $gameUser->points += $player["localPoints"];
+                $gameUser->save();
+            }
+
+            return response()->json([
+                'status' => 'success',
+            ]);
+
+        }catch (\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+
+        return $request;
+
+    }
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
+import { apiRequest } from "@/services/communicationManager/apiRequest";
 
 
 interface Language {
@@ -57,7 +58,10 @@ function LeaderGame({ game, participants }: { game: Game; participants: Particip
             return;
         }
 
-        setParticipantsOrderedByPoints(participants.sort((a, b) => b.points - a.points));
+        apiRequest("/games/" + game.uuid, "GET")
+        .then((response)=>{
+            setParticipantsOrderedByPoints(response.game.participants.sort((a, b) => b.points - a.points));
+        })
 
     }, [isAuthenticated, router]);
 
@@ -65,7 +69,7 @@ function LeaderGame({ game, participants }: { game: Game; participants: Particip
         socket.emit('nextGame', {roomUUID: game.uuid})
     };
 
-    if (!game.id || participants.length === 0) {
+    if (!game.id || participantsOrderedByPoints.length === 0) {
         return <div>Loading...</div>;
     } else {
         return (

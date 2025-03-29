@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import AvatarUserProfile from "@/components/ui/AvatarUserProfile";
-import { Clock3, ArrowRight, User, User2 } from "lucide-react";
+import { Clock3, ArrowRight, User, User2, Star } from "lucide-react";
 import socket from "@/services/websockets/socket";
 import next from "next";
+import { apiRequest } from "@/services/communicationManager/apiRequest";
 
 interface Participant {
     id: number;
@@ -64,9 +65,8 @@ export default function WordChain({
     participants: Participant[];
     game: Game;
 }) {
-    const { isAuthenticated } = useContext(AuthenticatorContext);
+    const { isAuthenticated, token, user } = useContext(AuthenticatorContext);
     const router = useRouter();
-    const { token, user } = useContext(AuthenticatorContext);
     const [currentWord, setCurrentWord] = useState("");
     const [gameStarted, setGameStarted] = useState(false);
     const [lastWord, setLastWord] = useState("");
@@ -108,6 +108,10 @@ export default function WordChain({
             setCurrentWord("");
         });
 
+        socket.on("roomNotFound", data => {
+            console.log("room not found");
+            router.push("/");
+        })
         return () => {
             socket.off("turnWordChain");
             socket.off("word");
@@ -118,9 +122,15 @@ export default function WordChain({
 
     useEffect(() => {
         console.log("---------------------------PLAYERS---------------------------")
+
+        if (players.length === 0 || !players) {
+            return;
+        }
+
         let timePlayer = players.find((p) => p.isActive)?.time
 
         console.table(players);
+
 
         let countFinished = 0;
         players.forEach(p => {
@@ -130,21 +140,35 @@ export default function WordChain({
         });
 
         if (countFinished === players.length) {
-            console.log("todos terminaron")
-            return;
-        }
-
-        if(!timePlayer) {
-            console.log("jugador sin tiempo ");
-            nextPlayer();
+            if (isMyTurn) {
+                apiRequest("/game/store/stats", "POST", {players: players})
+                    .then((response) => {
+                        console.log(response)
+                        socket.emit("showLeader", { token: token, roomUUID: game.uuid });
+                        console.log("todos terminaron")
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            }
             return;
         }
 
         if (timePlayer === 0 || timePlayer < 0) {
-            nextPlayer();
+            console.log("no tine tiempo", timer)
+            if (isMyTurn) {
+                setPoints((prevPoints) => prevPoints - 50)
+                //emitimos los datos del que tiene el turno para guardarlo
+                socket.emit("nextTurnWordChain", {
+                    roomUUID: game.uuid,
+                    points: points,
+                    timeRemaining: 0,
+                    playerWord: currentWord
+                });
+            }
             return;
         }
-        
+
         console.error(players.find((p) => p.isActive)?.time)
         setTimer(players.find((p) => p.isActive)?.time);
     }, [players])
@@ -152,20 +176,18 @@ export default function WordChain({
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
-        console.log(timer)
         // if(!timer || timer === undefined)
         // {
         //     return;
         // }
- 
+
         if (gameStarted && timer > 0) {
             interval = setInterval(() => {
                 setTimer((prev) => prev - 1);
             }, 1000);
         } else if (timer === 0) {
             console.log("tiempo acabado")
-            if(isMyTurn)
-            {
+            if (isMyTurn) {
                 nextPlayer();
             }
             return;
@@ -173,7 +195,7 @@ export default function WordChain({
         return () => clearInterval(interval);
     }, [gameStarted, timer, hasExecutedNextPlayer]);
 
-    
+
     const nextPlayer = () => {
         //emit the word writted
         socket.emit("lastWord", {
@@ -258,6 +280,15 @@ export default function WordChain({
                                 <span>Tu turno</span>
                             </div>
 
+                            <div className="absolute top-0 left-50 -translate-y-16 flex items-center gap-2 text-black bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                                {/* <Clock3 className="w-6 h-6" />
+              <span className="text-2xl font-bold">{timer}s</span> */}
+                                <Star className="w-6 h-6" />
+                                <span>
+                                    {points}
+                                </span>
+                            </div>
+
                             <div className="absolute top-0 right-0 -translate-y-16 flex items-center gap-2 text-black bg-white bg-opacity-20 px-4 py-2 rounded-full">
                                 <Clock3 className="w-6 h-6" />
                                 <span className="text-2xl font-bold">
@@ -275,6 +306,15 @@ export default function WordChain({
                                 <User2 className="w-6 h-6" />
                                 <span>
                                     Turno de {players.find((p) => p.isActive)?.user.username}
+                                </span>
+                            </div>
+
+                            <div className="absolute top-0 left-50 -translate-y-16 flex items-center gap-2 text-black bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                                {/* <Clock3 className="w-6 h-6" />
+              <span className="text-2xl font-bold">{timer}s</span> */}
+                                <Star className="w-6 h-6" />
+                                <span>
+                                    {points}
                                 </span>
                             </div>
 
