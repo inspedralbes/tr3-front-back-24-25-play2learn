@@ -94,21 +94,64 @@ export default function Hangman({
 
     return player?.user.username || "Desconocido";
   };
-
   const drawHangman = (attempts: number) => {
-    const parts = ["  O  ", " /|\\", " / \\"];
+    let hangman = null;
 
-    return (
-      <pre className="font-mono text-4xl whitespace-pre">
-        {`
-  +---+
-  |   |
-${attempts == 6 ? parts[0] : "     "}
-${attempts == 5 ? parts[1] : "     "}
-${attempts >= 3 ? parts[2] : "     "}
-=========`}
-      </pre>
-    );
+    switch (attempts) {
+      case 0:
+        hangman = hangman = `
+ +---+
+ |   |
+     |
+     |
+     |
+=========`;
+      case 1:
+        hangman = `
+ +---+
+ |   |
+ O   |
+     |
+     |
+=========`;
+        break;
+      case 2:
+        hangman = `
+ +---+
+ |   |
+ O   |
+ |   |
+     |
+=========`;
+        break;
+      case 3:
+        hangman = `
+ +---+
+ |   |
+ O   |
+/|\  |
+     |
+=========`;
+        break;
+      case 4:
+        hangman = `
+ +---+
+ |   |
+ O   |
+/|\  |
+/    |
+=========`;
+        break;
+      default:
+        hangman = `
+ +---+
+ |   |
+ O   |
+/|\\  |
+/ \\  |
+=========`;
+    }
+    return <pre className="font-mono text-4xl whitespace-pre">{hangman}</pre>;
   };
   //   const drawHangman = (attempts: number) => {
   //     return (
@@ -249,20 +292,28 @@ ${attempts >= 3 ? parts[2] : "     "}
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 text-white p-8">
       <div className="max-w-4xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
           <div className="flex items-center space-x-2 w-full sm:w-auto">
             <User className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-            <span className="text-lg sm:text-xl font-bold text-white">{user?.username}</span>
-            <div className="text-lg sm:text-xl font-bold text-white">{word}</div>
+            <span className="text-lg sm:text-xl font-bold text-white">
+              {user?.username}
+            </span>
+            <div className="text-lg sm:text-xl font-bold text-white">
+              {word}
+            </div>
           </div>
           <div className="flex items-center space-x-4 sm:space-x-6 w-full sm:w-auto justify-between sm:justify-end">
             <div className="flex items-center space-x-2">
               <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              <span className="text-lg sm:text-xl text-white">{formatTime(time ?? 0)}</span>
+              <span className="text-lg sm:text-xl text-white">
+                {formatTime(time ?? 0)}
+              </span>
             </div>
             <div className="flex items-center space-x-2">
               <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              <span className="text-lg sm:text-xl text-white">{guesses} errores</span>
+              <span className="text-lg sm:text-xl text-white">
+                {guesses} errores
+              </span>
             </div>
           </div>
         </div>

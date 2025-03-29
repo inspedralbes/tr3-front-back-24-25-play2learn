@@ -19,10 +19,7 @@ function App() {
   const [addLanguage, setAddLanguage] = useState<boolean>(false);
   const { isAuthenticated } = useContext(AuthenticatorContext);
   const router = useRouter();
-  // const languages = [
-  //   { id: 1, name: "Spanish", level: 3, progress: 65 }
-  // ];
-
+  
   useEffect(() => {
 
     if (!isAuthenticated) {
