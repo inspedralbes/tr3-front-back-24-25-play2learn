@@ -86,7 +86,15 @@ function TranslationGameComponent({participants, game}: { participants: Particip
         console.table(players);
 
         if (myTurn) {
-
+            apiRequest("/game/store/stats", "POST", {players: players})
+                .then((response) => {
+                    console.log(response)
+                    socket.emit("showLeader", {token: token, roomUUID: game.uuid});
+                    console.log("todos terminaron")
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         }
 
         //alert("¡El juego ha terminado! Gracias por jugar.");
@@ -120,18 +128,8 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     function sumRound() {
         if (roundCount >= maxRound) {
             setGameStarted(false);
-            console.log("voolea")
-            if (myTurn) {
-                apiRequest("/game/store/stats", "POST", {players: players})
-                    .then((response) => {
-                        console.log(response)
-                        socket.emit("showLeader", {token: token, roomUUID: game.uuid});
-                        console.log("todos terminaron")
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
-            }
+            console.log("adios")
+            endGame();
         } else {
 
             if (myTurn) {

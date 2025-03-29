@@ -4,19 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="retoquees para acabar el juego">
+    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="Merge y retoques que falta para hacer que acabe la partida">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/GameController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/GameController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Services/UserService.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Services/UserService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/LeaderGame.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/LeaderGame.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/WordChain.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/WordChain.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/ManagerGames.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/ManagerGames.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/finished/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/finished/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/lobby/[uuid]/LobbyGameClient.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/lobby/[uuid]/LobbyGameClient.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/components/GameLobby.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/components/GameLobby.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +49,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Merging game__translate",
+    "git-widget-placeholder": "game__translate",
     "last_opened_file_path": "C:/Users/deray/Documents/Cosas/tr3-front-back-24-25-play2learn/play2learn/src/app/games/translation/[uuid]",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -115,7 +105,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743283074708</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Merge y retoques que falta para hacer que acabe la partida">
+      <option name="closed" value="true" />
+      <created>1743288970509</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1743288970509</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -127,6 +125,7 @@
     <MESSAGE value="Creacion de socker para iniciar la partida a todos los de la sala. Modificacion de eloquent para recibir la informacion de la sala." />
     <MESSAGE value="arreglar puntos" />
     <MESSAGE value="retoquees para acabar el juego" />
-    <option name="LAST_COMMIT_MESSAGE" value="retoquees para acabar el juego" />
+    <MESSAGE value="Merge y retoques que falta para hacer que acabe la partida" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge y retoques que falta para hacer que acabe la partida" />
   </component>
 </project>
