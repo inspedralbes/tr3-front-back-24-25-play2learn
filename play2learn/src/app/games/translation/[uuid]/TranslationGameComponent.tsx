@@ -78,6 +78,18 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [correctMessage, setCorrectMessage] = useState<string | null>(null);
     const [myTurn, setMyTurn] = useState(false);
+    const [roundCount, setRoundCount] = useState(0);
+    const [maxRound, setMaxRound] = useState(0);
+
+    const endGame = () => {
+        setGameStarted(false);
+        console.log("-------------------------------PARTICIPANTES-------------------------------");
+        console.table(players);
+        //socket.emit('showLeader', {roomUUID: game.uuid}); // Notificar al backend si es necesario
+        alert("¡El juego ha terminado! Gracias por jugar.");
+
+        //router.push("/"); // Puedes redirigir a otra página o mostrar un modal
+    };
 
     function nextPlayer() {
         const currentIndex = players.find(p => p.isActive);
@@ -91,23 +103,30 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
         setMyTurn(currentIndex.user_id == user?.id);
 
-        console.log("Enviando nextTurnGeneral a backend con:", {
-            roomUUID: game.uuid,
-            user_id: currentIndex?.user_id,
-            points: currentIndex?.points
-        });
 
         socket.emit('nextTurnGeneral', {
             roomUUID: game.uuid,
             user_id: currentIndex?.user_id,
-            points: currentIndex?.points
+            points: currentIndex?.localPoints
         });
 
-        console.log("NEXTPLAYER");
-        console.table(game)
 
         setTimer(timer);
     };
+
+    function sumRound() {
+        setRoundCount(prevCount => {
+            const newCount = prevCount + 1;
+
+            if (newCount >= maxRound) {
+                console.log("¡El juego ha terminado!");
+                endGame();
+                return prevCount; // No augmentar el comptador si acaba el joc
+            }
+
+            return newCount;
+        });
+    }
 
     const startGame = () => {
 
@@ -117,10 +136,11 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     };
 
     function sumaPointPlayer() {
+        console.log("Sumant punt al jugador actiu");
         // Actualización de puntos y siguiente turno
         setPlayers(prevPlayers =>
             prevPlayers.map(player =>
-                player.isActive ? {...player, localPoints: player.localPoints + 1} : player
+                player.isActive ? {...player, localPoints: player.localPoints + 10} : player
             )
         );
 
@@ -128,7 +148,14 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             ...prev,
             localPoints: prev.localPoints + 1
         }));
+
+        sumRound();
+
         setOldWord(null);
+
+        if (myTurn) {
+            nextPlayer();
+        }
     }
 
     function randomWord() {
@@ -137,6 +164,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     }
 
     function restaPointsPlayer() {
+        console.log("Resta punt al jugador actiu");
         setPlayers(prevPlayers =>
             prevPlayers.map(player =>
                 ({...player})
@@ -145,9 +173,15 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
         setPlayers(prevPlayers =>
             prevPlayers.map(player =>
-                player.isActive ? {...player, localPoints: player.localPoints - 1} : player
+                player.isActive ? {...player, localPoints: player.localPoints - 5} : player
             )
         );
+
+        sumRound();
+
+        if (myTurn) {
+            nextPlayer();
+        }
 
     }
 
@@ -162,7 +196,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
 
         if (!gameStarted) {
-
             console.log("EMPEZO")
             startGame();
 
@@ -173,6 +206,21 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             })));
 
             setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
+        }
+
+        if (roundCount === maxRound) {
+            if (myTurn) {
+                apiRequest("/game/store/stats", "POST", {players: players})
+                    .then((response) => {
+                        console.log(response)
+                        socket.emit("showLeader", {token: token, roomUUID: game.uuid});
+                        console.log("todos terminaron")
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            }
+            return;
         }
 
         socket.on('turn', (data) => {
@@ -187,13 +235,18 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 }))
             );
 
-            setMyTurn(turn.user_id === user?.id)
+            setTimeout(() => {
+                setMyTurn(turn.user_id === user?.id)
+            }, 1000); // 3 segundos antes de cambiar de palabra
+
 
             setCanWrite(false);
             if (turn.user_id === user?.id) {
                 setCanWrite(true);
             }
             setTimer(data.game.max_time)
+            setMaxRound(data.game.n_rounds);
+
         });
 
         socket.on('wordRoom', (data) => {
@@ -227,7 +280,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                     setAcertado(false);
                     setCanWrite(true); // Habilitar nuevamente la entrada
                     randomWord();
-                }, 2000); // 3 segundos antes de cambiar de palabra
+                }, 1000); // 3 segundos antes de cambiar de palabra
 
                 //setAcertado(false);
             } else {
@@ -236,17 +289,24 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 // Clear error message after 3 seconds
                 setTimeout(() => {
                     setErrorMessage(null);
-                }, 3000);
+                }, 1000);
 
                 setAcertado(false);
                 console.log("Respuesta incorrecta o palabra no encontrada");
             }
         });
 
+        socket.on('leader', (data) => {
+            console.log("SOCKET FIN")
+            console.table(data);
+            //router.push('/');
+        });
+
         return () => {
             socket.off('wordRoom');
             socket.off('translateClient');
             socket.off('turn');
+            socket.off('leader');
         };
 
     }, [isAuthenticated, router]);
@@ -263,8 +323,10 @@ function TranslationGameComponent({participants, game}: { participants: Particip
         } else if (timer === 0) {
             console.log("SE ACABO CRACK")
 
+            sumRound();
+
             if (myTurn) {
-                nextPlayer();
+                restaPointsPlayer();
             }
         }
 
@@ -299,7 +361,23 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                     word_input: respuesta.toLowerCase(),
                 }
 
-                console.log("wolrd antiguo", oldWord);
+                console.log("API")
+                console.table(data);
+
+                console.log("oldWORD", oldWord);
+                console.log("Actual", palabraActual);
+
+                if (data.translation.toLowerCase() === palabraActual) {
+                    console.log("ACERTADO DESDE EL FETCH")
+
+                    if (myTurn) {
+                        sumaPointPlayer();
+                    }
+                } else {
+                    if (myTurn) {
+                        restaPointsPlayer();
+                    }
+                }
 
                 socket.emit('chatTranslate', (jsonSocket));
 
@@ -318,6 +396,11 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 className="absolute top-1 right-5 rounded-full gap-2 flex items-center text-black bg-white px-4 py-2 bg-opacity-25">
                 <Clock3 className="w-6 h-6"/>
                 <span className="text-2xl font-bold">{timer}s</span>
+            </div>
+
+            <div
+                className="absolute top-1 right-120 rounded-full gap-2 flex items-center content-center text-black bg-white px-4 py-2 bg-opacity-25">
+                <span className="text-2xl font-bold">{roundCount}/{maxRound}</span>
             </div>
 
             {/* Turn Messaging */}
@@ -339,7 +422,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
 
             {/* Error Message Section */}
-            {errorMessage && (
+            {myTurn && errorMessage && (
                 <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50
                 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg
                 animate-bounce">
@@ -347,7 +430,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 </div>
             )}
 
-            {correctMessage && (
+            {myTurn && correctMessage && (
                 <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50
                     bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg
                     animate-bounce">
@@ -406,12 +489,12 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                             onChange={(e) => setRespuesta(e.target.value)}
                             type="text"
                             placeholder="Escribe la traducción"
-                            {...(canWrite ? {autoFocus: true, disabled: false} : {disabled: true})}
+                            {...(myTurn ? {autoFocus: true, disabled: false} : {disabled: true})}
                         />
                         <button
                             className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600 transition"
                             onClick={inputResolve}
-                            {...(canWrite ? {autoFocus: true, disabled: false} : {disabled: true})}
+                            {...(myTurn ? {autoFocus: true, disabled: false} : {disabled: true})}
                         >
                             Enviar
                         </button>

@@ -26,6 +26,8 @@ Route::prefix('/lara')->group(function () {
     Route::post('/translate', [\App\Http\Controllers\Translation::class, 'translate']);
 });
 
+Route::post('/game/store/stats', [\App\Http\Controllers\GameController::class, 'storeStats']);
+
 
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
