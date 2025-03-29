@@ -59,7 +59,6 @@ interface Game {
 function TranslationGameComponent({participants, game}: { participants: Participant[]; game: Game }) {
 
     const router = useRouter();
-    const {t} = useTranslation();
     const params = useParams<{ uuid: string }>();
     const {isAuthenticated, token, user} = useContext(AuthenticatorContext);
     const [players, setPlayers] = useState<Player[]>([]);
@@ -70,7 +69,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     const [oldWord, setOldWord] = useState<string | null>(null);
     const [worldClient, setWordClient] = useState<string | null>(null);
     const [wordTranslate, setWordTranslate] = useState('');
-    const [wordGenerated, setWordGenerated] = useState(false);
     const [canWrite, setCanWrite] = useState(false); // Si el usuario puede escribir
     const [localPlayer, setLocalPlayer] = useState<Player>({} as Player);
     const [timer, setTimer] = useState(15);
@@ -82,11 +80,16 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     const [maxRound, setMaxRound] = useState(0);
 
     const endGame = () => {
-        setGameStarted(false);
+
+        console.log("-----------------------------FIN-----------------------------")
         console.log("-------------------------------PARTICIPANTES-------------------------------");
         console.table(players);
-        //socket.emit('showLeader', {roomUUID: game.uuid}); // Notificar al backend si es necesario
-        alert("¡El juego ha terminado! Gracias por jugar.");
+
+        if (myTurn) {
+
+        }
+
+        //alert("¡El juego ha terminado! Gracias por jugar.");
 
         //router.push("/"); // Puedes redirigir a otra página o mostrar un modal
     };
@@ -115,17 +118,32 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     };
 
     function sumRound() {
-        setRoundCount(prevCount => {
-            const newCount = prevCount + 1;
-
-            if (newCount >= maxRound) {
-                console.log("¡El juego ha terminado!");
-                endGame();
-                return prevCount; // No augmentar el comptador si acaba el joc
+        if (roundCount >= maxRound) {
+            setGameStarted(false);
+            console.log("voolea")
+            if (myTurn) {
+                apiRequest("/game/store/stats", "POST", {players: players})
+                    .then((response) => {
+                        console.log(response)
+                        socket.emit("showLeader", {token: token, roomUUID: game.uuid});
+                        console.log("todos terminaron")
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
             }
+        } else {
 
-            return newCount;
-        });
+            if (myTurn) {
+                let jsonData = {
+                    uuid: params.uuid,
+                    round: roundCount + 1
+                }
+                socket.emit('roundRoom', jsonData);
+
+            }
+        }
+
     }
 
     const startGame = () => {
@@ -165,6 +183,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
     function restaPointsPlayer() {
         console.log("Resta punt al jugador actiu");
+        console.log("Rondas aqui", roundCount)
         setPlayers(prevPlayers =>
             prevPlayers.map(player =>
                 ({...player})
@@ -208,20 +227,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
         }
 
-        if (roundCount === maxRound) {
-            if (myTurn) {
-                apiRequest("/game/store/stats", "POST", {players: players})
-                    .then((response) => {
-                        console.log(response)
-                        socket.emit("showLeader", {token: token, roomUUID: game.uuid});
-                        console.log("todos terminaron")
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
-            }
-            return;
-        }
 
         socket.on('turn', (data) => {
             console.log("--------------------TURNO DE--------------------")
@@ -302,11 +307,18 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             //router.push('/');
         });
 
+        socket.on('countRound', (data) => {
+            console.log("RONDAS", data);
+            setRoundCount(data.round);
+        });
+
+
         return () => {
             socket.off('wordRoom');
             socket.off('translateClient');
             socket.off('turn');
             socket.off('leader');
+            socket.off('countRound');
         };
 
     }, [isAuthenticated, router]);
@@ -321,13 +333,10 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 setTimer((prev) => prev - 1);
             }, 1000);
         } else if (timer === 0) {
-            console.log("SE ACABO CRACK")
+            console.log("SE ACABO CRACK");
 
-            sumRound();
-
-            if (myTurn) {
-                restaPointsPlayer();
-            }
+            // Si no, seguir con el contador normal
+            restaPointsPlayer();
         }
 
         return () => clearInterval(interval);
@@ -373,6 +382,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                     if (myTurn) {
                         sumaPointPlayer();
                     }
+
                 } else {
                     if (myTurn) {
                         restaPointsPlayer();

@@ -399,7 +399,6 @@ const GameLobby: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:justify-between">
                   <div>
                     <h2 className="text-xl font-bold">{room.name}</h2>
-                    <p className="text-indigo-300 mt-1">Max Clues: {room.max_clues}</p>
                   </div>
                   <div className="flex items-center space-x-2 mt-3 md:mt-0">
                     <div className="bg-indigo-700 px-3 py-1 rounded-full text-sm flex items-center">

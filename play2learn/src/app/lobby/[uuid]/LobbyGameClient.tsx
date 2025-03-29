@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -10,52 +10,52 @@ import AvatarUserProfile from "@/components/ui/AvatarUserProfile";
 
 
 export default function LobbyGameClient() {
-    const params = useParams<{ uuid: string }>();
-    const { isAuthenticated } = useContext(AuthenticatorContext);
-    const router = useRouter();
-    const { user, token } = useContext(AuthenticatorContext);
+  const params = useParams<{ uuid: string }>();
+  const { isAuthenticated } = useContext(AuthenticatorContext);
+  const router = useRouter();
+  const { user, token } = useContext(AuthenticatorContext);
 
+  interface Language {
+    id: number;
+    name: string;
+  }
 
-    interface Language {
-        id: number;
-        name: string;
-    }
+  interface LanguageLevel {
+    id: number;
+    language_id: number;
+    language: Language;
+    level: string;
+  }
 
-    interface LanguageLevel {
-        id: number;
-        language_id: number;
-        language: Language;
-        level: string;
-    }
+  interface User {
+    id: number;
+    name: string;
+    username: string;
+    profile_pic: string;
+  }
 
-    interface User {
-        id: number;
-        name: string;
-        profile_pic: string;
-    }
+  interface Participant {
+    id: number;
+    user: User;
+    rol: string;
+    points: number;
+  }
 
-    interface Participant {
-        id: number;
-        user: User;
-        rol: string;
-        points: number;
-    }
+  interface Game {
+    id: number;
+    id_level_language: number;
+    language_level: LanguageLevel;
+    uuid: string;
+    password: string;
+    name: string;
+    n_rounds: number;
+    max_clues: number;
+    max_time: number;
+    max_players: number;
+    participants: Participant[] | null;
+  }
 
-    interface Game {
-        id: number;
-        id_level_language: number;
-        language_level: LanguageLevel;
-        uuid: string;
-        password: string;
-        name: string;
-        n_rounds: number;
-        max_clues: number;
-        max_time: number;
-        max_players: number;
-        participants: Participant[] | null;
-    }
-
-    const [participants, setParticipants] = useState<Participant[]>([]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
 
   const handleStartGame = () => {
     socket.emit("startGame", { token, roomUUID: params.uuid });
@@ -66,23 +66,22 @@ export default function LobbyGameClient() {
     router.push("/");
   };
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/authenticate/login");
+      return;
+    }
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            router.push("/authenticate/login");
-            return;
-        }
+    socket.emit("getGame", { token: token || "", roomUUID: params.uuid });
 
-        socket.emit('getGame', { token: token || "", roomUUID: params.uuid });
+    socket.on("playerJoined", (data) => {
+      setParticipants(data.game.participants || []);
+    });
 
-        socket.on('playerJoined', (data) => {
-            setParticipants(data.game.participants || []);
-        });
-
-        socket.on('gameDeleted', (data) => {
-            setParticipants([]);
-            router.push("/");
-        });
+    socket.on("gameDeleted", (data) => {
+      setParticipants([]);
+      router.push("/");
+    });
 
     socket.on("gameStarted", (data) => {
       if (data.status === "success") {
@@ -109,7 +108,7 @@ export default function LobbyGameClient() {
         {participants.map((participant) => (
           <AvatarUserProfile
             key={participant.id}
-            name={participant.user.name}
+            name={participant.user.username}
             profile_pic={participant.user.profile_pic}
           />
         ))}

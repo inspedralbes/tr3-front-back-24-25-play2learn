@@ -4,10 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="arreglar puntos">
+    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="retoquees para acabar el juego">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/GameController.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Http/Controllers/GameController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/app/Services/UserService.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/app/Services/UserService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/back/play2learnlaravel/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/LeaderGame.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/LeaderGame.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/WordChain.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/WordChain.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/ManagerGames.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/ManagerGames.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/finished/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/finished/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/lobby/[uuid]/LobbyGameClient.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/lobby/[uuid]/LobbyGameClient.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/components/GameLobby.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/components/GameLobby.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,21 +55,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;game__translate&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/deray/Documents/Cosas/tr3-front-back-24-25-play2learn/play2learn/src/app/games/translation/[uuid]&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;F:\\DAW\\tr3-front-back-24-25-play2learn\\play2learn\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Merging game__translate",
+    "last_opened_file_path": "C:/Users/deray/Documents/Cosas/tr3-front-back-24-25-play2learn/play2learn/src/app/games/translation/[uuid]",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "F:\\DAW\\tr3-front-back-24-25-play2learn\\play2learn\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\deray\Documents\Cosas\tr3-front-back-24-25-play2learn\play2learn\src\app\games\translation\[uuid]" />
@@ -98,7 +107,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742317676389</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="retoquees para acabar el juego">
+      <option name="closed" value="true" />
+      <created>1743283074708</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1743283074708</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -109,6 +126,7 @@
     <MESSAGE value="Correos" />
     <MESSAGE value="Creacion de socker para iniciar la partida a todos los de la sala. Modificacion de eloquent para recibir la informacion de la sala." />
     <MESSAGE value="arreglar puntos" />
-    <option name="LAST_COMMIT_MESSAGE" value="arreglar puntos" />
+    <MESSAGE value="retoquees para acabar el juego" />
+    <option name="LAST_COMMIT_MESSAGE" value="retoquees para acabar el juego" />
   </component>
 </project>

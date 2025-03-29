@@ -24,7 +24,7 @@ class UserService
         $newUser = new User();
         $newUser->name = $user['name'];
         $newUser->email = $user['email'];
-        $newUser->profile_pic = $user['profile_pic'] ?? null;
+        $newUser->profile_pic = $user['profile_pic'] ?? 'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg';
         $newUser->username = $user['username'];
         $newUser->password = $user['password'];
         $newUser->save();
