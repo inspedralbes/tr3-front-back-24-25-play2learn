@@ -16,6 +16,7 @@ interface Language {
 function App() {
   const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
   const [languages, setLanguages] = useState<Language[]>([]);
+  const [addLanguage, setAddLanguage] = useState<boolean>(false);
   const { isAuthenticated } = useContext(AuthenticatorContext);
   const router = useRouter();
   // const languages = [
@@ -84,8 +85,9 @@ function App() {
           </button>
         ))}
 
-        <button className="w-full p-4 rounded-lg bg-indigo-800/30 border border-dashed border-indigo-600 hover:bg-indigo-800/50 transition-all flex items-center justify-center text-indigo-400">
-          <span className="mr-2">Add Language</span>
+        <button className="w-full p-4 rounded-lg bg-indigo-800/30 border border-dashed border-indigo-600 hover:bg-indigo-800/50 transition-all flex items-center justify-center text-indigo-400"
+        onClick={() => alert("Añadir idioma clicado")}>
+          <span className="mr-2">Añadir idioma</span>
           <ChevronRight size={16} />
         </button>
       </div>

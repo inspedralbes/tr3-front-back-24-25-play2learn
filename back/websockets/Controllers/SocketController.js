@@ -116,7 +116,7 @@ class SocketController {
         const sortedTurns = response.data.participants.sort(
           () => Math.random() - 0.5
         );
-        console.log(sortedTurns);
+        // console.log(sortedTurns);
         confGame.push({
           room: roomUUID,
           turn: 1,
@@ -144,10 +144,10 @@ class SocketController {
           user ? (user.room = roomUUID) : users.push({ id: socket.id, socket: socket, room: roomUUID });
         }
 
-        // Emitir a todos los demás clientes
-        socket.broadcast.emit("getLobbies", response);
         // Emitir al socket actual con datos personalizados
         socket.emit("lobbieCreated", response);
+        // Emitir a todos los demás clientes
+        socket.broadcast.emit("getLobbies", response);
       });
 
       socket.on("joinRoom", async ({ token, roomUUID }) => {
