@@ -8,7 +8,6 @@ use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
@@ -127,7 +126,7 @@ class AuthenticatorController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            // $this->mailService->sendMail($user->name, $user->email, 'people.welcome', ['name' => $user->name]);
+            $this->mailService->sendMail($user->name, $user->email, 'people.welcome', ['name' => $user->name]);
 
             DB::commit();
 

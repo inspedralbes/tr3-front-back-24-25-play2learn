@@ -48,7 +48,8 @@ class StatsUserLanguageController extends Controller
 
             $languageId = Language::where('name', $language)->first()->id;
 
-            $statsLanguage = StatsUserLanguage::where('user_id', $userId)
+            $statsLanguage = StatsUserLanguage::with('language', 'level')
+                ->where('user_id', $userId)
                 ->where('language_id', $languageId)
                 ->first();
 

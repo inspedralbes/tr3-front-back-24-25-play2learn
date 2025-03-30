@@ -54,9 +54,14 @@ const ProfileSection: React.FC = () => {
     total_wins: number;
     total_experience: number;
     words_learned: number;
-    level: number;
+    level: Level;
     experience: number;
     daily_streak: number;
+  }
+
+  interface Level{
+    level: number,
+    experience: number
   }
 
   const [stats, setStats] = useState<Stats | null>(null);
@@ -145,16 +150,16 @@ const ProfileSection: React.FC = () => {
 
               <div className="mt-4 flex items-center">
                 <Star className="text-yellow-400 mr-1" size={16} />
-                <span className="font-medium">Level {stats?.level}</span>
+                <span className="font-medium">Level {stats?.level.level}</span>
               </div>
 
               <div className="mt-3 w-full bg-indigo-950/50 h-2 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-yellow-500 to-amber-500"
-                  style={{ width: `${(stats?.experience || 0) / 5000 * 100}%` }}
+                  style={{ width: `${(stats?.experience || 0) / (stats?.level.experience|| 0) * 100}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-indigo-300 mt-1">{stats?.experience} / 5000 XP</p>
+              <p className="text-xs text-indigo-300 mt-1">{stats?.experience} / {stats?.level.experience} XP</p>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
@@ -247,7 +252,7 @@ const ProfileSection: React.FC = () => {
               {gameHistory && gameHistory.length > 0 ? (
                 gameHistory.map(game => (
                   <div key={game.id} className="flex items-center p-3 md:p-4 bg-indigo-900/30 rounded-lg">
-                    <div className={`w-2 h-10 md:h-12 rounded-full mr-3 md:mr-4 ${game.result === 'win' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <div className={`w-2 h-10 md:h-12 rounded-full mr-3 md:mr-4 ${game.result === '1' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                     <div>
                       <h3 className="font-medium">{game.game.name}</h3>
                       <p className="text-xs text-indigo-300">{game.game.status === "finished" ? getTimeAgo(game.game.created_at) : 'Recently joined'}</p>

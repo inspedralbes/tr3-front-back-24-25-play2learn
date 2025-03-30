@@ -107,6 +107,7 @@ export default function Hangman({
      |
      |
 =========`;
+        break;
       case 1:
         hangman = `
  +---+
@@ -130,7 +131,7 @@ export default function Hangman({
  +---+
  |   |
  O   |
-/|\  |
+/|\\  |
      |
 =========`;
         break;
@@ -139,7 +140,7 @@ export default function Hangman({
  +---+
  |   |
  O   |
-/|\  |
+/|\\  |
 /    |
 =========`;
         break;

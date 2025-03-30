@@ -387,6 +387,7 @@ class SocketController {
         if (game.game_num_rounds === game.game.n_rounds || game.game_num_rounds > game.game.n_rounds) {
           //logic for update and insert result games finish
           await apiRequest('/game/history/round', token, 'POST', { uuid: roomUUID, num_game: game.game_num_random })
+          await apiRequest('/game/store/stats/finish', token, 'POST', { uuid: roomUUID, language: language })
 
           console.log("se termino la partida")
           game.game_num_random = null;

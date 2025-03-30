@@ -10,6 +10,7 @@ import Hangman from "../Hangman";
 import WordChain from "../WordChain";
 import LeaderGame from "../LeaderGame";
 import TranslationGameComponent from "../TranslationGameComponent";
+import { LoaderComponent } from "@/components/LoaderComponent";
 
 export default function ManagerGames() {
   const params = useParams<{ uuid: string }>();
@@ -111,7 +112,7 @@ export default function ManagerGames() {
 
 
   if (!game.id || participants.length === 0) {
-    return (<div>Loading...</div>);
+    return <LoaderComponent />;
   } else if (leaderView) {
     return <LeaderGame game={game} participants={participants} />;
   } else {

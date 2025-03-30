@@ -7,6 +7,7 @@ use App\Models\GameHistoryRounds;
 use App\Models\GameHistoryUsers;
 use App\Models\GameUser;
 use App\Models\Language;
+use App\Models\LevelExperience;
 use App\Models\LevelLanguage;
 use App\Models\StatsUserLanguage;
 use Illuminate\Http\Request;
@@ -153,9 +154,9 @@ class GameController extends Controller
 
     public function getGame($gameUUID)
     {
+        Log::info($gameUUID);
         try {
             $games = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
-                ->whereIn('status', ['pending', 'in_progress'])
                 ->where('uuid', $gameUUID)
                 ->first();
 
@@ -363,6 +364,32 @@ class GameController extends Controller
         }
     }
 
+    private function updateUserExperience($statsUserLanguage, $gameUser) {
+        // Sumar la experiencia obtenida
+        $statsUserLanguage->experience += $gameUser->points / 2;
+
+        // Mientras la experiencia acumulada sea suficiente para subir de nivel...
+        while ($statsUserLanguage->experience >= $statsUserLanguage->level->experience) {
+            // Resta la experiencia requerida para el nivel actual
+            $statsUserLanguage->experience -= $statsUserLanguage->level->experience;
+
+            // Buscar el siguiente nivel
+            $nextLevel = LevelExperience::where('level', $statsUserLanguage->level->level + 1)->first();
+
+            // Si no hay siguiente nivel, se puede romper el ciclo (o manejarlo de otra forma)
+            if (!$nextLevel) {
+                break;
+            }
+
+            // Actualiza el nivel del usuario
+            $statsUserLanguage->level_id = $nextLevel->id;
+
+            // Es recomendable refrescar la relación para que $statsUserLanguage->level sea el nuevo nivel
+            $statsUserLanguage->load('level');
+        }
+    }
+
+
     public function storeStatsFinishGame(Request $request)
     {
         try {
@@ -387,15 +414,16 @@ class GameController extends Controller
                 $gameHistoryUser->save();
 
                 $statsUserLanguage = StatsUserLanguage::where('language_id', $language->id)
-                    ->where('user_id', $gameUser->user_id)->first();
-                Log::info($statsUserLanguage);
+                    ->where('user_id', $gameUser->user_id)
+                    ->first();
 
-                $statsUserLanguage->experience += $gameUser->points / 2;
+                $this->updateUserExperience($statsUserLanguage, $gameUser);
+
                 $statsUserLanguage->total_games = $statsUserLanguage->total_games + 1;
                 $statsUserLanguage->total_experience += $gameUser->points / 2;
                 if($index === 0)
                 {
-                    $statsUserLanguage->total_wins += $statsUserLanguage->total_wins + 1;
+                    $statsUserLanguage->total_wins += 1;
                 }
                 $statsUserLanguage->save();
             }

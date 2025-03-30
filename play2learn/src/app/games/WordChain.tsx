@@ -9,6 +9,7 @@ import { Clock3, ArrowRight, User, User2, Star } from "lucide-react";
 import socket from "@/services/websockets/socket";
 import next from "next";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
+import { LoaderComponent } from "@/components/LoaderComponent";
 
 interface Participant {
     id: number;
@@ -266,7 +267,7 @@ export default function WordChain({
     }, [lastWord, players]);
 
     if (!players || participants.length === 0) {
-        return <>loading...</>
+        return <LoaderComponent />;
     } else {
         return (
             <div className="min-h-screen flex items-center justify-center">
