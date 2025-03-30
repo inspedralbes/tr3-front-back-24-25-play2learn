@@ -130,9 +130,6 @@ export default function WordChain({
 
         let timePlayer = players.find((p) => p.isActive)?.time
 
-        console.table(players);
-
-
         let countFinished = 0;
         players.forEach(p => {
             if (p.time === 0) {
@@ -155,7 +152,7 @@ export default function WordChain({
             return;
         }
 
-        if (timePlayer === 0 || timePlayer < 0) {
+        if (timePlayer && (timePlayer === 0 || timePlayer < 0)) {
             console.log("no tine tiempo", timer)
             if (isMyTurn) {
                 setPoints((prevPoints) => prevPoints - 50)
