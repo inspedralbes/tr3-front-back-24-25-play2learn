@@ -26,6 +26,7 @@ interface LanguageLevel {
 interface User {
     id: number;
     name: string;
+    username: string;
     profile_pic: string;
 }
 
