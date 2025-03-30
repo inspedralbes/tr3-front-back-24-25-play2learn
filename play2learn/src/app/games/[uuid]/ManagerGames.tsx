@@ -9,10 +9,8 @@ import { useState } from "react";
 import Hangman from "../Hangman";
 import WordChain from "../WordChain";
 import LeaderGame from "../LeaderGame";
-import TranslationGameComponent from "../TranslationGameComponent";
 import { LoaderComponent } from "@/components/LoaderComponent";
-import Wordle from '@/app/games/Wordle/[uuid]/Wordle'
-import WordleComponent from "@/app/games/Wordle/[uuid]/page";
+import Wordle from '@/app/games/Wordle'
 
 export default function ManagerGames() {
   const params = useParams<{ uuid: string }>();

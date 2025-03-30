@@ -1,4 +1,6 @@
 // pages/index.js
+"use client"
+
 import { useState, useEffect, useContext } from 'react';
 import Head from 'next/head';
 import { useParams, useRouter } from "next/navigation";
