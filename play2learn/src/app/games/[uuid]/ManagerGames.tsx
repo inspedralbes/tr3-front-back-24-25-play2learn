@@ -89,10 +89,12 @@ export default function ManagerGames() {
     });
 
     socket.on('participantsLoaders', (data) => {
+      console.log("HOLAAAAAAAAA")
       setParticipants(data.game.participants || []);
     });
 
     socket.on('leader', (data) => {
+      console.log("HOLAAAAAAAAA X 222222222")
       setLeaderView(data.showLeader);
 
     })
@@ -102,6 +104,7 @@ export default function ManagerGames() {
       socket.off("inGame");
       socket.off("chargeGame");
       socket.off("leader");
+      socket.off("participantsLoaders");
     };
   }, [isAuthenticated, router]);
 

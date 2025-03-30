@@ -82,6 +82,7 @@ class SocketController {
             socket.on("startGame", async ({token, roomUUID}) => {
                 const response = await apiRequest("/games/start", token, "POST", {
                     roomUUID,
+
                 });
                 const sortedTurns = response.data.participants.sort(
                     () => Math.random() - 0.5
@@ -139,6 +140,8 @@ class SocketController {
                     console.log("Game not found");
                     return;
                 }
+
+                data.round++;
 
                 io.to(data.uuid).emit('countRound', data);
 
@@ -302,6 +305,7 @@ class SocketController {
             });
 
             socket.on('showLeader', async ({token, roomUUID}) => {
+                console.log("FRONT", {token, roomUUID})
                 const game = confGame.find((game) => game.room === roomUUID);
                 if (!game) {
                     console.error("Room not found");
@@ -311,6 +315,10 @@ class SocketController {
                 game.showLeader = true;
 
                 const response = await apiRequest("/games/" + roomUUID, token, "GET");
+
+                console.log("APIIIIIII", response);
+
+
 
                 io.to(roomUUID).emit("leader", game);
                 io.to(roomUUID).emit("participantsLoaders", response);

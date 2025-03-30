@@ -69,43 +69,42 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     const [oldWord, setOldWord] = useState<string | null>(null);
     const [worldClient, setWordClient] = useState<string | null>(null);
     const [wordTranslate, setWordTranslate] = useState('');
-    const [canWrite, setCanWrite] = useState(false); // Si el usuario puede escribir
     const [localPlayer, setLocalPlayer] = useState<Player>({} as Player);
-    const [timer, setTimer] = useState(15);
+    const [timer, setTimer] = useState(game.max_time);
     const [gameStarted, setGameStarted] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [correctMessage, setCorrectMessage] = useState<string | null>(null);
     const [myTurn, setMyTurn] = useState(false);
     const [roundCount, setRoundCount] = useState(0);
-    const [maxRound, setMaxRound] = useState(0);
+    const [maxRound, setMaxRound] = useState(game.n_rounds || 0);
+
 
     const endGame = () => {
 
-        console.log("-----------------------------FIN-----------------------------")
-        console.log("-------------------------------PARTICIPANTES-------------------------------");
-        console.table(players);
+        console.log("Ronda actual:", roundCount, "/", maxRound);
 
-        if (myTurn) {
+        if (participants.find((p) => p.rol === 'host')?.user_id === user?.id) {
+            // Primero realiza la llamada a la API con los datos simplificados
             apiRequest("/game/store/stats", "POST", {players: players})
                 .then((response) => {
-                    console.log(response)
+                    console.log(response);
+                    console.log("EMIT DE SHOWLEADER");
+
+                    // Luego envía solo los datos necesarios a través de socket.io
                     socket.emit("showLeader", {token: token, roomUUID: game.uuid});
-                    console.log("todos terminaron")
+
+                    console.log("todos terminaron");
                 })
                 .catch((error) => {
-                    console.log(error)
-                })
+                    console.log(error);
+                });
+
         }
-
-        //alert("¡El juego ha terminado! Gracias por jugar.");
-
-        //router.push("/"); // Puedes redirigir a otra página o mostrar un modal
+        return;
     };
 
     function nextPlayer() {
         const currentIndex = players.find(p => p.isActive);
-
-        console.log("Jugador activo antes de cambiar turno:", currentIndex);
 
         if (!currentIndex) {
             console.error("No se encontró ningún jugador activo.");
@@ -114,6 +113,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
         setMyTurn(currentIndex.user_id == user?.id);
 
+        console.log("EMIT DE NEXTTURN")
 
         socket.emit('nextTurnGeneral', {
             roomUUID: game.uuid,
@@ -121,24 +121,31 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             points: currentIndex?.localPoints
         });
 
+        setTimer(game.max_time);
 
-        setTimer(timer);
     };
 
     function sumRound() {
         if (roundCount >= maxRound) {
             setGameStarted(false);
-            console.log("adios")
-            endGame();
+            setTimer(0);
+            if (!gameStarted) {
+                console.log("adios");
+                console.log("NOS VAMOS A ENDGAME")
+                endGame();
+            }
         } else {
 
             if (myTurn) {
                 let jsonData = {
                     uuid: params.uuid,
-                    round: roundCount + 1
+                    round: roundCount
                 }
-                socket.emit('roundRoom', jsonData);
 
+                nextPlayer();
+
+                console.log("EMIT DE SIGUIENTE RONDA")
+                socket.emit('roundRoom', jsonData);
             }
         }
 
@@ -146,13 +153,17 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
     const startGame = () => {
 
+        console.log("EMIT DE GETTURN");
         socket.emit('getTurn', ({roomUUID: params.uuid}));
         setGameStarted(true);
-        randomWord();
+        if (maxRound > 0) {
+            randomWord();
+        } else {
+            console.log("Esperando a recibir el número máximo de rondas...");
+        }
     };
 
     function sumaPointPlayer() {
-        console.log("Sumant punt al jugador actiu");
         // Actualización de puntos y siguiente turno
         setPlayers(prevPlayers =>
             prevPlayers.map(player =>
@@ -165,23 +176,29 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             localPoints: prev.localPoints + 1
         }));
 
-        sumRound();
 
         setOldWord(null);
 
-        if (myTurn) {
-            nextPlayer();
-        }
+        sumRound();
+
     }
 
     function randomWord() {
-        setWordTranslate("");
-        socket.emit('randomWord', {uuid: params.uuid});
+        if (maxRound && roundCount < maxRound) {
+            setWordTranslate("");
+            console.log("EMIT DE RANDOM WORLD");
+            socket.emit('randomWord', {uuid: params.uuid});
+        } else if (maxRound) {
+            console.log("Juego terminado, no se generarán más palabras.");
+            setGameStarted(false);
+            endGame();
+        } else {
+            console.log("maxRound no está definido aún.");
+        }
     }
 
     function restaPointsPlayer() {
-        console.log("Resta punt al jugador actiu");
-        console.log("Rondas aqui", roundCount)
+
         setPlayers(prevPlayers =>
             prevPlayers.map(player =>
                 ({...player})
@@ -196,10 +213,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
         sumRound();
 
-        if (myTurn) {
-            nextPlayer();
-        }
-
     }
 
 
@@ -211,24 +224,21 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
         setRoom(game);
 
-
         if (!gameStarted) {
-            console.log("EMPEZO")
+
             startGame();
-
-            setPlayers(participants.map(participant => ({
-                ...participant,
-                isActive: false,
-                localPoints: 0
-            })));
-
-            setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
         }
+
+        setPlayers(participants.map(participant => ({
+            ...participant,
+            isActive: false,
+            localPoints: 0
+        })));
+
+        setLocalPlayer(participants.find(participant => participant.user.id === user?.id) as Player);
 
 
         socket.on('turn', (data) => {
-            console.log("--------------------TURNO DE--------------------")
-            console.table(data.turn.user); // Muestra los datos en formato de tabla
             const {turn, errors} = data;
 
             setPlayers(prevPlayers =>
@@ -243,23 +253,14 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             }, 1000); // 3 segundos antes de cambiar de palabra
 
 
-            setCanWrite(false);
-            if (turn.user_id === user?.id) {
-                setCanWrite(true);
-            }
-            setTimer(data.game.max_time)
-            setMaxRound(data.game.n_rounds);
-
+            setTimer(data.game.max_time);
         });
 
         socket.on('wordRoom', (data) => {
 
             if (data && data.word) {
-                setPalabraActual(prev => {
-                    return data.word;
-                });
+                setPalabraActual(data.word);
                 setOldWord(data.word);
-                //setPalabraActual(data.word);
             } else {
                 console.warn("No se recibió una palabra válida.");
             }
@@ -281,11 +282,9 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 setTimeout(() => {
                     setCorrectMessage(null);
                     setAcertado(false);
-                    setCanWrite(true); // Habilitar nuevamente la entrada
                     randomWord();
                 }, 1000); // 3 segundos antes de cambiar de palabra
 
-                //setAcertado(false);
             } else {
                 // Add error message when translation is incorrect
                 setErrorMessage("¡Te has equivocado! Intenta de nuevo.");
@@ -293,20 +292,14 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 setTimeout(() => {
                     setErrorMessage(null);
                 }, 1000);
-
+                setRespuesta('');
                 setAcertado(false);
                 console.log("Respuesta incorrecta o palabra no encontrada");
             }
         });
 
-        socket.on('leader', (data) => {
-            console.log("SOCKET FIN")
-            console.table(data);
-            //router.push('/');
-        });
-
         socket.on('countRound', (data) => {
-            console.log("RONDAS", data);
+            console.log("RONDAS: ", data);
             setRoundCount(data.round);
         });
 
@@ -315,7 +308,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             socket.off('wordRoom');
             socket.off('translateClient');
             socket.off('turn');
-            socket.off('leader');
             socket.off('countRound');
         };
 
@@ -331,7 +323,6 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 setTimer((prev) => prev - 1);
             }, 1000);
         } else if (timer === 0) {
-            console.log("SE ACABO CRACK");
 
             // Si no, seguir con el contador normal
             restaPointsPlayer();
@@ -368,15 +359,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                     word_input: respuesta.toLowerCase(),
                 }
 
-                console.log("API")
-                console.table(data);
-
-                console.log("oldWORD", oldWord);
-                console.log("Actual", palabraActual);
-
                 if (data.translation.toLowerCase() === palabraActual) {
-                    console.log("ACERTADO DESDE EL FETCH")
-
                     if (myTurn) {
                         sumaPointPlayer();
                     }
@@ -387,6 +370,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                     }
                 }
 
+                console.log("Enviant chatTranslate:", jsonSocket);
                 socket.emit('chatTranslate', (jsonSocket));
 
             }
@@ -422,7 +406,8 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                     ) : (
                         <div key={player.id}
                              className="text-center mb-4 absolute top-2 left-3 bg-white rounded-full px-4 py-2">
-                            <span className="text-1xl font-bold text-blue-600">Turno de {player.user.username}</span>
+                                <span
+                                    className="text-1xl font-bold text-blue-600">Turno de {player.user.username}</span>
                         </div>
                     )
                 ) : null
@@ -477,7 +462,8 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                 {/* Sección de Palabra a Resolver */}
                 <section className="mb-6">
                     <h2 className="text-2xl font-semibold mb-4 text-white-50">Palabra a Resolver</h2>
-                    <div className="bg-blue-100 text-blue-800 p-4 text-xl font-semibold text-center rounded-lg shadow">
+                    <div
+                        className="bg-blue-100 text-blue-800 p-4 text-xl font-semibold text-center rounded-lg shadow">
                         {palabraActual ? palabraActual : "Cargando palabra..."}
                     </div>
 
