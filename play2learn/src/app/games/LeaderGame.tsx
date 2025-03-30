@@ -54,7 +54,7 @@ function LeaderGame({ game, participants }: { game: Game; participants: Particip
     const { isAuthenticated, token } = useContext(AuthenticatorContext);
     const router = useRouter();
     const [participantsOrderedByPoints, setParticipantsOrderedByPoints] = useState<Participant[]>([]);
-    const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
+    const { selectedLanguage, setSelectedLanguage, hideLoader } = useContext(NavBarContext);
 
 
     useEffect(() => {
@@ -62,10 +62,12 @@ function LeaderGame({ game, participants }: { game: Game; participants: Particip
             router.push("/authenticate/login");
             return;
         }
-
+        hideLoader();
         apiRequest("/games/lobby/" + game.uuid, "GET")
             .then((response) => {
-                response.game.participants.sort((a: Participant, b: Participant) => b.points - a.points)
+                console.log(response)
+                hideLoader();
+                setParticipantsOrderedByPoints(response.game.participants.sort((a: Participant, b: Participant) => b.points - a.points))
             })
 
     }, [isAuthenticated, router]);

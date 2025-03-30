@@ -160,6 +160,15 @@ const GameLobby: React.FC = () => {
       [name]: value,
     }));
   };
+  
+  const handleGameChangeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setGame((prev) => ({
+        ...prev,
+        [name]: value,
+    }));
+};
+
 
   const handleChangePasswordModal = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordModal(e.target.value);
@@ -315,7 +324,7 @@ const GameLobby: React.FC = () => {
                 <select
                   name="id_level_language"
                   value={game.id_level_language}
-                  onChange={handleGameChange}
+                  onChange={handleGameChangeSelect}
                   className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
                 >
                   <option value="-1">Select difficulty</option>

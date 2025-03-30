@@ -304,9 +304,9 @@ export default function Hangman({
             <span className="text-lg sm:text-xl font-bold text-white">
               {user?.username}
             </span>
-            <div className="text-lg sm:text-xl font-bold text-white">
+            {/* <div className="text-lg sm:text-xl font-bold text-white">
               {word}
-            </div>
+            </div> */}
           </div>
           <div className="flex items-center space-x-4 sm:space-x-6 w-full sm:w-auto justify-between sm:justify-end">
             <div className="flex items-center space-x-2">

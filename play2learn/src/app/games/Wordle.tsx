@@ -58,6 +58,11 @@ interface Game {
     participants: Participant[] | null;
 }
 
+interface LetraEstado {
+    letra: string;
+    estado: string;
+  }
+  
 
 export default function Wordle({ participants, game }: { participants: Participant[]; game: Game }) {
 
@@ -68,7 +73,7 @@ export default function Wordle({ participants, game }: { participants: Participa
     const [players, setPlayers] = useState<Player[]>([]);
     const [localPlayer, setLocalPlayer] = useState<Player>({} as Player);
     const [palabra, setPalabra] = useState('');
-    const [intentos, setIntentos] = useState([]);
+    const [intentos, setIntentos] = useState<LetraEstado[][]>([]);
     const [intentoActual, setIntentoActual] = useState('');
     const [estadoJuego, setEstadoJuego] = useState('jugando'); // 'jugando', 'ganado', 'perdido', 'timeout'
     const [mensaje, setMensaje] = useState('');
@@ -422,7 +427,7 @@ export default function Wordle({ participants, game }: { participants: Participa
     };
 
     // Format time as mm:ss
-    const formatTime = (seconds) => {
+    const formatTime = (seconds: any) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -430,7 +435,7 @@ export default function Wordle({ participants, game }: { participants: Participa
 
     // Efecto para escuchar eventos de teclado
     useEffect(() => {
-        const manejarTecladoFisico = (event) => {
+        const manejarTecladoFisico = (event: KeyboardEvent) => {
             const tecla = event.key.toUpperCase();
 
             if (tecla === 'ENTER') {

@@ -181,7 +181,7 @@ export default function WordChain({
 
         if (gameStarted && (timer && timer > 0)) {
             interval = setInterval(() => {
-                setTimer((prev) => prev || 0 - 1);
+                setTimer((prev) => (prev || 0) - 1);
             }, 1000);
         } else if (timer === 0) {
             console.log("tiempo acabado")

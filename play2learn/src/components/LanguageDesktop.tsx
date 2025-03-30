@@ -136,7 +136,7 @@ function App() {
   function formatRelativeTime(dateString: any) {
     const now = new Date();
     const past = new Date(dateString);
-    const diffInSeconds = Math.floor((now - past) / 1000);
+    const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
   
     if (diffInSeconds < 60) {
       return "hace unos segundos";

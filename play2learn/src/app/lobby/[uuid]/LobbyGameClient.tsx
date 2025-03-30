@@ -34,7 +34,6 @@ export default function LobbyGameClient() {
     name: string;
     username: string;
     profile_pic: string;
-    username: string;
   }
 
   interface Participant {
