@@ -60,7 +60,7 @@ export default function LobbyGameClient() {
   }
 
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const {selectedLanguage} = useContext(NavBarContext);
+  const {selectedLanguage, hideLoader, showLoader} = useContext(NavBarContext);
   const getHost = () => {
     const host = participants.find((participant) => participant.rol === "host");
 
@@ -85,15 +85,18 @@ export default function LobbyGameClient() {
     socket.emit("getGame", { token: token || "", roomUUID: params.uuid });
 
     socket.on("playerJoined", (data) => {
+      hideLoader();
       setParticipants(data.game.participants || []);
     });
 
     socket.on("gameDeleted", (data) => {
+      hideLoader();
       setParticipants([]);
       router.push("/");
     });
 
     socket.on("gameStarted", (data) => {
+      hideLoader();
       if (data.status === "success") {
         router.push(`/games/${params.uuid}`);
       }

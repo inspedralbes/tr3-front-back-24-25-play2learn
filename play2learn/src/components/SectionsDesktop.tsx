@@ -7,6 +7,7 @@ import {
   BookOpen,
   Settings,
   LogOut,
+  User2,
 } from "lucide-react";
 import { useContext } from "react";
 import { NavBarContext } from "@/contexts/NavBarContext";
@@ -62,6 +63,18 @@ function App() {
             }`}
           >
             <Trophy size={24} />
+          </button>
+        </Link>
+        <Link href="/me">
+          <button
+            onClick={() => setActiveSection("me")}
+            className={`p-3 rounded-xl transition-all ${
+              activeSection === "me"
+                ? "bg-purple-700 text-white"
+                : "text-indigo-400 hover:bg-indigo-800"
+            }`}
+          >
+            <User2 size={24} />
           </button>
         </Link>
       </nav>
