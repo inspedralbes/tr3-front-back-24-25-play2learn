@@ -15,6 +15,19 @@ class SocketController {
       "grape",
     ];
 
+    let words = [
+      "hallo",
+      "bitte",
+      "danke",
+      "entschuldigung",
+      "ja",
+      "nein",
+      "freund",
+      "liebe",
+      "essen",
+      "trinken"
+    ];
+
     function shouldGenerateWordHangman(roomUUID) {
       const game = confGame.find((game) => game.room === roomUUID);
       if (!game) {
@@ -78,7 +91,7 @@ class SocketController {
 
       let remainingTime = maxTime;
       // Notificar el tiempo inicial
-      io.to(roomUUID).emit("timerTick", {time: remainingTime});
+      io.to(roomUUID).emit("timerTick", { time: remainingTime });
 
       game.timer = setInterval(() => {
         remainingTime--;
@@ -100,7 +113,7 @@ class SocketController {
           startTurnTimer(roomUUID, maxTime);
         } else {
           // console.log("Time remaining: " + remainingTime);
-          io.to(roomUUID).emit("timerTick", {time: remainingTime});
+          io.to(roomUUID).emit("timerTick", { time: remainingTime });
         }
       }, 1000);
     }
@@ -171,6 +184,39 @@ class SocketController {
         io.emit("getLobbies", response);
       });
 
+      socket.on('roundRoom', async (data) => {
+        console.log("Contador", data)
+        let game = confGame.find((game) => game.room === data.uuid);
+
+        if (!game) {
+          console.log("Game not found");
+          return;
+        }
+
+        data.round++;
+
+        io.to(data.uuid).emit('countRound', data);
+
+      });
+
+      socket.on('randomWord', async (data) => {
+        let game = confGame.find((game) => game.room === data.uuid);
+        if (!game) {
+          console.log("Game not found");
+          return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * words.length);
+        const word = words[randomIndex];
+
+        // Guarda la palabra en la configuración de la partida
+        game.currentWord = word;
+
+        console.log(`Nueva palabra para la sala ${data.uuid}: ${word}`);
+
+        io.to(data.uuid).emit('wordRoom', { word });
+      });
+
       socket.on("getGame", async ({ token, roomUUID }) => {
         if (!socket.rooms.has(roomUUID)) {
           socket.join(roomUUID);
@@ -185,13 +231,19 @@ class SocketController {
           response.game_num_random = filterGame.game_num_random;
           response.showLeader = filterGame.showLeader;
         }
-        
+
         io.to(roomUUID).emit("playerJoined", response);
         io.to(roomUUID).emit("inGame", response);
       });
 
+      socket.on('chatTranslate', (data) => {
+        console.log("Mensaje del chat", data);
+        io.to(data.uuid).emit('translateClient', data);
+      });
+
+
       socket.on("lobbie", async ({ token, language }) => {
-        const response = await apiRequest("/games/"+language, token);
+        const response = await apiRequest("/games/" + language, token);
         socket.emit("getLobbies", response);
       });
 
@@ -230,14 +282,19 @@ class SocketController {
           return;
         }
 
+        console.log("GET TURN: ", game);
+
         io.to(roomUUID).emit("turn", {
           turn: getTurnGame(roomUUID),
           errors: game.guessesErrors,
+          game: game.game
         });
       });
 
       socket.on("nextTurnGeneral", ({ roomUUID, user_id, points }) => {
+        console.log("FRONT TURN", { roomUUID, user_id, points });
         const game = confGame.find((game) => game.room === roomUUID);
+
 
         if (!game) {
           console.error("Room not found");
@@ -247,10 +304,15 @@ class SocketController {
         game.turn++;
         game.players.find((player) => player.user_id === user_id).points += points;
 
+        console.log("TURNOS SOCKET NUEVO: ", getTurnGame(roomUUID))
+
         io.to(roomUUID).emit("turn", {
           turn: getTurnGame(roomUUID),
           errors: game.guessesErrors,
+          game: game.game
         });
+
+        startTurnTimer(roomUUID, game.max_time);
       });
 
       socket.on('nextGame', async({ roomUUID, language, token }) => {
@@ -269,24 +331,13 @@ class SocketController {
           console.log("se termino la partida")
           game.game_num_random = null;
           game.game_num_rounds = null;
-
-          const response = await apiRequest('/game/store/stats/finish', token, 'POST', {uuid: roomUUID, language: language});
-
-          console.log(response)
-          if(response.status === 'success')
-          {
-
-          }
           io.to(roomUUID).emit("chargeGame", game);
-
           return;
-        }else{
+        } else {
           game.game_num_rounds++;
         }
 
-        // let num = Math.floor(Math.random() * 10);
-        let num = Math.floor(Math.random() * 2) + 1;
-
+        let num = Math.floor(Math.random() * 10);
         if (num === game.game_num_random) {
           if (num === 10) {
             num = 0;
@@ -300,7 +351,8 @@ class SocketController {
         io.to(roomUUID).emit("chargeGame", game);
       });
 
-      socket.on('showLeader', async({ token, roomUUID }) => {
+      socket.on('showLeader', async ({ token, roomUUID }) => {
+        console.log("FRONT", { token, roomUUID })
         const game = confGame.find((game) => game.room === roomUUID);
         if (!game) {
           console.error("Room not found");
@@ -309,9 +361,8 @@ class SocketController {
         console.log("showLeader")
         game.showLeader = true;
 
-        const response = await apiRequest("/games" + roomUUID, token, "GET");
-        await apiRequest('/game/history/round', token, 'POST', {uuid: roomUUID, num_game: game.game_num_random})
-        
+        const response = await apiRequest("/games/" + roomUUID, token, "GET");
+
         io.to(roomUUID).emit("leader", game);
         io.to(roomUUID).emit("participantsLoaders", response);
       });

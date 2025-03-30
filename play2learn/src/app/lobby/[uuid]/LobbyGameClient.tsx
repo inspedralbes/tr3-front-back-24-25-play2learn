@@ -9,6 +9,7 @@ import socket from "@/services/websockets/socket";
 import AvatarUserProfile from "@/components/ui/AvatarUserProfile";
 import { Crown, LogOut, PlayCircle, Users } from "lucide-react";
 
+
 export default function LobbyGameClient() {
   const params = useParams<{ uuid: string }>();
   const { isAuthenticated } = useContext(AuthenticatorContext);
@@ -105,6 +106,10 @@ export default function LobbyGameClient() {
       socket.off("gameStarted");
     };
   }, [isAuthenticated, router]);
+
+    function goToTranslate() {
+        socket.emit('startGame', {token: token || "", roomUUID: params.uuid});
+    }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800">

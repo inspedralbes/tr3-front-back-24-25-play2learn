@@ -9,6 +9,7 @@ import { useState } from "react";
 import Hangman from "../Hangman";
 import WordChain from "../WordChain";
 import LeaderGame from "../LeaderGame";
+import TranslationGameComponent from "@/app/games/translation/[uuid]/TranslationGameComponent";
 
 export default function ManagerGames() {
   const params = useParams<{ uuid: string }>();
@@ -89,10 +90,12 @@ export default function ManagerGames() {
     });
 
     socket.on('participantsLoaders', (data) => {
+      console.log("HOLAAAAAAAAA")
       setParticipants(data.game.participants || []);
     });
 
     socket.on('leader', (data) => {
+      console.log("HOLAAAAAAAAA X 222222222")
       setLeaderView(data.showLeader);
 
     })
@@ -120,5 +123,5 @@ export default function ManagerGames() {
         return <Hangman participants={participants} game={game} />;
     }
   }
-
+  
 }

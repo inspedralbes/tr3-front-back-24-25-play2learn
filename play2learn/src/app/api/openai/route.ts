@@ -31,3 +31,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
+

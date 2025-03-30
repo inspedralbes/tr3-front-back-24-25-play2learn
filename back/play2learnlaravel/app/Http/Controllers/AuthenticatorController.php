@@ -68,12 +68,12 @@ class AuthenticatorController extends Controller
 
     public function checkAuth()
     {
-        if(Auth::check()) {
+        if (Auth::check()) {
             return response()->json([
                 'status' => 'success',
                 'user' => Auth::user()
             ]);
-        }else{
+        } else {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Usuario no autenticado.'
@@ -216,7 +216,7 @@ class AuthenticatorController extends Controller
 
             //return response()->json(['status' => 'success', 'userData' => $userData]);
 
-            return redirect()->to('http://localhost:3000/contexts/AuthenticatorContext?data=' . urlencode(json_encode($userData)));
+            return redirect()->to(env('NEXT_URL_REDIRECT') . '?data=' . urlencode(json_encode($userData)));
 
         } catch (\Exception $e) {
             Log::error('Google login error', [
@@ -272,11 +272,7 @@ class AuthenticatorController extends Controller
 
 //            DB::commit();
 
-            //return response()->json(['status' => 'success', 'userData' => $userData]);
-
-            return redirect()->to('http://localhost:3000/contexts/AuthenticatorContext?data=' . urlencode(json_encode($userData)));
-
-//            return redirect()->to('http://localhost:3000/');
+            return redirect()->to(env('NEXT_URL_REDIRECT') . '?data=' . urlencode(json_encode($userData)));
 
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'errors' => $e->getMessage()]);
