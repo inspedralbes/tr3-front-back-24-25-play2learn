@@ -305,7 +305,7 @@ class SocketController {
         }
 
         if (newGuessedWord !== "") socket.broadcast.to(roomUUID).emit("newGuessedWord", { newGuessedWord: newGuessedWord });
-        if (newGuessedWord == getWordHangman(roomUUID)) {
+        if (newGuessedWord == getWordHangman(roomUUID) || game.guessesErrors >= 5) {
           if (shouldGenerateWordHangman(roomUUID)) {
             const word = generateWordHangman(roomUUID);
             io.to(roomUUID).emit("wordHangman", { newWord: word });
@@ -313,6 +313,7 @@ class SocketController {
             io.to(roomUUID).emit("gameOver");
             return;
           }
+          game.guessesErrors = 0;
         }
 
         game.turn++;
