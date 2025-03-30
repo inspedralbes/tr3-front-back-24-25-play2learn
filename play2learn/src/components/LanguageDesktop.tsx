@@ -6,6 +6,7 @@ import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { useRouter } from "next/navigation";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
+import Cookies from "js-cookie";
 
 interface Language {
   id: number;
@@ -17,7 +18,9 @@ interface Language {
 function App() {
   const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
   const [languages, setLanguages] = useState<Language[]>([]);
-  const [allLanguages, setAllLanguages] = useState<{ id: number; name: string }[]>([]);
+  const [allLanguages, setAllLanguages] = useState<
+    { id: number; name: string }[]
+  >([]);
   const [showAddLanguage, setShowAddLanguage] = useState(false);
   const [newLanguage, setNewLanguage] = useState("");
   const [idNewLanguage, setIdNewLanguage] = useState(0);
@@ -28,6 +31,16 @@ function App() {
     setShowAddLanguage(!showAddLanguage);
   };
 
+  const handleSelectLanguage = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOption = e.target.options[e.target.selectedIndex];
+    setNewLanguage(e.target.value);
+    setIdNewLanguage(parseInt(selectedOption.dataset.id || "0"));
+  };
+
+  const handleSetLanguage = (language: string) => {
+    setSelectedLanguage(language);
+    Cookies.set("lngActive", language, { expires: 7 });
+  };
   const handleAddLanguage = () => {
     if (newLanguage === "") return;
 
@@ -39,6 +52,7 @@ function App() {
             { id: idNewLanguage, name: newLanguage, level: 1, progress: 0 },
           ]);
           setShowAddLanguage(false);
+          handleSetLanguage(newLanguage);
         } else {
           alert("Error adding language.");
         }
@@ -66,23 +80,41 @@ function App() {
           })
         );
         setLanguages(fetchedLanguages);
-        setSelectedLanguage(fetchedLanguages[0].name);
+
+        const lngActive = Cookies.get("lngActive") || null;
+        console.log(lngActive);
+        console.log(
+          response.statsLanguages.some(
+            (lng: any) => lng.language.name === lngActive
+          )
+        );
+        if (
+          lngActive &&
+          response.statsLanguages.some(
+            (lng: any) => lng.language.name === lngActive
+          )
+        ) {
+          handleSetLanguage(lngActive);
+        } else {
+          handleSetLanguage(fetchedLanguages[0].name);
+        }
       }
     };
-
-    
 
     fetchLanguages();
   }, [isAuthenticated, router]);
 
   useEffect(() => {
     if (languages.length == 0) return;
-    
+
     const fetchNewLanguages = async () => {
       const response = await apiRequest(`/languages`);
       if (response.status === "success") {
         const newLng = response.languages
-          .filter((lng: any) => !languages.some((language) => language.name === lng.name))
+          .filter(
+            (lng: any) =>
+              !languages.some((language) => language.name === lng.name)
+          )
           .map((lng: any) => ({ id: lng.id, name: lng.name }));
         setAllLanguages(newLng);
         console.log(newLng);
@@ -177,12 +209,16 @@ function App() {
                 <select
                   name="id_language"
                   value={newLanguage}
-                  onChange={(e) => {setNewLanguage(e.target.value.split(":")[1]); setIdNewLanguage(parseInt(e.target.value.split(":")[0]))}}
+                  onChange={(e) => handleSelectLanguage(e)}
                   className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
                 >
                   <option value="">Select language</option>
                   {allLanguages.map((lng) => (
-                    <option key={`language${lng.id}`} value={`${lng.id}:${lng.name}`}>
+                    <option
+                      key={`language${lng.id}`}
+                      data-id={lng.id}
+                      value={lng.name}
+                    >
                       {lng.name}
                     </option>
                   ))}

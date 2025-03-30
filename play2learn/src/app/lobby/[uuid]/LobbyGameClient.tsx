@@ -72,8 +72,6 @@ export default function LobbyGameClient() {
   };
 
   const handleLeaveGame = () => {
-    console.log(participants);
-
     socket.emit("leaveGame", { token: token || "", roomUUID: params.uuid, language: selectedLanguage });
     router.push("/");
   };

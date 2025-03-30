@@ -31,8 +31,7 @@ export default function FinishedGame() {
       router.push("/authenticate/login");
       return;
     }
-    console.log(params.uuid)
-    console.log("wtf")
+
     apiRequest("/games/lobby/" + params.uuid, "GET").then((response) => {
       console.log(response);
       setParticipantsOrderedByPoints(
