@@ -1,0 +1,169 @@
+name: Translation
+description: ''
+endpoints:
+  -
+    httpMethods:
+      - GET
+    uri: api/lara/languages
+    metadata:
+      groupName: Translation
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        Obtiene la lista de idiomas soportados por el servicio de Lara.
+
+        Este endpoint devuelve todos los idiomas soportados para traducción. También permite obtener los nombres de los idiomas en un idioma específico.
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      display_language:
+        name: display_language
+        description: 'El idioma en el que se mostrarán los nombres de los idiomas soportados. Por defecto, es ''es'' (español). Ejemplo: "es"'
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanQueryParameters:
+      display_language: consequatur
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+              "languages": [
+                  {
+                      "code": "en",
+                      "name": "Inglés"
+                  },
+                  {
+                      "code": "es",
+                      "name": "Español"
+                  }
+              ]
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+              "error": "Error al obtener idiomas: Error en la API de Lara"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/lara/translate
+    metadata:
+      groupName: Translation
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        Traduce una palabra o frase de un idioma a otro utilizando el servicio de Lara.
+
+        Este endpoint toma una palabra o frase y la traduce de un idioma a otro. El idioma de origen es opcional y, si no se proporciona, Google puede detectarlo automáticamente.
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      word:
+        name: word
+        description: 'La palabra o frase a traducir. Ejemplo: "Hello"'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      target:
+        name: target
+        description: 'El código ISO de 2 letras del idioma de destino (es, en, fr, etc.). Ejemplo: "es"'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      source:
+        name: source
+        description: 'Opcional El código ISO de 2 letras del idioma de origen (en, fr, etc.). Ejemplo: "en". Si no se proporciona, se detectará automáticamente.'
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      word: consequatur
+      target: consequatur
+      source: consequatur
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+              "status": "success",
+              "result": "Hola"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+              "status": "error",
+              "message": "La palabra o idioma de destino no puede estar vacío"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+              "error": "Error al traducir: Error en la API de Lara"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []

@@ -13,6 +13,43 @@ use Illuminate\Support\Facades\Validator;
 class GameController extends Controller
 {
     //
+    /**
+     * @group Game
+     *
+     * Obtiene la lista de juegos que están en estado "pending" (pendiente).
+     *
+     * Este endpoint devuelve todos los juegos que están en espera de ser iniciados.
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "message": "Games list",
+     *     "games": [
+     *         {
+     *             "id": 1,
+     *             "name": "Game 1",
+     *             "status": "pending",
+     *             "participants": [
+     *                 {
+     *                     "user": {
+     *                         "name": "Player 1",
+     *                         "email": "player1@example.com"
+     *                     }
+     *                 }
+     *             ],
+     *             "language_level": {
+     *                 "language": {
+     *                     "name": "English"
+     *                 }
+     *             }
+     *         }
+     *     ]
+     * }
+     *
+     * @response 500 {
+     *     "status": "error",
+     *     "message": "Error al obtener la lista de juegos."
+     * }
+     */
     public function getList()
     {
         try{
@@ -34,6 +71,44 @@ class GameController extends Controller
 
     }
 
+    /**
+     * @group Game
+     *
+     * Crea un nuevo juego.
+     *
+     * Este endpoint permite crear un nuevo juego, especificando la configuración de este, como el nivel de lenguaje, las rondas, el máximo de pistas, etc.
+     *
+     * @bodyParam id_level_language integer required El ID del nivel de lenguaje para el juego. Ejemplo: 1
+     * @bodyParam password string required La contraseña del juego. Ejemplo: "secreta123"
+     * @bodyParam name string required El nombre del juego. Ejemplo: "Trivia Game"
+     * @bodyParam n_rounds integer required El número de rondas del juego. Ejemplo: 5
+     * @bodyParam max_clues integer required El máximo de pistas por ronda. Ejemplo: 3
+     * @bodyParam max_time integer required El tiempo máximo en segundos por ronda. Ejemplo: 60
+     * @bodyParam max_players integer required El número máximo de jugadores en el juego. Ejemplo: 4
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "message": "Game created",
+     *     "gameCreated": {
+     *         "id": 1,
+     *         "name": "Trivia Game",
+     *         "status": "pending"
+     *     },
+     *     "games": [...]
+     * }
+     *
+     * @response 422 {
+     *     "status": "error",
+     *     "errors": {
+     *         "name": ["The name field is required."]
+     *     }
+     * }
+     *
+     * @response 500 {
+     *     "status": "error",
+     *     "message": "Error al crear el juego."
+     * }
+     */
     public function store(Request $request)
     {
         Log::info($request);
@@ -99,6 +174,35 @@ class GameController extends Controller
         }
     }
 
+    /**
+     * @group Game
+     *
+     * Obtiene los detalles de un juego específico por su UUID.
+     *
+     * Este endpoint devuelve los detalles del juego, incluyendo los participantes y el nivel de lenguaje, si el juego está en estado "pending" o "in_progress".
+     *
+     * @urlParam gameUUID string required El UUID del juego. Ejemplo: "123e4567-e89b-12d3-a456-426614174000"
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "game": {
+     *         "id": 1,
+     *         "name": "Trivia Game",
+     *         "status": "pending",
+     *         "participants": [...],
+     *         "language_level": {
+     *             "language": {
+     *                 "name": "English"
+     *             }
+     *         }
+     *     }
+     * }
+     *
+     * @response 404 {
+     *     "status": "error",
+     *     "message": "Game not found"
+     * }
+     */
     public function getGame($gameUUID)
     {
         try{
@@ -120,6 +224,30 @@ class GameController extends Controller
         }
     }
 
+    /**
+     * @group Game
+     *
+     * Permite a un usuario unirse a un juego en estado "pending".
+     *
+     * Este endpoint agrega un usuario al juego como participante.
+     *
+     * @urlParam gameUUID string required El UUID del juego al que se unirá el usuario. Ejemplo: "123e4567-e89b-12d3-a456-426614174000"
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "games": [...],
+     *     "game": {
+     *         "id": 1,
+     *         "name": "Trivia Game",
+     *         "status": "pending"
+     *     }
+     * }
+     *
+     * @response 404 {
+     *     "status": "error",
+     *     "message": "Game not found"
+     * }
+     */
     public function join($gameUUID)
     {
         try{
@@ -153,6 +281,25 @@ class GameController extends Controller
         }
     }
 
+    /**
+     * @group Game
+     *
+     * Permite a un usuario abandonar un juego.
+     *
+     * Este endpoint permite a un usuario dejar un juego. Si el usuario es el host, se eliminarán todos los participantes y el juego.
+     *
+     * @urlParam gameUUID string required El UUID del juego. Ejemplo: "123e4567-e89b-12d3-a456-426614174000"
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "games": [...]
+     * }
+     *
+     * @response 404 {
+     *     "status": "error",
+     *     "message": "Game not found"
+     * }
+     */
     public function leaveGame($gameUUID)
     {
         try{
@@ -203,6 +350,30 @@ class GameController extends Controller
         }
     }
 
+    /**
+     * @group Game
+     *
+     * Inicia un juego que está en estado "pending".
+     *
+     * Este endpoint cambia el estado del juego a "in_progress" y comienza la partida.
+     *
+     * @bodyParam roomUUID string required El UUID del juego que se va a iniciar. Ejemplo: "123e4567-e89b-12d3-a456-426614174000"
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "message": "Game started",
+     *     "data": {
+     *         "id": 1,
+     *         "name": "Trivia Game",
+     *         "status": "in_progress"
+     *     }
+     * }
+     *
+     * @response 404 {
+     *     "status": "error",
+     *     "message": "Game not found"
+     * }
+     */
     public function startRoom(Request $request)
     {
         // dd($request->all());
@@ -239,6 +410,28 @@ class GameController extends Controller
         }
     }
 
+    /**
+     * @group Game
+     *
+     * Almacena las estadísticas de los jugadores al final de un juego.
+     *
+     * Este endpoint permite actualizar las estadísticas de los jugadores, sumando los puntos locales de cada uno.
+     *
+     * @bodyParam players array required Lista de jugadores con sus ID y puntos locales. Ejemplo:
+     * [
+     *     { "id": 1, "localPoints": 10 },
+     *     { "id": 2, "localPoints": 5 }
+     * ]
+     *
+     * @response 200 {
+     *     "status": "success"
+     * }
+     *
+     * @response 500 {
+     *     "status": "error",
+     *     "message": "Error al almacenar las estadísticas."
+     * }
+     */
     public function storeStats(Request $request)
     {
         Log::info($request);
