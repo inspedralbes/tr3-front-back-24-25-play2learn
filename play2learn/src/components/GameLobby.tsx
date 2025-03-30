@@ -24,6 +24,7 @@ const GameLobby: React.FC = () => {
   interface User {
     id: number;
     name: string;
+    username: string;
     profile_pic: string;
   }
 
@@ -46,6 +47,23 @@ const GameLobby: React.FC = () => {
     max_time: number;
     max_players: number;
     participants: Participant[] | null;
+  }
+
+  interface Level{
+    id: number,
+    level: number,
+    experience: number
+  }
+
+  interface Player {
+    id: number,
+    user_id: number,
+    user: User,
+    level: Level,
+    experience: number,
+    total_games: number,
+    total_wins: number
+    total_experience: number
   }
 
   const [game, setGame] = useState<Game>({
@@ -82,6 +100,7 @@ const GameLobby: React.FC = () => {
   const [containerLobbies, setContainerLobbies] = useState(false);
   const [showPasswordLobby, setShowPasswordLobby] = useState(false);
   const [languageLevels, setLanguageLevels] = useState<LanguageLevel[]>([]);
+  const [players, setPlayers] = useState<Player[]>();
 
   const filteredRooms = waitingRooms.filter(
     (room) =>
@@ -130,67 +149,69 @@ const GameLobby: React.FC = () => {
       return;
     }
 
-    setLanguageLevels([
-      {
-        id: 1,
-        language_id: 1,
-        language: {
-          id: 1,
-          name: "English",
-        },
-        level: "A1",
-      },
-      {
-        id: 2,
-        language_id: 1,
-        language: {
-          id: 1,
-          name: "English",
-        },
-        level: "A2",
-      },
-      {
-        id: 3,
-        language_id: 1,
-        language: {
-          id: 1,
-          name: "English",
-        },
-        level: "B1",
-      },
-      {
-        id: 4,
-        language_id: 1,
-        language: {
-          id: 1,
-          name: "English",
-        },
-        level: "B2",
-      },
-      {
-        id: 5,
-        language_id: 1,
-        language: {
-          id: 1,
-          name: "English",
-        },
-        level: "C1",
-      },
-      {
-        id: 6,
-        language_id: 1,
-        language: {
-          id: 1,
-          name: "English",
-        },
-        level: "C2",
-      },
-    ]);
+    // setLanguageLevels([
+    //   {
+    //     id: 1,
+    //     language_id: 1,
+    //     language: {
+    //       id: 1,
+    //       name: "English",
+    //     },
+    //     level: "A1",
+    //   },
+    //   {
+    //     id: 2,
+    //     language_id: 1,
+    //     language: {
+    //       id: 1,
+    //       name: "English",
+    //     },
+    //     level: "A2",
+    //   },
+    //   {
+    //     id: 3,
+    //     language_id: 1,
+    //     language: {
+    //       id: 1,
+    //       name: "English",
+    //     },
+    //     level: "B1",
+    //   },
+    //   {
+    //     id: 4,
+    //     language_id: 1,
+    //     language: {
+    //       id: 1,
+    //       name: "English",
+    //     },
+    //     level: "B2",
+    //   },
+    //   {
+    //     id: 5,
+    //     language_id: 1,
+    //     language: {
+    //       id: 1,
+    //       name: "English",
+    //     },
+    //     level: "C1",
+    //   },
+    //   {
+    //     id: 6,
+    //     language_id: 1,
+    //     language: {
+    //       id: 1,
+    //       name: "English",
+    //     },
+    //     level: "C2",
+    //   },
+    // ]);
 
-    socket.emit("lobbie", { token: token || "" });
+    socket.emit("lobbie", { token: token || "", language: selectedLanguage });
 
     socket.on("getLobbies", (data) => {
       setWaitingRooms(data.games);
+      setLanguageLevels(data.level_language);
+      setPlayers(data.stats_user_language);
       setContainerLobbies(true);
     });
 
@@ -519,24 +540,16 @@ const GameLobby: React.FC = () => {
         </h2>
 
         <div className="space-y-3">
-          {[
-            { rank: 1, name: "LinguaMaster", points: 1250, avatar: "LM" },
-            { rank: 2, name: "WordNinja", points: 980, avatar: "WN" },
-            { rank: 3, name: "SyntaxPro", points: 875, avatar: "SP" },
-            { rank: 4, name: "VocabKing", points: 720, avatar: "VK" },
-            { rank: 5, name: "GrammarGuru", points: 650, avatar: "GG" },
-          ].map((player) => (
+          {players?.map((player, index) => (
             <div
-              key={player.rank}
+              key={player.id}
               className="flex items-center p-3 bg-indigo-900/30 rounded-lg"
             >
-              <div className="w-8 text-center font-bold">#{player.rank}</div>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center text-xs font-bold ml-3">
-                {player.avatar}
-              </div>
-              <div className="ml-3 font-medium">{player.name}</div>
+              <div className="w-8 text-center font-bold">#{index+1}</div>
+              <img className="w-8 h-8 rounded-full  flex items-center justify-center text-xs font-bold ml-3" src={player.user.profile_pic}/>
+              <div className="ml-3 font-medium">{player.user.username}</div>
               <div className="ml-auto font-bold text-yellow-400">
-                {player.points} pts
+                {player.level.level} lvl
               </div>
             </div>
           ))}

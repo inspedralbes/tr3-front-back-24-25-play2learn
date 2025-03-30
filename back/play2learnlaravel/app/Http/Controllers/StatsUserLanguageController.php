@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\achievementsUser;
+use App\Models\Game;
 use App\Models\GameHistoryUsers;
+use App\Models\GameUser;
+use App\Models\Language;
 use App\Models\StatsUserLanguage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -37,11 +40,13 @@ class StatsUserLanguageController extends Controller
     }
 
     //
-    public function getUserStatsLanguage($languageId)
+    public function getUserStatsLanguage($language)
     {
         $status = "success";
         try {
             $userId = Auth::user()->id;
+
+            $languageId = Language::where('name', $language)->first()->id;
 
             $statsLanguage = StatsUserLanguage::where('user_id', $userId)
                 ->where('language_id', $languageId)
@@ -52,7 +57,18 @@ class StatsUserLanguageController extends Controller
                 ->where('user_id', $userId)
                 ->get();
 
+            $gamesIds = GameUser::where('user_id', $userId)->pluck('game_id');
+
+            $games = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
+                ->whereIn('id', $gamesIds)
+                ->where('status', 'finished')
+                ->whereHas('language_level.language', function ($query) use ($language) {
+                    $query->where('name', $language);
+                })
+                ->get();
+
             $gameHistoryUser = GameHistoryUsers::with('rounds', 'game')
+                ->whereIn('game_id', $games->pluck('id'))
                 ->where('user_id', $userId)
                 ->orderBy('created_at', 'desc')
                 ->limit(3)

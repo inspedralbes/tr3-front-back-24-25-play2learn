@@ -5,6 +5,7 @@ import { useState, useContext, useEffect } from "react";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { useRouter } from "next/navigation";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
+import socket from "@/services/websockets/socket";
 
 interface Language {
   id: number;
@@ -20,7 +21,7 @@ function App() {
   const [showAddLanguage, setShowAddLanguage] = useState(false);
   const [newLanguage, setNewLanguage] = useState("");
   const [idNewLanguage, setIdNewLanguage] = useState(0);
-  const { isAuthenticated } = useContext(AuthenticatorContext);
+  const { isAuthenticated, token } = useContext(AuthenticatorContext);
   const router = useRouter();
 
   const toggleAddLanguage = () => {
@@ -91,6 +92,11 @@ function App() {
     fetchNewLanguages();
   }, [languages]);
 
+  const handleChangeLanguge = (language: Language) =>{
+    setSelectedLanguage(language.name)
+    socket.emit("lobbie", { token: token || "", language: language.name });
+
+  }
 
   return (
     <div className="hidden md:block md:w-64 bg-indigo-900/50 p-6 border-r border-indigo-700">
@@ -103,7 +109,7 @@ function App() {
         {languages.map((language) => (
           <button
             key={language.id}
-            onClick={() => setSelectedLanguage(language.name)}
+            onClick={()=>handleChangeLanguge(language)}
             className={`w-full p-4 rounded-lg flex flex-col transition-all ${
               selectedLanguage === language.name
                 ? "bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg"

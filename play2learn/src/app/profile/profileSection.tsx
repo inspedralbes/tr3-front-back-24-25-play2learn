@@ -90,7 +90,7 @@ const ProfileSection: React.FC = () => {
   const [gameHistory, setGameHistory] = useState<GameHistory[]>([]);
 
   const initStats = async () => {
-    const response = await apiRequest(`/user/getUserStatsLanguage/1`);
+    const response = await apiRequest(`/user/getUserStatsLanguage/${selectedLanguage}`);
     console.log(response);
     if (response.status === 'success') {
       setAchievements(response.achievements);
@@ -254,8 +254,8 @@ const ProfileSection: React.FC = () => {
                     </div>
                     <div className="ml-auto">
                       <div className="font-bold text-right">{game.score} pts</div>
-                      <div className={`text-xs text-right ${game.result === 'win' ? 'text-green-400' : 'text-red-400'}`}>
-                        {game.result === 'win' ? 'Victory' : 'Defeat'}
+                      <div className={`text-xs text-right ${game.result === '1' ? 'text-green-400' : 'text-red-400'}`}>
+                        {game.result === '1' ? 'Victory' : 'Defeat'}
                       </div>
                     </div>
                   </div>

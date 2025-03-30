@@ -7,6 +7,7 @@ use App\Models\GameHistoryRounds;
 use App\Models\GameHistoryUsers;
 use App\Models\GameUser;
 use App\Models\Language;
+use App\Models\LevelLanguage;
 use App\Models\StatsUserLanguage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,44 @@ class GameController extends Controller
             ]);
         }
 
+    }
+
+    public function getListLanguage($language)
+    {
+        try{
+            $games = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
+                ->where('status', 'pending')
+                ->whereHas('language_level.language', function ($query) use ($language) {
+                    $query->where('name', $language);
+                })
+                ->get();
+
+            $languageModel = Language::where('name', $language)->first();
+
+            $level_language = LevelLanguage::where('language_id', $languageModel->id)->get();
+
+            $statsUserLanguage = StatsUserLanguage::with('user', 'level', 'language')
+                ->where('language_id', $languageModel->id)
+                ->get()
+                ->sortByDesc(function($item) {
+                    return $item->level->level;
+                })
+                ->values();
+
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Games list',
+                'games' => $games,
+                'level_language' => $level_language,
+                'stats_user_language' => $statsUserLanguage,
+            ]);
+        }catch (\Exception $e){
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     public function store(Request $request)
@@ -326,6 +365,7 @@ class GameController extends Controller
 
                 $statsUserLanguage->experience += $gameUser->points / 2;
                 $statsUserLanguage->total_games = $statsUserLanguage->total_games + 1;
+                $statsUserLanguage->total_experience += $gameUser->points / 2;
                 if($index === 0)
                 {
                     $statsUserLanguage->total_wins += $statsUserLanguage->total_wins + 1;

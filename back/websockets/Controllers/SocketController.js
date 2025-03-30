@@ -190,8 +190,8 @@ class SocketController {
         io.to(roomUUID).emit("inGame", response);
       });
 
-      socket.on("lobbie", async ({ token }) => {
-        const response = await apiRequest("/games", token);
+      socket.on("lobbie", async ({ token, language }) => {
+        const response = await apiRequest("/games/"+language, token);
         socket.emit("getLobbies", response);
       });
 
@@ -309,7 +309,7 @@ class SocketController {
         console.log("showLeader")
         game.showLeader = true;
 
-        const response = await apiRequest("/games/" + roomUUID, token, "GET");
+        const response = await apiRequest("/games" + roomUUID, token, "GET");
         await apiRequest('/game/history/round', token, 'POST', {uuid: roomUUID, num_game: game.game_num_random})
         
         io.to(roomUUID).emit("leader", game);
