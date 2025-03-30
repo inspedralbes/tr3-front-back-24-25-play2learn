@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
 import Cookies from "js-cookie";
-
 interface Language {
   id: number;
   name: string;
@@ -24,7 +23,7 @@ function App() {
   const [showAddLanguage, setShowAddLanguage] = useState(false);
   const [newLanguage, setNewLanguage] = useState("");
   const [idNewLanguage, setIdNewLanguage] = useState(0);
-  const { isAuthenticated, token } = useContext(AuthenticatorContext);
+  const { isAuthenticated, token, user } = useContext(AuthenticatorContext);
   const router = useRouter();
 
   const toggleAddLanguage = () => {
@@ -78,7 +77,7 @@ function App() {
             id: lng.language.id,
             name: lng.language.name,
             level: lng.level.level,
-            progress: lng.experience,
+            progress: (lng.experience*100)/lng.level.experience,
           })
         );
         setLanguages(fetchedLanguages);
@@ -134,6 +133,25 @@ function App() {
     Cookies.set("lngActive", language.name, { expires: 7 });
   }
 
+  function formatRelativeTime(dateString: any) {
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffInSeconds = Math.floor((now - past) / 1000);
+  
+    if (diffInSeconds < 60) {
+      return "hace unos segundos";
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `hace ${minutes} minuto${minutes > 1 ? "s" : ""}`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `hace ${hours} hora${hours > 1 ? "s" : ""}`;
+    } else {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `hace ${days} día${days > 1 ? "s" : ""}`;
+    }
+  }
+
   return (
     <div className="hidden md:block md:w-64 bg-indigo-900/50 p-6 border-r border-indigo-700">
       <h2 className="text-xl font-bold mb-6 flex items-center">
@@ -183,11 +201,11 @@ function App() {
           Daily Streak
         </h3>
         <div className="flex items-center mt-2">
-          <div className="text-2xl font-bold text-yellow-400">7</div>
+          <div className="text-2xl font-bold text-yellow-400">1</div>
           <div className="ml-2 text-xs text-indigo-300">days</div>
           <div className="ml-auto flex items-center text-xs text-indigo-300">
             <Clock size={14} className="mr-1" />
-            <span>4h left</span>
+            <span>{user?.created_at ? formatRelativeTime(user.created_at) : ""}</span>
           </div>
         </div>
       </div>

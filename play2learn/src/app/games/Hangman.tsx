@@ -204,6 +204,8 @@ export default function Hangman({
       roomUUID: uuid,
       acierto: acierto,
       newGuessedWord: newGuessedWord,
+      language: selectedLanguage,
+      token: token
     });
   };
 

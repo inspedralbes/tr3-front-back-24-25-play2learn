@@ -52,6 +52,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/game/store/stats/finish', [\App\Http\Controllers\GameController::class, 'storeStatsFinishGame']);
     Route::post('/game/history/round', [\App\Http\Controllers\GameController::class, 'storeHistoryRound']);
 
+
+    Route::post('/user/update', [AuthenticatorController::class, 'update']);
 });
 
 Route::get('/test', function () {

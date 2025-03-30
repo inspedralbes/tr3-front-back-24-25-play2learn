@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AchievementsUser;
 use App\Models\Game;
 use App\Models\GameHistoryRounds;
 use App\Models\GameHistoryUsers;
@@ -424,6 +425,11 @@ class GameController extends Controller
                 if($index === 0)
                 {
                     $statsUserLanguage->total_wins += 1;
+                    $achievementFirstWin = AchievementsUser::where('user_id', $gameUser->user_id)
+                        ->where('achievement_id', 1)
+                        ->first();
+                    $achievementFirstWin->progress = 100;
+                    $achievementFirstWin->save();
                 }
                 $statsUserLanguage->save();
             }

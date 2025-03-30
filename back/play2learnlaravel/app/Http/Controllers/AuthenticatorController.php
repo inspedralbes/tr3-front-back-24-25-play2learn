@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Hash;
 
 class AuthenticatorController extends Controller
 {
@@ -229,7 +230,6 @@ class AuthenticatorController extends Controller
         }
     }
 
-
     public function googleRedirect()
     {
         try {
@@ -290,4 +290,72 @@ class AuthenticatorController extends Controller
 
         return view('password.change', ['user' => $user]);
     }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        // Definimos las reglas de validación con "sometimes" para campos opcionales
+        $rules = [
+            'email' => 'sometimes|nullable|email',
+            'name' => 'sometimes|nullable|string|max:255',
+            'username' => 'sometimes|nullable|string|max:255|unique:users,username,' . $user->id,
+            'profile_pic' => 'sometimes|nullable|url',
+            // Si se quiere cambiar la contraseña, deben venir ambos campos
+            'password.current' => 'sometimes|required_with:password.new|string|min:6',
+            'password.new' => 'sometimes|required_with:password.current|string|min:6|different:password.current'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        try {
+            // Actualizar solo los campos que vienen en la solicitud
+            if ($request->has('email')) {
+                $user->email = $request->input('email');
+            }
+            if ($request->has('name')) {
+                $user->name = $request->input('name');
+            }
+            if ($request->has('username')) {
+                $user->username = $request->input('username');
+            }
+            if ($request->has('profile_pic')) {
+                $user->profile_pic = $request->input('profile_pic')
+                    ?: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
+            }
+
+            // Actualizar contraseña si se proporcionan ambos campos
+            if ($request->filled('password.current') && $request->filled('password.new')) {
+                if (Hash::check($request->input('password.current'), $user->password)) {
+                    $user->password = Hash::make($request->input('password.new'));
+                } else {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'La contraseña actual es incorrecta.'
+                    ], 400);
+                }
+            }
+
+            $user->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Usuario actualizado exitosamente.',
+                'user' => Auth::user()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $e->getMessage()
+            ]);
+        }
+    }
+
 }

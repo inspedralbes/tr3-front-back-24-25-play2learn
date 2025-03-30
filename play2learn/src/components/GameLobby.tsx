@@ -130,7 +130,7 @@ const GameLobby: React.FC = () => {
     const newErrors: ErrorGame = {
       name_error: game.name.trim() === "" ? "El nombre no puede estar vacío" : "",
       password_error: game.password.trim() === "" ? "La contraseña no puede estar vacía" : "",
-      id_level_language_error: game.id_level_language === -1 ?  "El nivel de idioma es obligatorio":"",
+      id_level_language_error: game.id_level_language === 0 || game.id_level_language === -1 ? "El nivel de idioma es obligatorio" : "",
       max_time: game.max_time > 10 ? "El tiempo máximo debe ser mayor a 0" : "",
     };
 
@@ -143,12 +143,14 @@ const GameLobby: React.FC = () => {
         ...prevErrorGame,
         ...newErrors,
       }));
+      return;
     } else {
       // Si no hay errores, puedes proceder con la lógica de tu juego
+      showLoader();
+      socket.emit("setLobbies", { token: token || "", game, language: selectedLanguage });
       console.log("Todos los datos son correctos, puedes continuar.");
     }
 
-    socket.emit("setLobbies", { token: token || "", game, language: selectedLanguage });
   };
 
   const handleGameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,6 +192,7 @@ const GameLobby: React.FC = () => {
     });
 
     socket.on("lobbieCreated", (data) => {
+      hideLoader();
       console.log("escuchando");
       setWaitingRooms(data.games);
       router.push("/lobby/" + data.gameCreated.uuid);
@@ -278,9 +281,12 @@ const GameLobby: React.FC = () => {
                   placeholder="Enter room name"
                   type="text"
                   onChange={handleGameChange}
-                  value={game?.name || ""}
+                  value={game.name}
                   className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
+                {errorGame.name_error && (
+                  <span className="text-red-500 text-sm">{errorGame.name_error}</span>
+                )}
               </div>
 
               <div>
@@ -292,10 +298,16 @@ const GameLobby: React.FC = () => {
                   placeholder="Enter password"
                   type="text"
                   onChange={handleGameChange}
-                  value={game?.password || ""}
+                  value={game.password}
                   className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white placeholder-indigo-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
+                {errorGame.password_error && (
+                  <span className="text-red-500 text-sm">
+                    {errorGame.password_error}
+                  </span>
+                )}
               </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Difficulty
@@ -303,12 +315,7 @@ const GameLobby: React.FC = () => {
                 <select
                   name="id_level_language"
                   value={game.id_level_language}
-                  onChange={(e) =>
-                    setGame((prev) => ({
-                      ...prev,
-                      id_level_language: parseInt(e.target.value),
-                    }))
-                  }
+                  onChange={handleGameChange}
                   className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
                 >
                   <option value="-1">Select difficulty</option>
@@ -318,6 +325,11 @@ const GameLobby: React.FC = () => {
                     </option>
                   ))}
                 </select>
+                {errorGame.id_level_language_error && (
+                  <span className="text-red-500 text-sm">
+                    {errorGame.id_level_language_error}
+                  </span>
+                )}
               </div>
 
               <div>
@@ -358,6 +370,11 @@ const GameLobby: React.FC = () => {
                     {game.max_time}
                   </span>
                 </div>
+                {errorGame.max_time && (
+                  <span className="text-red-500 text-sm">
+                    {errorGame.max_time}
+                  </span>
+                )}
               </div>
 
               <div className="pt-4">
@@ -417,7 +434,7 @@ const GameLobby: React.FC = () => {
                     </div>
 
                     <button
-                      className={`px-5 py-2 rounded-lg font-medium flex items-center ${room.participants?.length === room.max_players
+                      className={`px-5 py-2 rounded-lg font-medium flex items-center cursor-pointer ${room.participants?.length === room.max_players
                         ? "bg-indigo-700/50 text-indigo-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white shadow-lg shadow-emerald-900/30"
                         }`}

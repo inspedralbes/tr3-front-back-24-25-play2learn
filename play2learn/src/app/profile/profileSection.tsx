@@ -283,9 +283,9 @@ const ProfileSection: React.FC = () => {
               )}
             </div>
             
-            <button className="w-full mt-4 py-2 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-sm font-medium transition-all">
+            {/* <button className="w-full mt-4 py-2 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-sm font-medium transition-all">
               View Game History
-            </button>
+            </button> */}
           </div>
 
           {/* Language Progress */}
