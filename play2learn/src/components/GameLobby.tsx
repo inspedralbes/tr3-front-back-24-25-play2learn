@@ -421,7 +421,7 @@ const GameLobby: React.FC = () => {
                     </div>
                     <div className="bg-indigo-700 px-3 py-1 rounded-full text-sm flex items-center">
                       <Star size={14} className="mr-1 text-yellow-400" />
-                      <span>{room.language_level.level}</span>
+                      <span>{room.language_level?.level}</span>
                     </div>
                   </div>
                 </div>
