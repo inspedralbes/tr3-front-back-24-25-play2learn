@@ -1,6 +1,6 @@
 "use client";
+import { useEffect, useState, useContext, use } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState, useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { Clock, X, Keyboard, User, Clock3 } from "lucide-react";
@@ -8,20 +8,50 @@ import socket from "@/services/websockets/socket";
 
 interface Participant {
   id: number;
-  username: string;
+  user_id: number;
+  user: User;
   rol: string;
-  totalPoints: number;
-}
-
-interface Player extends Participant {
   points: number;
 }
 
-interface LobbyProps {
-  id_language_level: number;
-  players: Player[];
-  max_powers: number;
+interface Player extends Participant {
+  isActive: boolean;
+  word: string;
+  localPoints: number;
+  time: number;
+}
+
+interface User {
+  id: number;
+  name: string;
+  username: string;
+  profile_pic: string;
+}
+
+interface LanguageLevel {
+  id: number;
+  language_id: number;
+  language: Language;
+  level: string;
+}
+
+interface Language {
+  id: number;
+  name: string;
+}
+
+interface Game {
+  id: number;
+  id_level_language: number;
+  language_level: LanguageLevel;
+  uuid: string;
+  password: string;
+  name: string;
+  n_rounds: number;
+  max_clues: number;
   max_time: number;
+  max_players: number;
+  participants: Participant[] | null;
 }
 
 const POINTS_PER_CORRECT_LETTER = 50;
@@ -30,12 +60,16 @@ const POINTS_PENALTY_LETTER = -25;
 const POINTS_PENALTY_WORD = -150;
 const POINTS_PENALTY_NO_RESPONSE = -5;
 
-const Hangman: React.FC = () => {
-  const params = useParams<{ uuid: string }>();
+export default function Hangman({
+  participants,
+  game,
+}: {
+  participants: Participant[];
+  game: Game;
+}) {
+  const uuid = game.uuid;
   const router = useRouter();
   const { user, isAuthenticated } = useContext(AuthenticatorContext);
-
-  const [lobbyProps, setLobbyProps] = useState<LobbyProps | null>(null);
   const [word, setWord] = useState<string>("");
   const [guessedWord, setGuessedWord] = useState<string>("");
   const [turnUserId, setTurn] = useState<number>(0);
@@ -43,6 +77,7 @@ const Hangman: React.FC = () => {
   const [time, setTime] = useState<number>(0);
   const [inputLetter, setInputLetter] = useState<string>("");
   const [inputWord, setInputWord] = useState<string>("");
+  const [points, setPoints] = useState<number>(0);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -51,59 +86,119 @@ const Hangman: React.FC = () => {
   };
 
   const getPlayer = (id: number) => {
-    return lobbyProps?.players.find((player) => player.id === id);
-  }
+    return participants.find((player) => player.user.id === id);
+  };
 
   const getUsername = (id: number) => {
     const player = getPlayer(id);
 
-    return player?.username || "Desconocido";
+    return player?.user.username || "Desconocido";
   };
-
   const drawHangman = (attempts: number) => {
-    return (
-      <div>
-        <p>muñeco</p>
-      </div>
-    );
+    let hangman = null;
+
+    switch (attempts) {
+      case 0:
+        hangman = hangman = `
+ +---+
+ |   |
+     |
+     |
+     |
+=========`;
+      case 1:
+        hangman = `
+ +---+
+ |   |
+ O   |
+     |
+     |
+=========`;
+        break;
+      case 2:
+        hangman = `
+ +---+
+ |   |
+ O   |
+ |   |
+     |
+=========`;
+        break;
+      case 3:
+        hangman = `
+ +---+
+ |   |
+ O   |
+/|\  |
+     |
+=========`;
+        break;
+      case 4:
+        hangman = `
+ +---+
+ |   |
+ O   |
+/|\  |
+/    |
+=========`;
+        break;
+      default:
+        hangman = `
+ +---+
+ |   |
+ O   |
+/|\\  |
+/ \\  |
+=========`;
+    }
+    return <pre className="font-mono text-4xl whitespace-pre">{hangman}</pre>;
   };
 
-  const hostPlayer = lobbyProps?.players.find(
-    (player) => player.rol === "host"
-  );
+  const hostPlayer = game.participants?.find((player) => player.rol === "host");
 
   const isMyTurn = turnUserId === user?.id;
 
   const setPointsUsers = (points: number) => {
     const player = getPlayer(turnUserId);
-    
-    console.log(player);
+
     if (player) {
-      player.points += points;
-    }else console.log("no se encontro el jugador");
+      if (player.user_id === user?.id) {
+        setPoints((prevPoints) => prevPoints + points);
+        console.log("---------------------");
+        console.log("Turno: ", turnUserId);
+        console.log("Seteando puntos a jugador: ", player.user.username);
+        console.log("Puntos actuales: ", player.points);
+        player.points += points;
+        console.log("Puntos modificados: ", player.points);
+        console.log("---------------------");
+      }
+    } else console.log("no se encontro el jugador");
   };
 
   const letterGuess = () => {
     let acierto = true;
     let newGuessedWord = "";
     if (!guessedWord.includes(inputLetter) && word.includes(inputLetter)) {
-        newGuessedWord = word
+      newGuessedWord = word
         .split("")
         .map((letter, index) =>
           letter === inputLetter ? letter : guessedWord[index]
         )
         .join("");
-      
+
       setPointsUsers(POINTS_PER_CORRECT_LETTER);
       setGuessedWord(newGuessedWord);
     } else {
       setPointsUsers(POINTS_PENALTY_LETTER);
       acierto = false;
     }
-    
+
     setInputLetter("");
-    console.log(`roomUUID: ${params.uuid}, acierto: ${acierto}, newGuessedWord: ${newGuessedWord}`);
-    socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto, newGuessedWord: newGuessedWord });
+    socket.emit("nextTurn", {
+      roomUUID: uuid,
+      acierto: acierto,
+      newGuessedWord: newGuessedWord,
+    });
   };
 
   const wordGuess = () => {
@@ -120,7 +215,11 @@ const Hangman: React.FC = () => {
     }
 
     setInputWord("");
-    socket.emit("nextTurn", { roomUUID: params.uuid, acierto: acierto, newGuessedWord: newGuessedWord });
+    socket.emit("nextTurn", {
+      roomUUID: uuid,
+      acierto: acierto,
+      newGuessedWord: newGuessedWord,
+    });
   };
 
   useEffect(() => {
@@ -129,40 +228,15 @@ const Hangman: React.FC = () => {
       return;
     }
 
-    const fetchGameData = async () => {
-      try {
-        const response = await apiRequest(`/games/${params.uuid}`, "GET");
-        const data = response.game;
+    socket.emit("getWordHangman", { roomUUID: uuid });
+    socket.emit("getTurn", { roomUUID: uuid });
 
-        const p = data.participants.map(
-          (player: {
-            user_id: number;
-            user: { username: string };
-            rol: string;
-            points: number;
-          }) => ({
-            id: player.user_id,
-            username: player.user.username,
-            rol: player.rol,
-            points: 0,
-          })
-        );
-
-        setLobbyProps({
-          id_language_level: data.id_level_language,
-          players: p,
-          max_powers: data.max_clues,
-          max_time: data.max_time,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchGameData();
-
-    socket.emit("getWordHangman", { roomUUID: params.uuid });
-    socket.emit("getTurn", { roomUUID: params.uuid });
+    if (hostPlayer?.user_id === user?.id) {
+      socket.emit("startTimer", {
+        roomUUID: uuid,
+        maxTime: game.max_time,
+      });
+    }
 
     socket.on("wordHangman", ({ newWord }) => {
       if (newWord && newWord.length > 0) {
@@ -177,68 +251,62 @@ const Hangman: React.FC = () => {
     socket.on("newGuessedWord", ({ newGuessedWord }) => {
       setGuessedWord(newGuessedWord);
     });
-    
+    socket.on("timerTick", ({ time }) => {
+      setTime(time);
+    });
 
     return () => {
       socket.off("wordHangman");
       socket.off("turn");
       socket.off("newGuessedWord");
+      socket.off("timerTick");
     };
   }, [isAuthenticated, router]);
 
   useEffect(() => {
-    if (lobbyProps === null) return;
+    if (turnUserId === 0) return;
 
-    if (hostPlayer?.id === user?.id)
-      socket.emit("startTimer", {
-        roomUUID: params.uuid,
-        maxTime: lobbyProps.max_time,
-      });
-
-    socket.on("timerTick", ({ time }) => {
-      // console.log(time);
-      setTime(time);
-    });
-    socket.on("timeOut", () =>{
-      // const p = lobbyProps?.players.find(
-      //   (player) => player.rol === "host"
-      // );
-      lobbyProps?.players.forEach((player) => {
-        if (player.id) {
-          player.points += POINTS_PENALTY_NO_RESPONSE;
-        }
-      });
-    });
+    // socket.on("timeOut", () => {
+    //   setPointsUsers(POINTS_PENALTY_NO_RESPONSE);
+    // });
     socket.on("gameOver", () => {
       const player = getPlayer(user?.id || 0);
       console.log(player);
+      console.log("Puntos: ", points);
       router.push(`/`);
     });
 
     return () => {
-      socket.off("timerTick");
-      socket.off("timeOut");
+      //   socket.off("timeOut");
       socket.off("gameOver");
     };
-  }, [lobbyProps]);
+  }, [turnUserId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 text-white p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center space-x-2">
-            <User className="w-6 h-6" />
-            <span className="text-xl font-bold">{user?.username}</span>
-            <div className="text-xl font-bold">{word}</div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <User className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <span className="text-lg sm:text-xl font-bold text-white">
+              {user?.username}
+            </span>
+            <div className="text-lg sm:text-xl font-bold text-white">
+              {word}
+            </div>
           </div>
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 sm:space-x-6 w-full sm:w-auto justify-between sm:justify-end">
             <div className="flex items-center space-x-2">
-              <Clock className="w-6 h-6" />
-              <span className="text-xl">{formatTime(time ?? 0)}</span>
+              <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              <span className="text-lg sm:text-xl text-white">
+                {formatTime(time ?? 0)}
+              </span>
             </div>
             <div className="flex items-center space-x-2">
-              <X className="w-6 h-6" />
-              <span className="text-xl">{guesses} errores</span>
+              <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              <span className="text-lg sm:text-xl text-white">
+                {guesses} errores
+              </span>
             </div>
           </div>
         </div>
@@ -259,10 +327,14 @@ const Hangman: React.FC = () => {
         </div>
 
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-xl">
-          <div className="flex justify-center mb-8">{drawHangman(guesses)}</div>
+          <div className="flex justify-center items-center mb-8 sm:mb-12 text-white transform scale-75 sm:scale-90 md:scale-100">
+            {drawHangman(guesses)}
+          </div>
 
-          <div className="text-center mb-12">
-            <p className="text-6xl font-mono tracking-widest">{guessedWord}</p>
+          <div className="text-center mb-8 sm:mb-12">
+            <p className="text-4xl sm:text-5xl md:text-6xl font-mono tracking-widest text-white break-all">
+              {guessedWord}
+            </p>
           </div>
 
           <div
@@ -324,6 +396,4 @@ const Hangman: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default Hangman;
+}
