@@ -65,7 +65,7 @@ function LeaderGame({ game, participants }: { game: Game; participants: Particip
 
         apiRequest("/games/lobby/" + game.uuid, "GET")
             .then((response) => {
-                setParticipantsOrderedByPoints(response.game.participants.sort((a, b) => b.points - a.points));
+                response.game.participants.sort((a: Participant, b: Participant) => b.points - a.points)
             })
 
     }, [isAuthenticated, router]);
