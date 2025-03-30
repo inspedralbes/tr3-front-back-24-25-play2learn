@@ -112,21 +112,6 @@ function LeaderGame({ game, participants }: { game: Game; participants: Particip
         return <LoaderComponent />;
     } else {
         return (
-            // <div>
-            //     <h1>LeaderGame</h1>
-            //     <p>{game.name}</p>
-
-            //     {participantsOrderedByPoints.map((participant) => (
-            //         <div key={participant.id}>
-            //             <p>{participant.user.name}</p>
-            //             <p>{participant.rol}</p>
-            //             <p>{participant.points}</p>
-            //         </div>
-            //     ))}
-
-            //     <button onClick={handleNextGame}>Next Game</button>
-            // </div>
-
             <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 py-8">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
                     {/* Header */}

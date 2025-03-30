@@ -450,7 +450,7 @@ class SocketController {
 
         if (newGuessedWord !== "") socket.broadcast.to(roomUUID).emit("newGuessedWord", { newGuessedWord: newGuessedWord });
 
-        if (newGuessedWord == getWordHangman(roomUUID)) {
+        if (newGuessedWord == getWordHangman(roomUUID) || game.guessesErrors >= 5) {
           if (shouldGenerateWordHangman(roomUUID)) {
             const word = await generateWordHangman(roomUUID, language, token);
             io.to(roomUUID).emit("wordHangman", { newWord: word });
@@ -458,6 +458,8 @@ class SocketController {
             io.to(roomUUID).emit("gameOver");
             return;
           }
+          game.guessesErrors = 0;
+
         } else {
           console.log("no esta entrando nextTurnaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         }
@@ -472,6 +474,11 @@ class SocketController {
         startTurnTimer(roomUUID, game.time);
       });
 
+      socket.on('statsUserLanguage', async({token, language})=>{
+        const response = await apiRequest(`/user/getUserStatsLanguage/${language}`, token);
+        console.log(response);
+        socket.emit('getNewStatsUserLanguage', response)
+      });
       //game sockets cadenas encadenas-------------------------------
       socket.on('lastWord', ({ roomUUID, word }) => {
         const game = confGame.find((game) => game.room === roomUUID);

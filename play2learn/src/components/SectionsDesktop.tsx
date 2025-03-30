@@ -29,9 +29,7 @@ function App() {
   return (
     <div className="hidden md:flex md:w-20 bg-indigo-950 flex-col items-center py-8 border-r border-indigo-700">
       <div className="mb-10">
-        <div className="h-12 w-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-          <Globe className="h-6 w-6 text-white" />
-        </div>
+          <img className="h-12 w-12 text-white" src="/img/logo.png" />
       </div>
 
       <nav className="flex flex-col items-center space-y-8 flex-1">
@@ -66,12 +64,6 @@ function App() {
             <Trophy size={24} />
           </button>
         </Link>
-        <button className="p-3 rounded-xl text-indigo-400 hover:bg-indigo-800 transition-all">
-          <BookOpen size={24} />
-        </button>
-        <button className="p-3 rounded-xl text-indigo-400 hover:bg-indigo-800 transition-all">
-          <Settings size={24} />
-        </button>
       </nav>
 
       <button 

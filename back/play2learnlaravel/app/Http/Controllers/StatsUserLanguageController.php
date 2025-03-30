@@ -22,8 +22,8 @@ class StatsUserLanguageController extends Controller
         try {
             $userId = Auth::user()->id;
 
-            $statsLanguages = StatsUserLanguage::where('user_id', $userId)
-                ->with('language')
+            $statsLanguages = StatsUserLanguage::with('level', 'language')
+                ->where('user_id', $userId)
                 ->get();
 
             return response()->json([

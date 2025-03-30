@@ -16,7 +16,7 @@ interface Language {
 }
 
 function App() {
-  const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
+  const { selectedLanguage, setSelectedLanguage, showLoader } = useContext(NavBarContext);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [allLanguages, setAllLanguages] = useState<
     { id: number; name: string }[]
@@ -75,7 +75,7 @@ function App() {
           (lng: any) => ({
             id: lng.language.id,
             name: lng.language.name,
-            level: lng.level_id,
+            level: lng.level.level,
             progress: lng.experience,
           })
         );
@@ -125,9 +125,10 @@ function App() {
   }, [languages]);
 
   const handleChangeLanguge = (language: Language) =>{
+    showLoader();
     setSelectedLanguage(language.name)
     socket.emit("lobbie", { token: token || "", language: language.name });
-
+    socket.emit("statsUserLanguage", {token: token, language: language.name});
   }
 
   return (

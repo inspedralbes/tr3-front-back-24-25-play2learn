@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react';
 import { Users, Clock, Star, Trophy, ChevronRight, Play, X, Plus, Search, Loader2 } from 'lucide-react';
-import {NavBarContext} from "@/contexts/NavBarContext";
+import { NavBarContext } from "@/contexts/NavBarContext";
 import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import { useRouter } from "next/navigation";
@@ -49,7 +49,14 @@ const GameLobby: React.FC = () => {
     participants: Participant[] | null;
   }
 
-  interface Level{
+  interface ErrorGame {
+    name_error: string,
+    password_error: string,
+    id_level_language_error: string,
+    max_time: string
+  }
+
+  interface Level {
     id: number,
     level: number,
     experience: number
@@ -87,7 +94,7 @@ const GameLobby: React.FC = () => {
     max_players: 4,
     participants: null,
   });
-
+  const [errorGame, setErrorGame] = useState<ErrorGame>({} as ErrorGame);
   const router = useRouter();
   const { selectedLanguage } = useContext(NavBarContext);
   const { user, isAuthenticated, token } = useContext(AuthenticatorContext);
@@ -117,8 +124,30 @@ const GameLobby: React.FC = () => {
     setGameSelected(room);
   };
 
-  const   handleCreateRoom = () => {
-    console.log(game)
+  const handleCreateRoom = () => {
+    console.log(game);
+
+    const newErrors: ErrorGame = {
+      name_error: game.name.trim() === "" ? "El nombre no puede estar vacío" : "",
+      password_error: game.password.trim() === "" ? "La contraseña no puede estar vacía" : "",
+      id_level_language_error: game.id_level_language === -1 ?  "El nivel de idioma es obligatorio":"",
+      max_time: game.max_time > 10 ? "El tiempo máximo debe ser mayor a 0" : "",
+    };
+
+    // Comprobar si hay algún error
+    const hasError = Object.values(newErrors).some(error => error !== "" && error !== 0);
+
+    // Actualizar estado solo si hay errores
+    if (hasError) {
+      setErrorGame(prevErrorGame => ({
+        ...prevErrorGame,
+        ...newErrors,
+      }));
+    } else {
+      // Si no hay errores, puedes proceder con la lógica de tu juego
+      console.log("Todos los datos son correctos, puedes continuar.");
+    }
+
     socket.emit("setLobbies", { token: token || "", game, language: selectedLanguage });
   };
 
@@ -250,10 +279,20 @@ const GameLobby: React.FC = () => {
         </h1>
         <button
           onClick={toggleCreateRoom}
-          className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center transition-all shadow-lg shadow-purple-900/30"
+          className="bg-gradient-to-r cursor-pointer from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center transition-all shadow-lg shadow-purple-900/30"
         >
-          <Plus size={18} className="mr-2" />
-          Create Room
+          {!showCreateRoom ? (
+            <>
+              <Plus size={18} className="mr-2" />
+              Create Room
+            </>
+          ) : (
+            <>
+              Cargando...
+              <Loader2 className="w-5 h-5 ms-2 animate-spin" />
+            </>
+          )}
+
         </button>
       </div>
 
@@ -279,7 +318,7 @@ const GameLobby: React.FC = () => {
               <h2 className="text-xl font-bold">Create Game Room</h2>
               <button
                 onClick={toggleCreateRoom}
-                className="p-2 rounded-full hover:bg-indigo-800"
+                className="p-2 rounded-full hover:bg-indigo-800 cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -328,7 +367,7 @@ const GameLobby: React.FC = () => {
                   }
                   className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
                 >
-                  <option value="">Select difficulty</option>
+                  <option value="-1">Select difficulty</option>
                   {languageLevels.map((level) => (
                     <option key={level.id} value={level.id}>
                       {level.level}
@@ -359,26 +398,6 @@ const GameLobby: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Max Clues
-                </label>
-                <div className="flex justify-between items-center">
-                  <input
-                    type="range"
-                    min="0"
-                    max="5"
-                    value={game.max_clues}
-                    onChange={handleGameChange}
-                    name="max_clues"
-                    className="w-full h-2 bg-indigo-800 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <span className="ml-3 bg-indigo-800 px-2 py-1 rounded-md">
-                    {game.max_clues}
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
                   Max Time Round
                 </label>
                 <div className="flex justify-between items-center">
@@ -399,7 +418,7 @@ const GameLobby: React.FC = () => {
 
               <div className="pt-4">
                 <button
-                  className="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 rounded-lg font-medium transition-all shadow-lg"
+                  className="w-full py-3 bg-gradient-to-r cursor-pointer from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 rounded-lg font-medium transition-all shadow-lg"
                   onClick={handleCreateRoom}
                 >
                   Create & Start
@@ -477,14 +496,14 @@ const GameLobby: React.FC = () => {
             </div>
           )}
         </div>
-      ):
-      (
-        <>
-        <div className="flex items-center justify-center">
-          <Loader2 className="animate-spin" size={40}/>
-        </div>
-        </>
-      )}
+      ) :
+        (
+          <>
+            <div className="flex items-center justify-center">
+              <Loader2 className="animate-spin" size={40} />
+            </div>
+          </>
+        )}
       {/* Create Room Modal */}
       {showPasswordLobby && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
@@ -547,8 +566,8 @@ const GameLobby: React.FC = () => {
               key={player.id}
               className="flex items-center p-3 bg-indigo-900/30 rounded-lg"
             >
-              <div className="w-8 text-center font-bold">#{index+1}</div>
-              <img className="w-8 h-8 rounded-full  flex items-center justify-center text-xs font-bold ml-3" src={player.user.profile_pic}/>
+              <div className="w-8 text-center font-bold">#{index + 1}</div>
+              <img className="w-8 h-8 rounded-full  flex items-center justify-center text-xs font-bold ml-3" src={player.user.profile_pic} />
               <div className="ml-3 font-medium">{player.user.username}</div>
               <div className="ml-auto font-bold text-yellow-400">
                 {player.level.level} lvl

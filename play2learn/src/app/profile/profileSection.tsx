@@ -6,9 +6,10 @@ import { useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
+import socket from '@/services/websockets/socket';
 
 const ProfileSection: React.FC = () => {
-  const { selectedLanguage, setActiveSection } = useContext(NavBarContext);
+  const { selectedLanguage, setActiveSection, hideLoader } = useContext(NavBarContext);
   const { user, isAuthenticated } = useContext(AuthenticatorContext);
   
   const router = useRouter();
@@ -95,6 +96,8 @@ const ProfileSection: React.FC = () => {
   const [gameHistory, setGameHistory] = useState<GameHistory[]>([]);
 
   const initStats = async () => {
+    hideLoader();
+
     const response = await apiRequest(`/user/getUserStatsLanguage/${selectedLanguage}`);
     console.log(response);
     if (response.status === 'success') {
@@ -113,6 +116,14 @@ const ProfileSection: React.FC = () => {
       router.push('/authenticate/login');
     }
 
+    socket.on('getNewStatsUserLanguage', (data) =>{
+      hideLoader();
+      if (data.status === 'success') {
+        setAchievements(data.achievements);
+        setStats(data.statsLanguage);
+        setGameHistory(data.gameHistoryUser);
+      }
+    })
     initStats();
   }, [isAuthenticated, router]);
 
