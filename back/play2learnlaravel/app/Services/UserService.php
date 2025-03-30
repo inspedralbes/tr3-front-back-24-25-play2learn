@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Archievements;
-use App\Models\ArchievementsUser;
+use App\Models\Achievements;
+use App\Models\AchievementsUser;
 use App\Models\StatsUserLanguage;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +15,7 @@ class UserService
     /***
      * This function create new user with the default archivments and global stats...
      * Steps: - Create User
-     *        - Create Archievements Users
+     *        - Create achievements Users
      * @param $user
      * @return User
      */
@@ -24,27 +24,28 @@ class UserService
         $newUser = new User();
         $newUser->name = $user['name'];
         $newUser->email = $user['email'];
+        $newUser->profile_pic = $user['profile_pic'] ?? 'https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg';
         $newUser->username = $user['username'];
         $newUser->password = $user['password'];
         $newUser->save();
 
-        //init the active archievements for new user
-        $archievements = Archievements::select('id')
+        //init the active achievements for new user
+        $achievements = Achievements::select('id')
             ->where('status', 'active')->get();
 
-        foreach ($archievements as $archievement) {
-            $defaultArchievement = new ArchievementsUser();
-            $defaultArchievement->user_id = $newUser->id;
-            $defaultArchievement->archievement_id = $archievement->id;
-            $defaultArchievement->progress = 0.00;
-            $defaultArchievement->save();
+        foreach ($achievements as $achievement) {
+            $defaultachievement = new AchievementsUser();
+            $defaultachievement->user_id = $newUser->id;
+            $defaultachievement->achievement_id = $achievement->id;
+            $defaultachievement->progress = 0.00;
+            $defaultachievement->save();
         }
 
         //init the default stats for new user
         $statsUserLanguages = new StatsUserLanguage();
         $statsUserLanguages->user_id = $newUser->id;
         $statsUserLanguages->language_id = 1;
-        $statsUserLanguages->level = 0;
+        $statsUserLanguages->level_id = 1;
         $statsUserLanguages->experience = 0;
         $statsUserLanguages->total_games = 0;
         $statsUserLanguages->total_wins = 0;

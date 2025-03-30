@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { AuthProvider } from "@/contexts/AuthContext";
+import { NavBarProvider } from "@/contexts/NavBarContext";
 
 import ManagerSideBar from "@/components/sidebar/ManagerSideBar";
 import { AuthenticatorProvider } from "@/contexts/AuthenticatorContext";
@@ -35,13 +35,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthenticatorProvider>
-          <AuthProvider>
-            <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white">
+          <NavBarProvider>
+            <div className="min-h-screen h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white">
               <ManagerSideBar>
                 {children}
               </ManagerSideBar>
             </div>
-          </AuthProvider>
+          </NavBarProvider>
         </AuthenticatorProvider>
       </body>
     </html>
