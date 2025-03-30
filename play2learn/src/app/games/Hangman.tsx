@@ -69,7 +69,7 @@ export default function Hangman({
 }) {
   const uuid = game.uuid;
   const router = useRouter();
-  const { user, isAuthenticated } = useContext(AuthenticatorContext);
+  const { user, isAuthenticated, token } = useContext(AuthenticatorContext);
   const [word, setWord] = useState<string>("");
   const [guessedWord, setGuessedWord] = useState<string>("");
   const [turnUserId, setTurn] = useState<number>(0);
@@ -171,6 +171,10 @@ export default function Hangman({
         player.points += points;
         console.log("Puntos modificados: ", player.points);
         console.log("---------------------");
+        apiRequest('/game/store/stats/user', 'POST', {player: player})
+        .then((response)=>{
+          console.log(response);
+        });
       }
     } else console.log("no se encontro el jugador");
   };
@@ -273,7 +277,9 @@ export default function Hangman({
       const player = getPlayer(user?.id || 0);
       console.log(player);
       console.log("Puntos: ", points);
-      router.push(`/`);
+      socket.emit("showLeader", { token: token, roomUUID: game.uuid });
+
+      // router.push(`/`);
     });
 
     return () => {
@@ -283,7 +289,7 @@ export default function Hangman({
   }, [turnUserId]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-blue-500 text-white p-8">
+    <div className="min-h-screen text-white p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
           <div className="flex items-center space-x-2 w-full sm:w-auto">

@@ -17,7 +17,7 @@ interface NavBarContextProps {
 export const NavBarContext = createContext<NavBarContextProps>({
   activeSection: 'lobby',
   setActiveSection: () => {},
-  selectedLanguage: 'Spanish',
+  selectedLanguage: 'Castellano',
   setSelectedLanguage: () => {},
   mobileMenuOpen: false,
   setMobileMenuOpen: () => {},
@@ -32,7 +32,7 @@ interface NavBarProviderProps {
 
 export const NavBarProvider: React.FC<NavBarProviderProps> = ({ children }) => {
   const [activeSection, setActiveSection] = useState('lobby');
-  const [selectedLanguage, setSelectedLanguage] = useState('Spanish');
+  const [selectedLanguage, setSelectedLanguage] = useState('Castellano');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 

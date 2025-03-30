@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthenticatorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use \App\Http\Controllers\AuthenticatorController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -22,7 +22,6 @@ Route::prefix('/auth')->group(function () {
 });
 
 
-
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/checkAuth', [AuthenticatorController::class, 'checkAuth']);
     Route::prefix('/user')->group(function () {
@@ -31,16 +30,20 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/getUserStatsLanguage/{languageId}', [\App\Http\Controllers\StatsUserLanguageController::class, 'getUserStatsLanguage']);
     });
 
-   Route::prefix('/games')->group(function () {
-       Route::get('/', [\App\Http\Controllers\GameController::class, 'getList']);
-       Route::post('/store', [\App\Http\Controllers\GameController::class, 'store']);
-       Route::get('/{gameUUID}', [\App\Http\Controllers\GameController::class, 'getGame']);
-       Route::get('/join/{gameUUID}', [\App\Http\Controllers\GameController::class, 'join']);
-       Route::get('/leave/{gameUUID}', [\App\Http\Controllers\GameController::class, 'leaveGame']);
-       Route::post('/start', [\App\Http\Controllers\GameController::class, 'startRoom']);
-   });
+    Route::prefix('/games')->group(function () {
+        Route::get('/', [\App\Http\Controllers\GameController::class, 'getList']);
+        Route::post('/store', [\App\Http\Controllers\GameController::class, 'store']);
+        Route::get('/{gameUUID}', [\App\Http\Controllers\GameController::class, 'getGame']);
+        Route::get('/join/{gameUUID}', [\App\Http\Controllers\GameController::class, 'join']);
+        Route::get('/leave/{gameUUID}', [\App\Http\Controllers\GameController::class, 'leaveGame']);
+        Route::post('/start', [\App\Http\Controllers\GameController::class, 'startRoom']);
+    });
 
-   Route::post('/game/store/stats', [\App\Http\Controllers\GameController::class, 'storeStats']);
+    Route::post('/game/store/stats', [\App\Http\Controllers\GameController::class, 'storeStats']);
+    Route::post('/game/store/stats/user', [\App\Http\Controllers\GameController::class, 'storeStatsUser']);
+    Route::post('/game/store/stats/finish', [\App\Http\Controllers\GameController::class, 'storeStatsFinishGame']);
+    Route::post('/game/history/round', [\App\Http\Controllers\GameController::class, 'storeHistoryRound']);
+
 });
 
 Route::get('/test', function () {

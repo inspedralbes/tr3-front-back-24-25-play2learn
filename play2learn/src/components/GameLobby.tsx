@@ -63,7 +63,7 @@ const GameLobby: React.FC = () => {
     uuid: "",
     password: "",
     name: "",
-    n_rounds: 5,
+    n_rounds: 3,
     max_clues: 0,
     max_time: 10,
     max_players: 4,

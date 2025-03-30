@@ -64,7 +64,6 @@ export default function ManagerGames() {
       router.push("/authenticate/login");
       return;
     }
-
     socket.emit("getGame", { token: token || "", roomUUID: params.uuid });
 
     socket.on("inGame", (data) => {
@@ -73,6 +72,7 @@ export default function ManagerGames() {
       setRandomGame(data.game_num_random);
 
       setLeaderView(data.showLeader);
+      console.log(data.game_num_random)
     });
 
     socket.on('chargeGame', (data) => {
@@ -102,6 +102,7 @@ export default function ManagerGames() {
       socket.off("inGame");
       socket.off("chargeGame");
       socket.off("leader");
+      socket.off("participantsLoaders")
     };
   }, [isAuthenticated, router]);
 
@@ -111,7 +112,13 @@ export default function ManagerGames() {
   } else if (leaderView) {
     return <LeaderGame game={game} participants={participants} />;
   } else {
-    return <WordChain participants={participants} game={game} />;
+    switch(randomGame)
+    {
+      case 1:
+        return <WordChain participants={participants} game={game} />;
+      case 2:
+        return <Hangman participants={participants} game={game} />;
+    }
   }
 
 }

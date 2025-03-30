@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\GameHistoryRounds;
+use App\Models\GameHistoryUsers;
 use App\Models\GameUser;
+use App\Models\Language;
+use App\Models\StatsUserLanguage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class GameController extends Controller
 {
     //
     public function getList()
     {
-        try{
+        try {
             $games = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
                 ->where('status', 'pending')
                 ->get();
@@ -25,7 +29,7 @@ class GameController extends Controller
                 'message' => 'Games list',
                 'games' => $games
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -58,7 +62,7 @@ class GameController extends Controller
             ], 422);
         }
 
-        try{
+        try {
             //create game with game setting
             $game = new Game();
             $game->id_level_language = $request->input('id_level_language');
@@ -91,7 +95,7 @@ class GameController extends Controller
                 'gameCreated' => $game,
                 'games' => $gameList
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -101,7 +105,7 @@ class GameController extends Controller
 
     public function getGame($gameUUID)
     {
-        try{
+        try {
             $games = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
                 ->whereIn('status', ['pending', 'in_progress'])
                 ->where('uuid', $gameUUID)
@@ -112,7 +116,7 @@ class GameController extends Controller
                 'status' => 'success',
                 'game' => $games
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -122,7 +126,7 @@ class GameController extends Controller
 
     public function join($gameUUID)
     {
-        try{
+        try {
             $game = Game::where('uuid', $gameUUID)->first();
 
             $gameUser = new GameUser();
@@ -145,7 +149,7 @@ class GameController extends Controller
                 'game' => $game
             ]);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -155,18 +159,18 @@ class GameController extends Controller
 
     public function leaveGame($gameUUID)
     {
-        try{
+        try {
             $game = Game::where('uuid', $gameUUID)->first();
 
             $gameUser = GameUser::where('user_id', Auth::user()->id)
                 ->where('game_id', $game->id)
                 ->first();
 
-            if($gameUser->rol === "host"){
+            if ($gameUser->rol === "host") {
                 $gameUsers = GameUser::where('game_id', $game->id)
                     ->get();
 
-                foreach($gameUsers as $gameUser){
+                foreach ($gameUsers as $gameUser) {
                     $gameUser->delete();
                 }
 
@@ -195,7 +199,7 @@ class GameController extends Controller
                 'games' => $gameList,
                 'game' => $game
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -206,7 +210,7 @@ class GameController extends Controller
     public function startRoom(Request $request)
     {
         // dd($request->all());
-        try{
+        try {
             DB::beginTransaction();
             $game = Game::with('participants')
                 ->where('uuid', $request->input('roomUUID'))
@@ -222,6 +226,16 @@ class GameController extends Controller
             $game->status = 'in_progress';
             $game->save();
 
+            foreach ($game->participants as $participant) {
+                $gameHistoryUser = new GameHistoryUsers();
+                $gameHistoryUser->game_id = $game->id;
+                $gameHistoryUser->user_id = $participant->user_id;
+                $gameHistoryUser->score = 0;
+                $gameHistoryUser->result = "sin definir";
+                $gameHistoryUser->created_at = now();
+                $gameHistoryUser->save();
+            }
+
             DB::commit();
 
             $game->load('participants', 'participants.user', 'language_level', 'language_level.language');
@@ -231,7 +245,7 @@ class GameController extends Controller
                 'message' => 'Game started',
                 'data' => $game
             ]);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -241,8 +255,7 @@ class GameController extends Controller
 
     public function storeStats(Request $request)
     {
-        Log::info($request);
-        try{
+        try {
             $players = $request->players;
 
             foreach ($players as $player) {
@@ -255,14 +268,137 @@ class GameController extends Controller
                 'status' => 'success',
             ]);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
             ]);
         }
+    }
 
-        return $request;
+    public function storeStatsUser(Request $request)
+    {
+        try {
+            $player = $request->player;
 
+            $gameUser = GameUser::findOrFail($player["id"]);
+            $gameUser->points += $player["points"];
+            $gameUser->save();
+
+            return response()->json([
+                'status' => 'success',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function storeStatsFinishGame(Request $request)
+    {
+        try {
+            $uuid = $request->uuid;
+            $language_string = $request->language;
+
+            $game = Game::where('uuid', $uuid)->first();
+            $game->status = 'finished';
+            $game->save();
+
+            $language = Language::where('name', $language_string)->first();
+            Log::info($language);
+            $gameUsers = GameUser::where('game_id', $game->id)
+                ->orderBy('points', 'desc')
+                ->get();
+
+            foreach ($gameUsers as $index => $gameUser) {
+                $gameHistoryUser = GameHistoryUsers::where('game_id', $game->id)
+                    ->where('user_id', $gameUser->user_id)->first();
+                $gameHistoryUser->score = $gameUser->points;
+                $gameHistoryUser->result = $index + 1;
+                $gameHistoryUser->save();
+
+                $statsUserLanguage = StatsUserLanguage::where('language_id', $language->id)
+                    ->where('user_id', $gameUser->user_id)->first();
+                Log::info($statsUserLanguage);
+
+                $statsUserLanguage->experience += $gameUser->points / 2;
+                $statsUserLanguage->total_games = $statsUserLanguage->total_games + 1;
+                if($index === 0)
+                {
+                    $statsUserLanguage->total_wins += $statsUserLanguage->total_wins + 1;
+                }
+                $statsUserLanguage->save();
+            }
+
+            return response()->json([
+                'status' => 'success',
+
+            ]);
+        } catch (
+        \Exception $e
+        ) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function storeHistoryRound(Request $request)
+    {
+        try {
+            $uuid = $request->uuid;
+            $num_game = $request->num_game;
+
+            $gameName = "";
+            switch ($num_game) {
+                case 1:
+                    $gameName = "Palabras encadenas";
+                    break;
+                case 2:
+                    $gameName = "Ahorcado";
+                    break;
+                case 3:
+                    $gameName = "Juego de traducción";
+                    break;
+                default:
+                    $gameName = "No especificado";
+                    break;
+            }
+            $game = Game::where('uuid', $uuid)->first();
+
+            $gameHistoryUsers = GameHistoryUsers::where('game_id', $game->id)->get();
+            foreach ($gameHistoryUsers as $gameHistoryUser) {
+                $gameUser = GameUser::where('game_id', $game->id)
+                    ->where('user_id', $gameHistoryUser->user_id)->first();
+                $gameHistoryUser->gameUser = $gameUser;
+            }
+
+            $gameHistoryUsers = $gameHistoryUsers->sortByDesc(function ($gameHistoryUser) {
+                return $gameHistoryUser->gameUser->points;
+            })->values();
+
+            foreach ($gameHistoryUsers as $index => $gameHistoryUser) {
+                $gameHistoryRound = new GameHistoryRounds();
+                $gameHistoryRound->game_history_id = $gameHistoryUser->id;
+                $gameHistoryRound->position = $index + 1;
+                $gameHistoryRound->name = $gameName;
+                $gameHistoryRound->score = $gameHistoryUser->gameUser->points;
+                $gameHistoryRound->save();
+            }
+
+            return response()->json([
+                'status' => 'success',
+            ]);
+
+        } catch (\Exception $exception) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ]);
+        }
     }
 }

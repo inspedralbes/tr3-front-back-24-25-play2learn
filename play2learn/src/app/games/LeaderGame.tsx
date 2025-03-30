@@ -6,7 +6,7 @@ import { useContext } from "react";
 import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
-
+import { NavBarContext } from "@/contexts/NavBarContext";
 
 interface Language {
     id: number;
@@ -51,6 +51,8 @@ function LeaderGame({ game, participants }: { game: Game; participants: Particip
     const { isAuthenticated, token } = useContext(AuthenticatorContext);
     const router = useRouter();
     const [participantsOrderedByPoints, setParticipantsOrderedByPoints] = useState<Participant[]>([]);
+    const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
+
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -59,14 +61,14 @@ function LeaderGame({ game, participants }: { game: Game; participants: Particip
         }
 
         apiRequest("/games/" + game.uuid, "GET")
-        .then((response)=>{
-            setParticipantsOrderedByPoints(response.game.participants.sort((a, b) => b.points - a.points));
-        })
+            .then((response) => {
+                setParticipantsOrderedByPoints(response.game.participants.sort((a, b) => b.points - a.points));
+            })
 
     }, [isAuthenticated, router]);
 
     const handleNextGame = () => {
-        socket.emit('nextGame', {roomUUID: game.uuid})
+        socket.emit('nextGame', { roomUUID: game.uuid, language: selectedLanguage, token: token})
     };
 
     if (!game.id || participantsOrderedByPoints.length === 0) {

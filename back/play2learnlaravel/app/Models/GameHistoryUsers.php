@@ -11,4 +11,9 @@ class GameHistoryUsers extends Model
     {
         return $this->hasMany(GameHistoryRounds::class, 'game_history_id', 'id');
     }
+
+    public function game()
+    {
+        return $this->belongsTo(Game::class, 'game_id', 'id');
+    }
 }

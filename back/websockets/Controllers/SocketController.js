@@ -125,7 +125,7 @@ class SocketController {
           turn: 1,
           players: sortedTurns,
           guessesErrors: 0,
-          game_num_random: Math.floor(Math.random() * 10),
+          game_num_random: Math.floor(Math.random() * 2) + 1,
           game_num_rounds: 1,
           game_time_max: response.data.max_time,
           game: response.data,
@@ -253,7 +253,7 @@ class SocketController {
         });
       });
 
-      socket.on('nextGame', ({ roomUUID }) => {
+      socket.on('nextGame', async({ roomUUID, language, token }) => {
         const game = confGame.find((game) => game.room === roomUUID);
         if (!game) {
           console.error("Room not found");
@@ -264,17 +264,29 @@ class SocketController {
 
         if (game.game_num_rounds === game.game.n_rounds || game.game_num_rounds > game.game.n_rounds) {
           //logic for update and insert result games finish
+          await apiRequest('/game/history/round', token, 'POST', {uuid: roomUUID, num_game: game.game_num_random})
 
           console.log("se termino la partida")
           game.game_num_random = null;
           game.game_num_rounds = null;
+
+          const response = await apiRequest('/game/store/stats/finish', token, 'POST', {uuid: roomUUID, language: language});
+
+          console.log(response)
+          if(response.status === 'success')
+          {
+
+          }
           io.to(roomUUID).emit("chargeGame", game);
+
           return;
         }else{
           game.game_num_rounds++;
         }
 
-        let num = Math.floor(Math.random() * 10);
+        // let num = Math.floor(Math.random() * 10);
+        let num = Math.floor(Math.random() * 2) + 1;
+
         if (num === game.game_num_random) {
           if (num === 10) {
             num = 0;
@@ -298,6 +310,7 @@ class SocketController {
         game.showLeader = true;
 
         const response = await apiRequest("/games/" + roomUUID, token, "GET");
+        await apiRequest('/game/history/round', token, 'POST', {uuid: roomUUID, num_game: game.game_num_random})
         
         io.to(roomUUID).emit("leader", game);
         io.to(roomUUID).emit("participantsLoaders", response);
