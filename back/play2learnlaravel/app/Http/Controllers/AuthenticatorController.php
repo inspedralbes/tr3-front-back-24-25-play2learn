@@ -24,6 +24,29 @@ class AuthenticatorController extends Controller
         $this->mailService = new MailService();
     }
 
+    /**
+     * @group Authentication
+     *
+     * Inicia sesión con el usuario.
+     *
+     * @bodyParam user string required El correo electrónico o nombre de usuario del usuario. Ejemplo: johndoe@example.com
+     * @bodyParam password string required La contraseña del usuario. Ejemplo: password123
+     *
+     * @response 201 {
+     *     "status": "success",
+     *     "user": { "id": 1, "name": "John Doe" },
+     *     "token": "your-generated-token",
+     *     "message": "Usuario logeado exitosamente."
+     * }
+     *
+     * @response 422 {
+     *     "status": "error",
+     *     "errors": {
+     *         "user": ["El correo electrónico o nombre de usuario no es válido."],
+     *         "password": ["La contraseña es incorrecta."]
+     *     }
+     * }
+     */
     public function login(Request $request)
     {
         $rules = [
@@ -66,6 +89,21 @@ class AuthenticatorController extends Controller
         ], 201);
     }
 
+    /**
+     * @group Authentication
+     *
+     * Verifica si el usuario está autenticado.
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "user": { "id": 1, "name": "John Doe" }
+     * }
+     *
+     * @response 401 {
+     *     "status": "error",
+     *     "message": "Usuario no autenticado."
+     * }
+     */
     public function checkAuth()
     {
         if (Auth::check()) {
@@ -81,7 +119,17 @@ class AuthenticatorController extends Controller
         }
     }
 
-    public function logout()
+    /**
+     * @group Authentication
+     *
+     * Cierra la sesión del usuario.
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "message": "Usuario deslogeado exitosamente."
+     * }
+     */
+    public function logout(Request $request)
     {
         $user = Auth::user();
         $user->tokens()->delete();
@@ -92,6 +140,29 @@ class AuthenticatorController extends Controller
         ], 200);
     }
 
+    /**
+     * @group Authentication
+     *
+     * Registra un nuevo usuario.
+     *
+     * @bodyParam name string required El nombre del usuario. Ejemplo: John Doe
+     * @bodyParam username string required El nombre de usuario. Ejemplo: johndoe
+     * @bodyParam email string required El correo electrónico del usuario. Ejemplo: johndoe@example.com
+     * @bodyParam password string required La contraseña del usuario. Ejemplo: password123
+     *
+     * @response 201 {
+     *     "status": "success",
+     *     "user": { "id": 1, "name": "John Doe" },
+     *     "token": "your-generated-token"
+     * }
+     *
+     * @response 422 {
+     *     "status": "error",
+     *     "errors": {
+     *         "email": ["The email has already been taken."]
+     *     }
+     * }
+     */
     public function register(Request $request)
     {
         $rules = [
@@ -148,6 +219,35 @@ class AuthenticatorController extends Controller
 
     }
 
+    /**
+     * @group Authentication
+     *
+     * Inicia sesión con Google.
+     *
+     * Este endpoint permite a los usuarios iniciar sesión utilizando su cuenta de Google. Si el usuario no existe, se crea uno nuevo.
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "user": {
+     *         "id": 1,
+     *         "name": "John Doe",
+     *         "email": "johndoe@example.com",
+     *         "profile_pic": "http://profilepic.com/pic.jpg",
+     *         "username": "johndoe"
+     *     },
+     *     "token": "your-generated-token"
+     * }
+     *
+     * @response 422 {
+     *     "status": "error",
+     *     "message": "Email no encontrado"
+     * }
+     *
+     * @response 500 {
+     *     "status": "error",
+     *     "message": "Error al crear el usuario"
+     * }
+     */
     public function googleLogin(Request $request)
     {
         try {
@@ -230,6 +330,23 @@ class AuthenticatorController extends Controller
         }
     }
 
+    /**
+     * @group Authentication
+     *
+     * Redirige al usuario a la pantalla de login de Google.
+     *
+     * Este endpoint redirige al usuario a la pantalla de login de Google para la autenticación.
+     *
+     * @response 302 {
+     *     "status": "success",
+     *     "message": "Redirigiendo a Google para autenticación"
+     * }
+     *
+     * @response 500 {
+     *     "status": "error",
+     *     "message": "Error al redirigir al login de Google"
+     * }
+     */
     public function googleRedirect()
     {
         try {
@@ -241,6 +358,33 @@ class AuthenticatorController extends Controller
         }
     }
 
+    /**
+     * @group Authentication
+     *
+     * Cambia la contraseña del usuario.
+     *
+     * Este endpoint permite al usuario cambiar su contraseña utilizando un UUID para identificar al usuario.
+     *
+     * @bodyParam uuid string required El UUID del usuario. Ejemplo: 123e4567-e89b-12d3-a456-426614174000
+     * @bodyParam new_password string required La nueva contraseña del usuario. Ejemplo: newpassword123
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "user": {
+     *         "id": 1,
+     *         "name": "John Doe",
+     *         "email": "johndoe@example.com",
+     *         "profile_pic": "http://profilepic.com/pic.jpg",
+     *         "username": "johndoe"
+     *     },
+     *     "token": "your-generated-token"
+     * }
+     *
+     * @response 404 {
+     *     "status": "error",
+     *     "message": "Usuario no encontrado"
+     * }
+     */
     public function changePassword(Request $request)
     {
         try {

@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="cambios">
+    <list default="true" id="41804f30-47ef-42fa-83dc-22d3ef51bfe3" name="Changes" comment="wordle empezado solo traducir palabras y documentacion de enbdpoints acabado">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/websockets/Controllers/SocketController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/websockets/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/websockets/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/Wordle/Wordle.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/Wordle/[uuid]/Wordle.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/Wordle/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/Wordle/[uuid]/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/ManagerGames.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/[uuid]/ManagerGames.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/app/games/translation/[uuid]/TranslationGameComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/play2learn/src/services/websockets/socket.ts" beforeDir="false" afterPath="$PROJECT_DIR$/play2learn/src/services/websockets/socket.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,9 +64,34 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="F:\DAW\tr3-front-back-24-25-play2learn\play2learn\src\app\games\Wordle\[uuid]" />
       <recent name="C:\Users\deray\Documents\Cosas\tr3-front-back-24-25-play2learn\play2learn\src\app\games\translation\[uuid]" />
       <recent name="C:\Users\deray\Documents\Cosas\tr3-front-back-24-25-play2learn\play2learn\src\app\games" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="openapi.yaml" type="SwaggerCodegen" editBeforeRun="true" temporary="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="customTemplatesPath" value="" />
+      <option name="generateToPath" value="F:\DAW\tr3-front-back-24-25-play2learn\back\gen" />
+      <option name="generationParameters">
+        <list />
+      </option>
+      <option name="generatorType" value="OPENAPI_GENERATOR_V7" />
+      <option name="jdkPath" value="C:\Program Files\JetBrains\PhpStorm 2024.2.3\jbr\bin\java.exe" />
+      <option name="language" value="php" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="specificationPath" value="F:\DAW\tr3-front-back-24-25-play2learn\back\play2learnlaravel\storage\app\private\scribe\openapi.yaml" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="OpenAPI/Swagger Code Generator.openapi.yaml" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -119,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743288970509</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="wordle empezado solo traducir palabras y documentacion de enbdpoints acabado">
+      <option name="closed" value="true" />
+      <created>1743363617303</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743363617303</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -132,6 +163,7 @@
     <MESSAGE value="arreglar puntos" />
     <MESSAGE value="retoquees para acabar el juego" />
     <MESSAGE value="Merge y retoques que falta para hacer que acabe la partida" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge y retoques que falta para hacer que acabe la partida" />
+    <MESSAGE value="wordle empezado solo traducir palabras y documentacion de enbdpoints acabado" />
+    <option name="LAST_COMMIT_MESSAGE" value="wordle empezado solo traducir palabras y documentacion de enbdpoints acabado" />
   </component>
 </project>
