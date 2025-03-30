@@ -435,6 +435,7 @@ const GameLobby: React.FC = () => {
                         ? "bg-indigo-700/50 text-indigo-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white shadow-lg shadow-emerald-900/30"
                         }`}
+                      disabled={room.participants?.length === room.max_players}
                       onClick={() => showModalJoinLobby(room)}
                     >
                       <Play size={16} className="mr-2" />
