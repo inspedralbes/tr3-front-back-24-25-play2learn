@@ -81,9 +81,10 @@ class AuthenticatorController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $request->user()->tokens()->delete();
+        $user = Auth::user();
+        $user->tokens()->delete();
 
         return response()->json([
             'status' => 'success',

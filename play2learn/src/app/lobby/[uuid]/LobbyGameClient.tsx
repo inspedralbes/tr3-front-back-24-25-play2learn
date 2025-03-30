@@ -69,9 +69,8 @@ export default function LobbyGameClient() {
   };
 
   const handleLeaveGame = () => {
-    // socket.emit("leaveGame", { token: token || "", roomUUID: params.uuid });
-    // router.push("/");
-    console.log(participants);
+    socket.emit("leaveGame", { token: token || "", roomUUID: params.uuid });
+    router.push("/");
   };
 
   useEffect(() => {

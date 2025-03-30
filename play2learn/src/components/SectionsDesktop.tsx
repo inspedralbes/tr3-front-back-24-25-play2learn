@@ -8,12 +8,23 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { NavBarContext } from "@/contexts/NavBarContext";
 import { useContext } from "react";
+import { NavBarContext } from "@/contexts/NavBarContext";
+import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
+import { apiRequest } from "@/services/communicationManager/apiRequest";
 import Link from "next/link";
 
 function App() {
   const { activeSection, setActiveSection } = useContext(NavBarContext);
+  const { logout } = useContext(AuthenticatorContext);
+  
+  const handleLogout = async() => {
+    const response = await apiRequest("/auth/logout");
+
+    if (response.status === "success") {
+      logout(); 
+    }
+1  }
 
   return (
     <div className="hidden md:flex md:w-20 bg-indigo-950 flex-col items-center py-8 border-r border-indigo-700">
@@ -63,7 +74,10 @@ function App() {
         </button>
       </nav>
 
-      <button className="p-3 rounded-xl text-indigo-400 hover:bg-indigo-800 transition-all mt-auto">
+      <button 
+      onClick={() => handleLogout()}
+      className="p-3 rounded-xl text-indigo-400 hover:bg-indigo-800 transition-all mt-auto"
+        >
         <LogOut size={24} />
       </button>
     </div>
