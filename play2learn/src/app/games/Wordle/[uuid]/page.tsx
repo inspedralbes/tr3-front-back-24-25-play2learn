@@ -1,4 +1,5 @@
 import Wordle from './Wordle'
-export default function TranslatePage() {
+
+export default function WordleComponent() {
     return <Wordle/>
 }

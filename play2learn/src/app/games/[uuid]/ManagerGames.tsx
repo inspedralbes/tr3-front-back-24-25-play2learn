@@ -9,6 +9,8 @@ import { useState } from "react";
 import WordChain from "../WordChain";
 import LeaderGame from "../LeaderGame";
 import TranslationGameComponent from "@/app/games/translation/[uuid]/TranslationGameComponent";
+import Wordle from '@/app/games/Wordle/[uuid]/Wordle'
+import WordleComponent from "@/app/games/Wordle/[uuid]/page";
 
 export default function ManagerGames() {
   const params = useParams<{ uuid: string }>();
@@ -114,7 +116,7 @@ export default function ManagerGames() {
   } else if (leaderView) {
     return <LeaderGame game={game} participants={participants} />;
   }else {
-    return <TranslationGameComponent participants={participants} game={game} />;
+    return <Wordle participants={participants} game={game} />;
   }
   
 }
