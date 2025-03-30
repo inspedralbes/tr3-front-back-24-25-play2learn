@@ -336,7 +336,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
     }, [gameStarted, timer])
 
-    const inputResolve = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const inputResolve = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const language = "de"
         try {
             if (respuesta.trim() == '') {
