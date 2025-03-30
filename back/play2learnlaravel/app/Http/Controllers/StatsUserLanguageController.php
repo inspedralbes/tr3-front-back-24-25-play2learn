@@ -120,7 +120,7 @@ class StatsUserLanguageController extends Controller
      *     "message": "Error al obtener las estadísticas del idioma."
      * }
      */
-    public function getUserStatsLanguage($languageId)
+    public function getUserStatsLanguage($language)
     {
         $status = "success";
         try {

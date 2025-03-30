@@ -183,7 +183,7 @@ class SocketController {
           turn: 1,
           players: sortedTurns,
           guessesErrors: 0,
-          game_num_random: Math.floor(Math.random() * 2) + 1,
+          game_num_random: Math.floor(Math.random() * 3) + 1,
           game_num_rounds: 1,
           game_time_max: response.data.max_time,
           game: response.data,
@@ -399,7 +399,7 @@ class SocketController {
         }
 
         // let num = Math.floor(Math.random() * 10);
-        let num = Math.floor(Math.random() * 2) + 1;
+        let num = Math.floor(Math.random() * 3) + 1;
 
         if (num === game.game_num_random) {
           if (num === 10) {

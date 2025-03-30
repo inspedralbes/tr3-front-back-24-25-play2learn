@@ -124,10 +124,10 @@ export default function ManagerGames() {
         return <WordChain participants={participants} game={game} />;
       case 2:
         return <Hangman participants={participants} game={game} />;
-      // case 3:
-      //   return <Hangman participants={participants} game={game} />;
+      case 3:
+        return <Wordle participants={participants} game={game} />;
       default:
-        return <WordChain participants={participants} game={game} />
+        return <Hangman participants={participants} game={game} />
     }
   }
   
