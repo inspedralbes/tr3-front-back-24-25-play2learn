@@ -5,6 +5,7 @@ import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { Clock, X, Keyboard, User, Clock3 } from "lucide-react";
 import socket from "@/services/websockets/socket";
+import { NavBarContext } from "@/contexts/NavBarContext";
 
 interface Participant {
   id: number;
@@ -78,7 +79,7 @@ export default function Hangman({
   const [inputLetter, setInputLetter] = useState<string>("");
   const [inputWord, setInputWord] = useState<string>("");
   const [points, setPoints] = useState<number>(0);
-
+  const {selectedLanguage} = useContext(NavBarContext);
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -223,6 +224,8 @@ export default function Hangman({
       roomUUID: uuid,
       acierto: acierto,
       newGuessedWord: newGuessedWord,
+      language: selectedLanguage,
+      token: token
     });
   };
 
@@ -243,6 +246,7 @@ export default function Hangman({
     }
 
     socket.on("wordHangman", ({ newWord }) => {
+      console.log(newWord)
       if (newWord && newWord.length > 0) {
         setWord(newWord);
         setGuessedWord("_".repeat(newWord.length));

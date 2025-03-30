@@ -79,7 +79,6 @@ class GameController extends Controller
 
     public function store(Request $request)
     {
-        Log::info($request);
         $rules = [
             'id_level_language' => 'required',
             'password' => 'required',
@@ -124,15 +123,25 @@ class GameController extends Controller
             $gameUser->updated_at = now();
             $gameUser->save();
 
+            $languageName = $game->language_level->language->name;
+            $languageModel = Language::where('name', $languageName)->first();
+
+
             $gameList = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
                 ->where('status', 'pending')
+                ->whereHas('language_level.language', function ($query) use ($languageName) {
+                    $query->where('name', $languageName);
+                })
                 ->get();
+
+            $level_language = LevelLanguage::where('language_id', $languageModel->id)->get();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Game created',
                 'gameCreated' => $game,
-                'games' => $gameList
+                'games' => $gameList,
+                'level_language' => $level_language,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -201,6 +210,8 @@ class GameController extends Controller
         try {
             $game = Game::where('uuid', $gameUUID)->first();
 
+            $languageName = $game->language_level->language->name;
+
             $gameUser = GameUser::where('user_id', Auth::user()->id)
                 ->where('game_id', $game->id)
                 ->first();
@@ -215,13 +226,21 @@ class GameController extends Controller
 
                 $game->delete();
 
+                $languageModel = Language::where('name', $languageName)->first();
+
                 $gameList = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
                     ->where('status', 'pending')
+                    ->whereHas('language_level.language', function ($query) use ($languageName) {
+                        $query->where('name', $languageName);
+                    })
                     ->get();
+
+                $level_language = LevelLanguage::where('language_id', $languageModel->id)->get();
 
                 return response()->json([
                     'status' => 'success',
                     'games' => $gameList,
+                    'level_language' => $level_language,
                 ]);
             }
 
@@ -229,14 +248,22 @@ class GameController extends Controller
 
             $game->load('participants', 'participants.user', 'language_level', 'language_level.language');
 
+            $languageModel = Language::where('name', $languageName)->first();
+
             $gameList = Game::with('participants', 'participants.user', 'language_level', 'language_level.language')
                 ->where('status', 'pending')
+                ->whereHas('language_level.language', function ($query) use ($languageName) {
+                    $query->where('name', $languageName);
+                })
                 ->get();
+
+            $level_language = LevelLanguage::where('language_id', $languageModel->id)->get();
 
             return response()->json([
                 'status' => 'success',
                 'games' => $gameList,
-                'game' => $game
+                'game' => $game,
+                'level_language' => $level_language,
             ]);
         } catch (\Exception $e) {
             return response()->json([

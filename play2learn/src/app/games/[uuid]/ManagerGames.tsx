@@ -9,7 +9,7 @@ import { useState } from "react";
 import Hangman from "../Hangman";
 import WordChain from "../WordChain";
 import LeaderGame from "../LeaderGame";
-import TranslationGameComponent from "@/app/games/translation/[uuid]/TranslationGameComponent";
+import TranslationGameComponent from "../TranslationGameComponent";
 
 export default function ManagerGames() {
   const params = useParams<{ uuid: string }>();
@@ -121,6 +121,10 @@ export default function ManagerGames() {
         return <WordChain participants={participants} game={game} />;
       case 2:
         return <Hangman participants={participants} game={game} />;
+      // case 3:
+      //   return <Hangman participants={participants} game={game} />;
+      default:
+        return <WordChain participants={participants} game={game} />
     }
   }
   

@@ -8,6 +8,7 @@ import { AuthenticatorContext } from "@/contexts/AuthenticatorContext";
 import socket from "@/services/websockets/socket";
 import AvatarUserProfile from "@/components/ui/AvatarUserProfile";
 import { Crown, LogOut, PlayCircle, Users } from "lucide-react";
+import { NavBarContext } from "@/contexts/NavBarContext";
 
 
 export default function LobbyGameClient() {
@@ -59,7 +60,7 @@ export default function LobbyGameClient() {
   }
 
   const [participants, setParticipants] = useState<Participant[]>([]);
-
+  const {selectedLanguage} = useContext(NavBarContext);
   const getHost = () => {
     const host = participants.find((participant) => participant.rol === "host");
 
@@ -67,13 +68,14 @@ export default function LobbyGameClient() {
   };
 
   const handleStartGame = () => {
-    socket.emit("startGame", { token, roomUUID: params.uuid });
+    socket.emit("startGame", { token, roomUUID: params.uuid, language: selectedLanguage });
   };
 
   const handleLeaveGame = () => {
-    // socket.emit("leaveGame", { token: token || "", roomUUID: params.uuid });
-    // router.push("/");
     console.log(participants);
+
+    socket.emit("leaveGame", { token: token || "", roomUUID: params.uuid, language: selectedLanguage });
+    router.push("/");
   };
 
   useEffect(() => {

@@ -41,7 +41,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/', [\App\Http\Controllers\GameController::class, 'getList']);
         Route::get('/{language}', [\App\Http\Controllers\GameController::class, 'getListLanguage']);
         Route::post('/store', [\App\Http\Controllers\GameController::class, 'store']);
-        Route::get('/{gameUUID}', [\App\Http\Controllers\GameController::class, 'getGame']);
+        Route::get('/lobby/{gameUUID}', [\App\Http\Controllers\GameController::class, 'getGame']);
         Route::get('/join/{gameUUID}', [\App\Http\Controllers\GameController::class, 'join']);
         Route::get('/leave/{gameUUID}', [\App\Http\Controllers\GameController::class, 'leaveGame']);
         Route::post('/start', [\App\Http\Controllers\GameController::class, 'startRoom']);

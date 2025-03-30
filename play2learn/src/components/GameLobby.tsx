@@ -38,7 +38,7 @@ const GameLobby: React.FC = () => {
   interface Game {
     id: number;
     id_level_language: number;
-    language_level: LanguageLevel;
+    language_level: LanguageLevel | null;
     uuid: string;
     password: string;
     name: string;
@@ -118,7 +118,8 @@ const GameLobby: React.FC = () => {
   };
 
   const   handleCreateRoom = () => {
-    socket.emit("setLobbies", { token: token || "", game });
+    console.log(game)
+    socket.emit("setLobbies", { token: token || "", game, language: selectedLanguage });
   };
 
   const handleGameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +137,7 @@ const GameLobby: React.FC = () => {
   const handleJoinLobby = async () => {
     if (!gameSelected.uuid) return;
     if (passwordModal == gameSelected.password) {
-      socket.emit("joinRoom", { token: token || "", roomUUID: gameSelected.uuid });
+      socket.emit("joinRoom", { token: token || "", roomUUID: gameSelected.uuid, language: selectedLanguage });
       router.push("/lobby/" + gameSelected.uuid);
     } else {
       console.error("Password incorrect");
@@ -229,6 +230,7 @@ const GameLobby: React.FC = () => {
   }, [isAuthenticated, router]);
 
   useEffect(() => {
+    console.log(languageLevels)
     const language = languageLevels.find(
       (level) => level.id === game.id_level_language
     );

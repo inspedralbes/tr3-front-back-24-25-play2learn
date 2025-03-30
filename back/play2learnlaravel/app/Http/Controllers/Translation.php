@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Language;
 use Illuminate\Http\Request;
 use Lara\Translator;
 use Lara\LaraCredentials;
@@ -20,11 +21,13 @@ class Translation extends Controller
         ]);
 
         try {
+            $code = Language::where('name', $request->target)->first()->code;
+
             $credentials = new LaraCredentials(env("LARA_API_ID"), env("LARA_API_KEY"));
             $lara = new Translator($credentials);
 
             // This translates your text from English ("en-US") to Italian ("it-IT").
-            $result = $lara->translate($request->word, $request->source, request()->target);
+            $result = $lara->translate($request->word, $request->source, $code);
 
             // Devolver el resultado
             return response()->json([

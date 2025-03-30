@@ -9,6 +9,7 @@ import socket from "@/services/websockets/socket";
 import {apiRequest} from "@/services/communicationManager/apiRequest";
 import {auto} from "openai/_shims/registry";
 import {Clock3} from "lucide-react";
+import { NavBarContext } from "@/contexts/NavBarContext";
 
 interface Language {
     id: number;
@@ -77,6 +78,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
     const [myTurn, setMyTurn] = useState(false);
     const [roundCount, setRoundCount] = useState(0);
     const [maxRound, setMaxRound] = useState(game.n_rounds || 0);
+    const {selectedLanguage} = useContext(NavBarContext)
 
 
     const endGame = () => {
@@ -91,7 +93,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                     console.log("EMIT DE SHOWLEADER");
 
                     // Luego envía solo los datos necesarios a través de socket.io
-                    socket.emit("showLeader", {token: token, roomUUID: game.uuid});
+                    socket.emit("showLeader", {token: String(token), roomUUID: String(game.uuid)});
 
                     console.log("todos terminaron");
                 })
@@ -127,14 +129,15 @@ function TranslationGameComponent({participants, game}: { participants: Particip
 
     function sumRound() {
         if (roundCount >= maxRound) {
-            setGameStarted(false);
-            setTimer(0);
-            if (!gameStarted) {
+            // setGameStarted(false);
+            // setTimer(0);
+            // if (!gameStarted) {
                 console.log("adios");
                 console.log("NOS VAMOS A ENDGAME")
                 endGame();
-            }
+            // }
         } else {
+            console.log("NOS VAMOS A next player------------------------------------------------------------------------")
 
             if (myTurn) {
                 let jsonData = {
@@ -267,7 +270,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
         });
 
         socket.on('translateClient', (data) => {
-            if (data.word_translate && data.word_translate.toLowerCase() === data.word) {
+            if (data.word_translate && data.word_translate.toLowerCase() === data.word_input) {
                 setWordClient(data.word_input);
                 setAcertado(true);
                 setWordTranslate(data.word_translate);
@@ -343,9 +346,9 @@ function TranslationGameComponent({participants, game}: { participants: Particip
             } else {
                 //const responseApi = await fetch(`/api/openai-translate?word=${respuesta.toLowerCase()}&language=${language}`);
                 const jsonData = {
-                    word: respuesta.toLowerCase(),
+                    word: palabraActual,
                     source: auto,
-                    target: language,
+                    target: selectedLanguage,
                 }
 
                 const response = await apiRequest('/lara/translate', "POST", jsonData);
@@ -359,7 +362,7 @@ function TranslationGameComponent({participants, game}: { participants: Particip
                     word_input: respuesta.toLowerCase(),
                 }
 
-                if (data.translation.toLowerCase() === palabraActual) {
+                if (data.translation.toLowerCase() === respuesta.toLowerCase()) {
                     if (myTurn) {
                         sumaPointPlayer();
                     }

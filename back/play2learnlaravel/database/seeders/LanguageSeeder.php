@@ -20,21 +20,25 @@ class LanguageSeeder extends Seeder
             [
                 'id' => 1,
                 'name' => 'Castellano',
+                'code' => 'es',
                 'slug' => Str::slug('Castellano'),
             ],
             [
                 'id' => 2,
                 'name' => 'Ingles',
+                'code' => 'en',
                 'slug' => Str::slug('Ingles'),
             ],
             [
                 'id' => 3,
                 'name' => 'Francés',
+                'code' => 'fr',
                 'slug' => Str::slug('Francés'),
             ],
             [
                 'id' => 4,
                 'name' => 'Aleman',
+                'code' => 'de',
                 'slug' => Str::slug('Aleman'),
             ],
         ]);
