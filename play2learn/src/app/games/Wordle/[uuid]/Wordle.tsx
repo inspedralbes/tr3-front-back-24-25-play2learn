@@ -215,7 +215,7 @@ export default function Wordle({ participants, game }: { participants: Participa
         }, 2000);
     };
 
-    const manejarTecla = (tecla) => {
+    const manejarTecla = (tecla: any) => {
         if (estadoJuego !== 'jugando' || gameOver || !timerActive || timeRemaining <= 0) return;
 
         if (tecla === 'ENTER') {
@@ -397,7 +397,7 @@ export default function Wordle({ participants, game }: { participants: Participa
     ];
 
     // Determinar el estado de cada tecla
-    const obtenerEstadoTecla = (tecla) => {
+    const obtenerEstadoTecla = (tecla:any) => {
         let estado = '';
 
         for (let i = 0; i < intentos.length; i++) {

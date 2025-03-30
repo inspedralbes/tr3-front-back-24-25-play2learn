@@ -34,12 +34,14 @@ export default function ManagerGames() {
   interface User {
     id: number;
     name: string;
+    username: string;
     profile_pic: string;
   }
 
   interface Participant {
     id: number;
     user: User;
+    user_id: number;
     rol: string;
     points: number;
   }
@@ -93,12 +95,10 @@ export default function ManagerGames() {
     });
 
     socket.on('participantsLoaders', (data) => {
-      console.log("HOLAAAAAAAAA")
       setParticipants(data.game.participants || []);
     });
 
     socket.on('leader', (data) => {
-      console.log("HOLAAAAAAAAA X 222222222")
       setLeaderView(data.showLeader);
 
     })
