@@ -153,13 +153,6 @@ export default function Hangman({
     }
     return <pre className="font-mono text-4xl whitespace-pre">{hangman}</pre>;
   };
-  //   const drawHangman = (attempts: number) => {
-  //     return (
-  //       <div>
-  //         <p>muñeco</p>
-  //       </div>
-  //     );
-  //   };
 
   const hostPlayer = game.participants?.find((player) => player.rol === "host");
 

@@ -1,5 +1,5 @@
 "use client";
-import { Languages, ChevronRight, Sparkles, Clock } from "lucide-react";
+import { Languages, ChevronRight, Sparkles, Clock, X } from "lucide-react";
 import { NavBarContext } from "@/contexts/NavBarContext";
 import { useState, useContext, useEffect } from "react";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
@@ -16,19 +16,44 @@ interface Language {
 function App() {
   const { selectedLanguage, setSelectedLanguage } = useContext(NavBarContext);
   const [languages, setLanguages] = useState<Language[]>([]);
-  const [addLanguage, setAddLanguage] = useState<boolean>(false);
+  const [allLanguages, setAllLanguages] = useState<{ id: number; name: string }[]>([]);
+  const [showAddLanguage, setShowAddLanguage] = useState(false);
+  const [newLanguage, setNewLanguage] = useState("");
+  const [idNewLanguage, setIdNewLanguage] = useState(0);
   const { isAuthenticated } = useContext(AuthenticatorContext);
   const router = useRouter();
-  
-  useEffect(() => {
 
+  const toggleAddLanguage = () => {
+    setShowAddLanguage(!showAddLanguage);
+  };
+
+  const handleAddLanguage = () => {
+    if (newLanguage === "") return;
+
+    apiRequest(`/user/languages/store`, "POST", { id_language: idNewLanguage })
+      .then((response) => {
+        if (response.status === "success") {
+          setLanguages((prev) => [
+            ...prev,
+            { id: idNewLanguage, name: newLanguage, level: 1, progress: 0 },
+          ]);
+          setShowAddLanguage(false);
+        } else {
+          alert("Error adding language.");
+        }
+      })
+      .catch(() => {
+        alert("Error adding language.");
+      });
+  };
+
+  useEffect(() => {
     if (!isAuthenticated) {
       router.push("/authenticate/login");
       return;
     }
     const fetchLanguages = async () => {
       const response = await apiRequest(`/user/languages`);
-      // console.log(response.statsLanguages);
 
       if (response.status === "success") {
         const fetchedLanguages: Language[] = response.statsLanguages.map(
@@ -39,14 +64,33 @@ function App() {
             progress: lng.experience,
           })
         );
-        // console.log(fetchedLanguages);
         setLanguages(fetchedLanguages);
         setSelectedLanguage(fetchedLanguages[0].name);
       }
     };
 
+    
+
     fetchLanguages();
   }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    if (languages.length == 0) return;
+    
+    const fetchNewLanguages = async () => {
+      const response = await apiRequest(`/languages`);
+      if (response.status === "success") {
+        const newLng = response.languages
+          .filter((lng: any) => !languages.some((language) => language.name === lng.name))
+          .map((lng: any) => ({ id: lng.id, name: lng.name }));
+        setAllLanguages(newLng);
+        console.log(newLng);
+      }
+    };
+
+    fetchNewLanguages();
+  }, [languages]);
+
 
   return (
     <div className="hidden md:block md:w-64 bg-indigo-900/50 p-6 border-r border-indigo-700">
@@ -82,8 +126,10 @@ function App() {
           </button>
         ))}
 
-        <button className="w-full p-4 rounded-lg bg-indigo-800/30 border border-dashed border-indigo-600 hover:bg-indigo-800/50 transition-all flex items-center justify-center text-indigo-400"
-        onClick={() => alert("Añadir idioma clicado")}>
+        <button
+          className="w-full p-4 rounded-lg bg-indigo-800/30 border border-dashed border-indigo-600 hover:bg-indigo-800/50 transition-all flex items-center justify-center text-indigo-400"
+          onClick={() => toggleAddLanguage()}
+        >
           <span className="mr-2">Añadir idioma</span>
           <ChevronRight size={16} />
         </button>
@@ -103,6 +149,51 @@ function App() {
           </div>
         </div>
       </div>
+
+      {showAddLanguage && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-indigo-900 rounded-xl p-6 w-full max-w-md border border-indigo-700 shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">Add New Languages</h2>
+              <button
+                onClick={toggleAddLanguage}
+                className="p-2 rounded-full hover:bg-indigo-800"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Languages
+                </label>
+                <select
+                  name="id_language"
+                  value={newLanguage}
+                  onChange={(e) => {setNewLanguage(e.target.value.split(":")[1]); setIdNewLanguage(parseInt(e.target.value.split(":")[0]))}}
+                  className="w-full p-3 bg-indigo-800/50 border border-indigo-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none"
+                >
+                  <option value="">Select language</option>
+                  {allLanguages.map((lng) => (
+                    <option key={`language${lng.id}`} value={`${lng.id}:${lng.name}`}>
+                      {lng.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="pt-4">
+                <button
+                  className="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 rounded-lg font-medium transition-all shadow-lg"
+                  onClick={handleAddLanguage}
+                >
+                  Add Language
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
