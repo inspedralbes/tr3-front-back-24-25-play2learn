@@ -35,12 +35,14 @@ function App() {
     const selectedOption = e.target.options[e.target.selectedIndex];
     setNewLanguage(e.target.value);
     setIdNewLanguage(parseInt(selectedOption.dataset.id || "0"));
+    Cookies.set("lngActive", e.target.value, { expires: 7 });
   };
 
   const handleSetLanguage = (language: string) => {
     setSelectedLanguage(language);
     Cookies.set("lngActive", language, { expires: 7 });
   };
+  
   const handleAddLanguage = () => {
     if (newLanguage === "") return;
 
@@ -124,11 +126,12 @@ function App() {
     fetchNewLanguages();
   }, [languages]);
 
-  const handleChangeLanguge = (language: Language) =>{
+  const handleChangeLanguage = (language: Language) =>{
     showLoader();
     setSelectedLanguage(language.name)
     socket.emit("lobbie", { token: token || "", language: language.name });
     socket.emit("statsUserLanguage", {token: token, language: language.name});
+    Cookies.set("lngActive", language.name, { expires: 7 });
   }
 
   return (
@@ -142,7 +145,7 @@ function App() {
         {languages.map((language) => (
           <button
             key={language.id}
-            onClick={()=>handleChangeLanguge(language)}
+            onClick={()=>handleChangeLanguage(language)}
             className={`w-full p-4 rounded-lg flex flex-col transition-all ${
               selectedLanguage === language.name
                 ? "bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg"
@@ -169,7 +172,7 @@ function App() {
           className="w-full p-4 rounded-lg bg-indigo-800/30 border border-dashed border-indigo-600 hover:bg-indigo-800/50 transition-all flex items-center justify-center text-indigo-400"
           onClick={() => toggleAddLanguage()}
         >
-          <span className="mr-2">Añadir idioma</span>
+          <span className="mr-2">Add Language</span>
           <ChevronRight size={16} />
         </button>
       </div>

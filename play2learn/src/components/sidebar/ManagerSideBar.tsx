@@ -1,5 +1,5 @@
 "use client";
-
+import NavBarMovile from "@/components/NavBarMovile";
 import Idiomas from "@/components/LanguageDesktop";
 import Secciones from "@/components/SectionsDesktop";
 import { usePathname } from "next/navigation";
@@ -20,11 +20,17 @@ export default function ManagerSideBar({
     <>
       {!hideSidebar && (
         <div className="fixed top-0 left-0 h-full flex flex-row">
-          {/* <NavBarMovile/> */}
           <Secciones />
           <Idiomas />
         </div>
       )}
+
+      {!hideSidebar && (
+        <div>
+          <NavBarMovile/>
+        </div>
+      )}
+
 
       <div
         className={

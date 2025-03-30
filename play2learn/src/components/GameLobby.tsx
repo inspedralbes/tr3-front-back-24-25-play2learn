@@ -96,7 +96,7 @@ const GameLobby: React.FC = () => {
   });
   const [errorGame, setErrorGame] = useState<ErrorGame>({} as ErrorGame);
   const router = useRouter();
-  const { selectedLanguage } = useContext(NavBarContext);
+  const { selectedLanguage, hideLoader, showLoader } = useContext(NavBarContext);
   const { user, isAuthenticated, token } = useContext(AuthenticatorContext);
 
   const [showCreateRoom, setShowCreateRoom] = useState(false);
@@ -179,66 +179,10 @@ const GameLobby: React.FC = () => {
       return;
     }
 
-    // setLanguageLevels([
-    //   {
-    //     id: 1,
-    //     language_id: 1,
-    //     language: {
-    //       id: 1,
-    //       name: "English",
-    //     },
-    //     level: "A1",
-    //   },
-    //   {
-    //     id: 2,
-    //     language_id: 1,
-    //     language: {
-    //       id: 1,
-    //       name: "English",
-    //     },
-    //     level: "A2",
-    //   },
-    //   {
-    //     id: 3,
-    //     language_id: 1,
-    //     language: {
-    //       id: 1,
-    //       name: "English",
-    //     },
-    //     level: "B1",
-    //   },
-    //   {
-    //     id: 4,
-    //     language_id: 1,
-    //     language: {
-    //       id: 1,
-    //       name: "English",
-    //     },
-    //     level: "B2",
-    //   },
-    //   {
-    //     id: 5,
-    //     language_id: 1,
-    //     language: {
-    //       id: 1,
-    //       name: "English",
-    //     },
-    //     level: "C1",
-    //   },
-    //   {
-    //     id: 6,
-    //     language_id: 1,
-    //     language: {
-    //       id: 1,
-    //       name: "English",
-    //     },
-    //     level: "C2",
-    //   },
-    // ]);
-
     socket.emit("lobbie", { token: token || "", language: selectedLanguage });
 
     socket.on("getLobbies", (data) => {
+      hideLoader();
       setWaitingRooms(data.games);
       setLanguageLevels(data.level_language);
       setPlayers(data.stats_user_language);
