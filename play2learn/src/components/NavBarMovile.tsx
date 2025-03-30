@@ -1,6 +1,6 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import { Menu, Languages, Users, TowerControl as GameController, Trophy, BookOpen, Settings, LogOut, ChevronRight, Sparkles, Clock, X } from "lucide-react";
+import { Menu, Languages, Users, TowerControl as GameController, Trophy, BookOpen, Settings, LogOut, ChevronRight, Sparkles, Clock, X, User2 } from "lucide-react";
 import { apiRequest } from "@/services/communicationManager/apiRequest";
 import { useRouter } from "next/navigation";
 import { NavBarContext } from "@/contexts/NavBarContext";
@@ -49,17 +49,17 @@ function App() {
   };
 
   const toggleMobileSidebar = () => {
-    if (!mobileSidebarOpen){
+    if (!mobileSidebarOpen) {
       setMobileMenuOpen(false);
     }
     setMobileSidebarOpen(!mobileSidebarOpen);
   };
-  
-  const handleChangeLanguage = (language: Language) =>{
+
+  const handleChangeLanguage = (language: Language) => {
     showLoader();
     setSelectedLanguage(language.name)
     socket.emit("lobbie", { token: token || "", language: language.name });
-    socket.emit("statsUserLanguage", {token: token, language: language.name});
+    socket.emit("statsUserLanguage", { token: token, language: language.name });
   }
 
 
@@ -162,34 +162,44 @@ function App() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-indigo-950 border-b border-indigo-700 absolute top-[68px] left-0 right-0 z-50">
           <nav className="flex flex-col p-4">
-          <Link href="/">
-            <button
-              onClick={() => handleNavClick("lobby")}
-              className={`p-3 mb-2 rounded-xl flex items-center transition-all ${
-                activeSection === "lobby"
+            <Link href="/">
+              <button
+                onClick={() => handleNavClick("lobby")}
+                className={`p-3 mb-2 rounded-xl flex items-center transition-all ${activeSection === "lobby"
                   ? "bg-purple-700 text-white"
                   : "text-indigo-400 hover:bg-indigo-800"
-              }`}
-            >
-              <Users size={20} className="mr-3" />
-              <span>Game Lobby</span>
-            </button>
-          </Link>
+                  }`}
+              >
+                <Users size={20} className="mr-3" />
+                <span>Game Lobby</span>
+              </button>
+            </Link>
             <Link href="/profile">
-            <button
-              onClick={() => handleNavClick("profile")}
-              className={`p-3 mb-2 rounded-xl flex items-center transition-all ${
-                activeSection === "profile"
+              <button
+                onClick={() => handleNavClick("profile")}
+                className={`p-3 mb-2 rounded-xl flex items-center transition-all ${activeSection === "profile"
                   ? "bg-purple-700 text-white"
                   : "text-indigo-400 hover:bg-indigo-800"
-              }`}
-            >
-              <Trophy size={20} className="mr-3" />
-              <span>Profile</span>
-            </button>
+                  }`}
+              >
+                <Trophy size={20} className="mr-3" />
+                <span>Profile</span>
+              </button>
+            </Link>
+            <Link href="/me">
+              <button
+                onClick={() => handleNavClick("me")}
+                className={`p-3 mb-2 rounded-xl flex items-center transition-all ${activeSection === "me"
+                  ? "bg-purple-700 text-white"
+                  : "text-indigo-400 hover:bg-indigo-800"
+                  }`}
+              >
+                <User2 size={20} className="mr-3"/>
+                <span>Me</span>
+              </button>
             </Link>
             <button className="p-3 rounded-xl flex items-center text-indigo-400 hover:bg-indigo-800 transition-all"
-            onClick={() => handleLogout()}
+              onClick={() => handleLogout()}
             >
               <LogOut size={20} className="mr-3" />
               <span>Logout</span>
@@ -222,11 +232,10 @@ function App() {
                   setSelectedLanguage(language.name);
                   setMobileSidebarOpen(false);
                 }}
-                className={`w-full p-4 rounded-lg flex flex-col transition-all ${
-                  selectedLanguage === language.name
-                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg"
-                    : "bg-indigo-800/50 hover:bg-indigo-800"
-                }`}
+                className={`w-full p-4 rounded-lg flex flex-col transition-all ${selectedLanguage === language.name
+                  ? "bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg"
+                  : "bg-indigo-800/50 hover:bg-indigo-800"
+                  }`}
               >
                 <div className="flex justify-between items-center">
                   <span className="font-medium">{language.name}</span>
@@ -245,7 +254,7 @@ function App() {
             ))}
 
             <button className="w-full p-4 rounded-lg bg-indigo-800/30 border border-dashed border-indigo-600 hover:bg-indigo-800/50 transition-all flex items-center justify-center text-indigo-400"
-            onClick={toggleAddLanguage}
+              onClick={toggleAddLanguage}
             >
               <span className="mr-2">Añadir idioma</span>
               <ChevronRight size={16} />
