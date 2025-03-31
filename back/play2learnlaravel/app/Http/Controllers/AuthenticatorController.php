@@ -207,7 +207,7 @@ class AuthenticatorController extends Controller
                 'status' => 'success',
                 'user' => $user,
                 'token' => $token,
-                'message' => 'Usuario registrado exitosamente.'
+                'message' => 'Usuario registrado  exitosamente.'
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
