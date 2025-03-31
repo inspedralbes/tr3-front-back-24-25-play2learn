@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\achievementsUser;
+use App\Models\AchievementsUser;
 use App\Models\Game;
 use App\Models\GameHistoryUsers;
 use App\Models\GameUser;

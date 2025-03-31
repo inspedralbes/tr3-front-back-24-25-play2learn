@@ -199,7 +199,7 @@ class AuthenticatorController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            $this->mailService->sendMail($user->name, $user->email, 'people.welcome', ['name' => $user->name]);
+//            $this->mailService->sendMail($user->name, $user->email, 'people.welcome', ['name' => $user->name]);
 
             DB::commit();
 

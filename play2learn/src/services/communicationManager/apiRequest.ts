@@ -1,7 +1,6 @@
 import Cookies from "js-cookie";
 
-const routeApi: string =
-  (process.env.NEXT_PUBLIC_API_LARAVEL_URL || "https://api.play2learn.pro/api");
+const routeApi: string = "https://api.play2learn.pro/api";
 
 export async function apiRequest(
   endpoint: string,
