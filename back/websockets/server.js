@@ -21,7 +21,9 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http, {
     cors: {
         origin: "*",
-        methods: ["GET", "POST"]
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Content-Type"], // Permite encabezados específicos si es necesario
+        credentials: true // Permite el envío de cookies y cabeceras de autorización
     }
 });
 

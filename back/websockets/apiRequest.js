@@ -1,4 +1,4 @@
-const routeApi = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+const routeApi = "https://api.play2learn.pro/api";
 
 async function apiRequest(endpoint, token = null, method = "GET", body = null) {
   try {
