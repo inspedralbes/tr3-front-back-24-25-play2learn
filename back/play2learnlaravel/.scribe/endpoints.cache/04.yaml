@@ -70,7 +70,7 @@ endpoints:
   -
     httpMethods:
       - GET
-    uri: 'api/user/getUserStatsLanguage/{languageId}'
+    uri: 'api/user/getUserStatsLanguage/{language}'
     metadata:
       groupName: StatsUserLanguage
       groupDescription: ''
@@ -87,6 +87,16 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
+      language:
+        name: language
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
       languageId:
         name: languageId
         description: 'El ID del idioma para obtener las estadísticas del usuario. Ejemplo: 1'
@@ -98,6 +108,7 @@ endpoints:
         nullable: false
         custom: []
     cleanUrlParameters:
+      language: consequatur
       languageId: 17
     queryParameters: []
     cleanQueryParameters: []

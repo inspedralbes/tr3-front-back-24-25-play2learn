@@ -1,233 +1,19 @@
-name: Authentication
+name: Translation
 description: ''
 endpoints:
   -
     httpMethods:
-      - POST
-    uri: api/auth/register
-    metadata:
-      groupName: Authentication
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Registra un nuevo usuario.'
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        name: name
-        description: 'El nombre del usuario. Ejemplo: John Doe'
-        required: true
-        example: consequatur
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      username:
-        name: username
-        description: 'El nombre de usuario. Ejemplo: johndoe'
-        required: true
-        example: consequatur
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      email:
-        name: email
-        description: 'El correo electrónico del usuario. Ejemplo: johndoe@example.com'
-        required: true
-        example: qkunze@example.com
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      password:
-        name: password
-        description: 'La contraseña del usuario. Ejemplo: password123'
-        required: true
-        example: 'O[2UZ5ij-e/dl4m{o,'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      name: consequatur
-      username: consequatur
-      email: qkunze@example.com
-      password: 'O[2UZ5ij-e/dl4m{o,'
-    fileParameters: []
-    responses:
-      -
-        status: 201
-        content: |-
-          {
-              "status": "success",
-              "user": { "id": 1, "name": "John Doe" },
-              "token": "your-generated-token"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 422
-        content: |-
-          {
-              "status": "error",
-              "errors": {
-                  "email": ["The email has already been taken."]
-              }
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/auth/login
-    metadata:
-      groupName: Authentication
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Inicia sesión con el usuario.'
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      user:
-        name: user
-        description: 'El correo electrónico o nombre de usuario del usuario. Ejemplo: johndoe@example.com'
-        required: true
-        example: consequatur
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      password:
-        name: password
-        description: 'La contraseña del usuario. Ejemplo: password123'
-        required: true
-        example: 'O[2UZ5ij-e/dl4m{o,'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      user: consequatur
-      password: 'O[2UZ5ij-e/dl4m{o,'
-    fileParameters: []
-    responses:
-      -
-        status: 201
-        content: |-
-          {
-              "status": "success",
-              "user": { "id": 1, "name": "John Doe" },
-              "token": "your-generated-token",
-              "message": "Usuario logeado exitosamente."
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 422
-        content: |-
-          {
-              "status": "error",
-              "errors": {
-                  "user": ["El correo electrónico o nombre de usuario no es válido."],
-                  "password": ["La contraseña es incorrecta."]
-              }
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/auth/logout
-    metadata:
-      groupName: Authentication
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Cierra la sesión del usuario.'
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "status": "success",
-              "message": "Usuario deslogeado exitosamente."
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
       - GET
-    uri: api/auth/google/callback
+    uri: api/lara/languages
     metadata:
-      groupName: Authentication
+      groupName: Translation
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
       title: |-
-        Inicia sesión con Google.
+        Obtiene la lista de idiomas soportados por el servicio de Lara.
 
-        Este endpoint permite a los usuarios iniciar sesión utilizando su cuenta de Google. Si el usuario no existe, se crea uno nuevo.
+        Este endpoint devuelve todos los idiomas soportados para traducción. También permite obtener los nombres de los idiomas en un idioma específico.
       description: ''
       authenticated: false
       custom: []
@@ -236,8 +22,19 @@ endpoints:
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
+    queryParameters:
+      display_language:
+        name: display_language
+        description: 'El idioma en el que se mostrarán los nombres de los idiomas soportados. Por defecto, es ''es'' (español). Ejemplo: "es"'
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanQueryParameters:
+      display_language: consequatur
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -246,25 +43,16 @@ endpoints:
         status: 200
         content: |-
           {
-              "status": "success",
-              "user": {
-                  "id": 1,
-                  "name": "John Doe",
-                  "email": "johndoe@example.com",
-                  "profile_pic": "http://profilepic.com/pic.jpg",
-                  "username": "johndoe"
-              },
-              "token": "your-generated-token"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 422
-        content: |-
-          {
-              "status": "error",
-              "message": "Email no encontrado"
+              "languages": [
+                  {
+                      "code": "en",
+                      "name": "Inglés"
+                  },
+                  {
+                      "code": "es",
+                      "name": "Español"
+                  }
+              ]
           }
         headers: []
         description: ''
@@ -273,83 +61,7 @@ endpoints:
         status: 500
         content: |-
           {
-              "status": "error",
-              "message": "Error al crear el usuario"
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/auth/google/redirect
-    metadata:
-      groupName: Authentication
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: |-
-        Redirige al usuario a la pantalla de login de Google.
-
-        Este endpoint redirige al usuario a la pantalla de login de Google para la autenticación.
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 302
-        content: |-
-          {
-              "status": "success",
-              "message": "Redirigiendo a Google para autenticación"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 302
-        content: |-
-          <!DOCTYPE html>
-          <html>
-              <head>
-                  <meta charset="UTF-8" />
-                  <meta http-equiv="refresh" content="0;url='https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;scope=openid+profile+email&amp;response_type=code'" />
-
-                  <title>Redirecting to https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;scope=openid+profile+email&amp;response_type=code</title>
-              </head>
-              <body>
-                  Redirecting to <a href="https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;scope=openid+profile+email&amp;response_type=code">https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;scope=openid+profile+email&amp;response_type=code</a>.
-              </body>
-          </html>
-        headers:
-          cache-control: 'no-cache, private'
-          location: 'https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&scope=openid+profile+email&response_type=code'
-          content-type: 'text/html; charset=utf-8'
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-      -
-        status: 500
-        content: |-
-          {
-              "status": "error",
-              "message": "Error al redirigir al login de Google"
+              "error": "Error al obtener idiomas: Error en la API de Lara"
           }
         headers: []
         description: ''
@@ -363,16 +75,16 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: api/auth/change-password
+    uri: api/lara/translate
     metadata:
-      groupName: Authentication
+      groupName: Translation
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
       title: |-
-        Cambia la contraseña del usuario.
+        Traduce una palabra o frase de un idioma a otro utilizando el servicio de Lara.
 
-        Este endpoint permite al usuario cambiar su contraseña utilizando un UUID para identificar al usuario.
+        Este endpoint toma una palabra o frase y la traduce de un idioma a otro. El idioma de origen es opcional y, si no se proporciona, Google puede detectarlo automáticamente.
       description: ''
       authenticated: false
       custom: []
@@ -384,19 +96,9 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      uuid:
-        name: uuid
-        description: 'El UUID del usuario. Ejemplo: 123e4567-e89b-12d3-a456-426614174000'
-        required: true
-        example: 66529e01-d113-3473-8d6f-9e11e09332ea
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      new_password:
-        name: new_password
-        description: 'La nueva contraseña del usuario. Ejemplo: newpassword123'
+      word:
+        name: word
+        description: 'La palabra o frase a traducir. Ejemplo: "Hello"'
         required: true
         example: consequatur
         type: string
@@ -404,9 +106,30 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
+      target:
+        name: target
+        description: 'El código ISO de 2 letras del idioma de destino (es, en, fr, etc.). Ejemplo: "es"'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      source:
+        name: source
+        description: 'Opcional El código ISO de 2 letras del idioma de origen (en, fr, etc.). Ejemplo: "en". Si no se proporciona, se detectará automáticamente.'
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
     cleanBodyParameters:
-      uuid: 66529e01-d113-3473-8d6f-9e11e09332ea
-      new_password: consequatur
+      word: consequatur
+      target: consequatur
+      source: consequatur
     fileParameters: []
     responses:
       -
@@ -414,74 +137,26 @@ endpoints:
         content: |-
           {
               "status": "success",
-              "user": {
-                  "id": 1,
-                  "name": "John Doe",
-                  "email": "johndoe@example.com",
-                  "profile_pic": "http://profilepic.com/pic.jpg",
-                  "username": "johndoe"
-              },
-              "token": "your-generated-token"
+              "result": "Hola"
           }
         headers: []
         description: ''
         custom: []
       -
-        status: 404
+        status: 422
         content: |-
           {
               "status": "error",
-              "message": "Usuario no encontrado"
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/checkAuth
-    metadata:
-      groupName: Authentication
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Verifica si el usuario está autenticado.'
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "status": "success",
-              "user": { "id": 1, "name": "John Doe" }
+              "message": "La palabra o idioma de destino no puede estar vacío"
           }
         headers: []
         description: ''
         custom: []
       -
-        status: 401
+        status: 500
         content: |-
           {
-              "status": "error",
-              "message": "Usuario no autenticado."
+              "error": "Error al traducir: Error en la API de Lara"
           }
         headers: []
         description: ''

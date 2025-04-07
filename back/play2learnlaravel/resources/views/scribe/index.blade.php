@@ -71,24 +71,19 @@
                     <a href="#authentication">Authentication</a>
                 </li>
                                     <ul id="tocify-subheader-authentication" class="tocify-subheader">
-                                                    <li class="tocify-item level-2" data-unique="authentication-POSTapi-auth-register">
+                                                    <li class="tocify-item level-2" data-unique="authentication-GETapi-auth-logout">
+                                <a href="#authentication-GETapi-auth-logout">Cierra la sesión del usuario.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="authentication-POSTapi-auth-register">
                                 <a href="#authentication-POSTapi-auth-register">Registra un nuevo usuario.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="authentication-POSTapi-auth-login">
                                 <a href="#authentication-POSTapi-auth-login">Inicia sesión con el usuario.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="authentication-POSTapi-auth-logout">
-                                <a href="#authentication-POSTapi-auth-logout">Cierra la sesión del usuario.</a>
-                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="authentication-GETapi-auth-google-callback">
                                 <a href="#authentication-GETapi-auth-google-callback">Inicia sesión con Google.
 
 Este endpoint permite a los usuarios iniciar sesión utilizando su cuenta de Google. Si el usuario no existe, se crea uno nuevo.</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="authentication-GETapi-auth-google-redirect">
-                                <a href="#authentication-GETapi-auth-google-redirect">Redirige al usuario a la pantalla de login de Google.
-
-Este endpoint redirige al usuario a la pantalla de login de Google para la autenticación.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="authentication-POSTapi-auth-change-password">
                                 <a href="#authentication-POSTapi-auth-change-password">Cambia la contraseña del usuario.
@@ -105,11 +100,20 @@ Este endpoint permite al usuario cambiar su contraseña utilizando un UUID para 
                     <a href="#endpoints">Endpoints</a>
                 </li>
                                     <ul id="tocify-subheader-endpoints" class="tocify-subheader">
-                                                    <li class="tocify-item level-2" data-unique="endpoints-GETapi-user">
-                                <a href="#endpoints-GETapi-user">GET api/user</a>
+                                                    <li class="tocify-item level-2" data-unique="endpoints-POSTapi-user-languages-store">
+                                <a href="#endpoints-POSTapi-user-languages-store">POST api/user/languages/store</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-test">
-                                <a href="#endpoints-GETapi-test">GET api/test</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-game-store-stats-user">
+                                <a href="#endpoints-POSTapi-game-store-stats-user">POST api/game/store/stats/user</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-game-store-stats-finish">
+                                <a href="#endpoints-POSTapi-game-store-stats-finish">POST api/game/store/stats/finish</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-game-history-round">
+                                <a href="#endpoints-POSTapi-game-history-round">POST api/game/history/round</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-user-update">
+                                <a href="#endpoints-POSTapi-user-update">POST api/user/update</a>
                             </li>
                                                                         </ul>
                             </ul>
@@ -133,8 +137,8 @@ Este endpoint devuelve todos los juegos que están en espera de ser iniciados.</
 
 Este endpoint permite crear un nuevo juego, especificando la configuración de este, como el nivel de lenguaje, las rondas, el máximo de pistas, etc.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="game-GETapi-games--gameUUID-">
-                                <a href="#game-GETapi-games--gameUUID-">Obtiene los detalles de un juego específico por su UUID.
+                                                                                <li class="tocify-item level-2" data-unique="game-GETapi-games-lobby--gameUUID-">
+                                <a href="#game-GETapi-games-lobby--gameUUID-">Obtiene los detalles de un juego específico por su UUID.
 
 Este endpoint devuelve los detalles del juego, incluyendo los participantes y el nivel de lenguaje, si el juego está en estado "pending" o "in_progress".</a>
                             </li>
@@ -165,8 +169,8 @@ Este endpoint cambia el estado del juego a "in_progress" y comienza la partida.<
 
 Este endpoint devuelve las estadísticas de los idiomas aprendidos por el usuario autenticado, junto con la información del idioma.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="statsuserlanguage-GETapi-user-getUserStatsLanguage--languageId-">
-                                <a href="#statsuserlanguage-GETapi-user-getUserStatsLanguage--languageId-">Obtiene las estadísticas de un idioma específico de un usuario.
+                                                                                <li class="tocify-item level-2" data-unique="statsuserlanguage-GETapi-user-getUserStatsLanguage--language-">
+                                <a href="#statsuserlanguage-GETapi-user-getUserStatsLanguage--language-">Obtiene las estadísticas de un idioma específico de un usuario.
 
 Este endpoint devuelve las estadísticas de un idioma específico del usuario, los logros relacionados con ese idioma y el historial de juegos más recientes del usuario.</a>
                             </li>
@@ -198,7 +202,7 @@ Este endpoint toma una palabra o frase y la traduce de un idioma a otro. El idio
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: March 30, 2025</li>
+        <li>Last updated: April 7, 2025</li>
     </ul>
 </div>
 
@@ -221,7 +225,125 @@ You can switch the language used with the tabs at the top right (or from the nav
 
     
 
-                                <h2 id="authentication-POSTapi-auth-register">Registra un nuevo usuario.</h2>
+                                <h2 id="authentication-GETapi-auth-logout">Cierra la sesión del usuario.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-auth-logout">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/auth/logout" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/auth/logout"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-auth-logout">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;message&quot;: &quot;Usuario deslogeado exitosamente.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-auth-logout" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-auth-logout"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-auth-logout"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-auth-logout" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-auth-logout">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-auth-logout" data-method="GET"
+      data-path="api/auth/logout"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-auth-logout', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-auth-logout"
+                    onclick="tryItOut('GETapi-auth-logout');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-auth-logout"
+                    onclick="cancelTryOut('GETapi-auth-logout');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-auth-logout"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/auth/logout</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-auth-logout"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-auth-logout"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="authentication-POSTapi-auth-register">Registra un nuevo usuario.</h2>
 
 <p>
 </p>
@@ -591,124 +713,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="authentication-POSTapi-auth-logout">Cierra la sesión del usuario.</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-POSTapi-auth-logout">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/auth/logout" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/auth/logout"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "POST",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-POSTapi-auth-logout">
-            <blockquote>
-            <p>Example response (200):</p>
-        </blockquote>
-                <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;status&quot;: &quot;success&quot;,
-    &quot;message&quot;: &quot;Usuario deslogeado exitosamente.&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-POSTapi-auth-logout" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-POSTapi-auth-logout"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-POSTapi-auth-logout"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-POSTapi-auth-logout" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-POSTapi-auth-logout">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-POSTapi-auth-logout" data-method="POST"
-      data-path="api/auth/logout"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('POSTapi-auth-logout', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-POSTapi-auth-logout"
-                    onclick="tryItOut('POSTapi-auth-logout');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-POSTapi-auth-logout"
-                    onclick="cancelTryOut('POSTapi-auth-logout');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-POSTapi-auth-logout"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-black">POST</small>
-            <b><code>api/auth/logout</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="POSTapi-auth-logout"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="POSTapi-auth-logout"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        </form>
-
                     <h2 id="authentication-GETapi-auth-google-callback">Inicia sesión con Google.
 
 Este endpoint permite a los usuarios iniciar sesión utilizando su cuenta de Google. Si el usuario no existe, se crea uno nuevo.</h2>
@@ -849,162 +853,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="Accept"                data-endpoint="GETapi-auth-google-callback"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        </form>
-
-                    <h2 id="authentication-GETapi-auth-google-redirect">Redirige al usuario a la pantalla de login de Google.
-
-Este endpoint redirige al usuario a la pantalla de login de Google para la autenticación.</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-GETapi-auth-google-redirect">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/auth/google/redirect" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/auth/google/redirect"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-auth-google-redirect">
-            <blockquote>
-            <p>Example response (302):</p>
-        </blockquote>
-                <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;status&quot;: &quot;success&quot;,
-    &quot;message&quot;: &quot;Redirigiendo a Google para autenticaci&oacute;n&quot;
-}</code>
- </pre>
-            <blockquote>
-            <p>Example response (302):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-location: https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;scope=openid+profile+email&amp;response_type=code
-content-type: text/html; charset=utf-8
-access-control-allow-origin: *
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-    &lt;head&gt;
-        &lt;meta charset=&quot;UTF-8&quot; /&gt;
-        &lt;meta http-equiv=&quot;refresh&quot; content=&quot;0;url=&#039;https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;amp;scope=openid+profile+email&amp;amp;response_type=code&#039;&quot; /&gt;
-
-        &lt;title&gt;Redirecting to https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;amp;scope=openid+profile+email&amp;amp;response_type=code&lt;/title&gt;
-    &lt;/head&gt;
-    &lt;body&gt;
-        Redirecting to &lt;a href=&quot;https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;amp;scope=openid+profile+email&amp;amp;response_type=code&quot;&gt;https://accounts.google.com/o/oauth2/auth?client_id=113787329055-52gfb9g08ifqpf9sjnoatrhssk5lhleb.apps.googleusercontent.com&amp;amp;redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fapi%2Fauth%2Fgoogle%2Fcallback&amp;amp;scope=openid+profile+email&amp;amp;response_type=code&lt;/a&gt;.
-    &lt;/body&gt;
-&lt;/html&gt;</code>
- </pre>
-            <blockquote>
-            <p>Example response (500):</p>
-        </blockquote>
-                <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;status&quot;: &quot;error&quot;,
-    &quot;message&quot;: &quot;Error al redirigir al login de Google&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-auth-google-redirect" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-auth-google-redirect"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-auth-google-redirect"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-auth-google-redirect" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-auth-google-redirect">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-auth-google-redirect" data-method="GET"
-      data-path="api/auth/google/redirect"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-auth-google-redirect', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-auth-google-redirect"
-                    onclick="tryItOut('GETapi-auth-google-redirect');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-auth-google-redirect"
-                    onclick="cancelTryOut('GETapi-auth-google-redirect');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-auth-google-redirect"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/auth/google/redirect</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-auth-google-redirect"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-auth-google-redirect"
                value="application/json"
                data-component="header">
     <br>
@@ -1318,27 +1166,31 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
     
 
-                                <h2 id="endpoints-GETapi-user">GET api/user</h2>
+                                <h2 id="endpoints-POSTapi-user-languages-store">POST api/user/languages/store</h2>
 
 <p>
 </p>
 
 
 
-<span id="example-requests-GETapi-user">
+<span id="example-requests-POSTapi-user-languages-store">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/user" \
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/user/languages/store" \
     --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
+    --header "Accept: application/json" \
+    --data "{
+    \"id_language\": \"consequatur\"
+}"
+</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/user"
+    "http://localhost/api/user/languages/store"
 );
 
 const headers = {
@@ -1346,76 +1198,65 @@ const headers = {
     "Accept": "application/json",
 };
 
+let body = {
+    "id_language": "consequatur"
+};
+
 fetch(url, {
-    method: "GET",
+    method: "POST",
     headers,
+    body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
 
-<span id="example-responses-GETapi-user">
-            <blockquote>
-            <p>Example response (401):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-content-type: application/json
-access-control-allow-origin: *
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Unauthenticated.&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-user" hidden>
+<span id="example-responses-POSTapi-user-languages-store">
+</span>
+<span id="execution-results-POSTapi-user-languages-store" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-user"></span>:
+                id="execution-response-status-POSTapi-user-languages-store"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-user"
+    <pre class="json"><code id="execution-response-content-POSTapi-user-languages-store"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-user" hidden>
+<span id="execution-error-POSTapi-user-languages-store" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-user">
+    <pre><code id="execution-error-message-POSTapi-user-languages-store">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-user" data-method="GET"
-      data-path="api/user"
+<form id="form-POSTapi-user-languages-store" data-method="POST"
+      data-path="api/user/languages/store"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-user', this);">
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-user-languages-store', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-user"
-                    onclick="tryItOut('GETapi-user');">Try it out ⚡
+                    id="btn-tryout-POSTapi-user-languages-store"
+                    onclick="tryItOut('POSTapi-user-languages-store');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-user"
-                    onclick="cancelTryOut('GETapi-user');" hidden>Cancel 🛑
+                    id="btn-canceltryout-POSTapi-user-languages-store"
+                    onclick="cancelTryOut('POSTapi-user-languages-store');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-user"
+                    id="btn-executetryout-POSTapi-user-languages-store"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
             </button>
             </h3>
             <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/user</code></b>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/user/languages/store</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -1423,7 +1264,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-user"
+                              name="Content-Type"                data-endpoint="POSTapi-user-languages-store"
                value="application/json"
                data-component="header">
     <br>
@@ -1434,35 +1275,47 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-user"
+                              name="Accept"                data-endpoint="POSTapi-user-languages-store"
                value="application/json"
                data-component="header">
     <br>
 <p>Example: <code>application/json</code></p>
             </div>
-                        </form>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>id_language</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id_language"                data-endpoint="POSTapi-user-languages-store"
+               value="consequatur"
+               data-component="body">
+    <br>
+<p>Example: <code>consequatur</code></p>
+        </div>
+        </form>
 
-                    <h2 id="endpoints-GETapi-test">GET api/test</h2>
+                    <h2 id="endpoints-POSTapi-game-store-stats-user">POST api/game/store/stats/user</h2>
 
 <p>
 </p>
 
 
 
-<span id="example-requests-GETapi-test">
+<span id="example-requests-POSTapi-game-store-stats-user">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/test" \
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/game/store/stats/user" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/test"
+    "http://localhost/api/game/store/stats/user"
 );
 
 const headers = {
@@ -1471,75 +1324,59 @@ const headers = {
 };
 
 fetch(url, {
-    method: "GET",
+    method: "POST",
     headers,
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
 
-<span id="example-responses-GETapi-test">
-            <blockquote>
-            <p>Example response (200):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-content-type: application/json
-access-control-allow-origin: *
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Test route is working!&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-test" hidden>
+<span id="example-responses-POSTapi-game-store-stats-user">
+</span>
+<span id="execution-results-POSTapi-game-store-stats-user" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-test"></span>:
+                id="execution-response-status-POSTapi-game-store-stats-user"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-test"
+    <pre class="json"><code id="execution-response-content-POSTapi-game-store-stats-user"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-test" hidden>
+<span id="execution-error-POSTapi-game-store-stats-user" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-test">
+    <pre><code id="execution-error-message-POSTapi-game-store-stats-user">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-test" data-method="GET"
-      data-path="api/test"
+<form id="form-POSTapi-game-store-stats-user" data-method="POST"
+      data-path="api/game/store/stats/user"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-test', this);">
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-game-store-stats-user', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-test"
-                    onclick="tryItOut('GETapi-test');">Try it out ⚡
+                    id="btn-tryout-POSTapi-game-store-stats-user"
+                    onclick="tryItOut('POSTapi-game-store-stats-user');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-test"
-                    onclick="cancelTryOut('GETapi-test');" hidden>Cancel 🛑
+                    id="btn-canceltryout-POSTapi-game-store-stats-user"
+                    onclick="cancelTryOut('POSTapi-game-store-stats-user');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-test"
+                    id="btn-executetryout-POSTapi-game-store-stats-user"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
             </button>
             </h3>
             <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/test</code></b>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/game/store/stats/user</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -1547,7 +1384,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-test"
+                              name="Content-Type"                data-endpoint="POSTapi-game-store-stats-user"
                value="application/json"
                data-component="header">
     <br>
@@ -1558,13 +1395,436 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-test"
+                              name="Accept"                data-endpoint="POSTapi-game-store-stats-user"
                value="application/json"
                data-component="header">
     <br>
 <p>Example: <code>application/json</code></p>
             </div>
                         </form>
+
+                    <h2 id="endpoints-POSTapi-game-store-stats-finish">POST api/game/store/stats/finish</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-game-store-stats-finish">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/game/store/stats/finish" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/game/store/stats/finish"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-game-store-stats-finish">
+</span>
+<span id="execution-results-POSTapi-game-store-stats-finish" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-game-store-stats-finish"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-game-store-stats-finish"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-game-store-stats-finish" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-game-store-stats-finish">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-game-store-stats-finish" data-method="POST"
+      data-path="api/game/store/stats/finish"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-game-store-stats-finish', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-game-store-stats-finish"
+                    onclick="tryItOut('POSTapi-game-store-stats-finish');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-game-store-stats-finish"
+                    onclick="cancelTryOut('POSTapi-game-store-stats-finish');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-game-store-stats-finish"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/game/store/stats/finish</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-game-store-stats-finish"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-game-store-stats-finish"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-POSTapi-game-history-round">POST api/game/history/round</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-game-history-round">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/game/history/round" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/game/history/round"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-game-history-round">
+</span>
+<span id="execution-results-POSTapi-game-history-round" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-game-history-round"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-game-history-round"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-game-history-round" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-game-history-round">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-game-history-round" data-method="POST"
+      data-path="api/game/history/round"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-game-history-round', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-game-history-round"
+                    onclick="tryItOut('POSTapi-game-history-round');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-game-history-round"
+                    onclick="cancelTryOut('POSTapi-game-history-round');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-game-history-round"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/game/history/round</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-game-history-round"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-game-history-round"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-POSTapi-user-update">POST api/user/update</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-user-update">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/user/update" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"email\": \"qkunze@example.com\",
+    \"name\": \"opfuudtdsufvyvddqamni\",
+    \"profile_pic\": \"http:\\/\\/www.grady.com\\/aspernatur-natus-earum-quas-dignissimos-perferendis-voluptatibus\",
+    \"password\": {
+        \"current\": \"ghdtqtqxbajwbpilpmufinllwloauydlsmsjuryvojcybzvrbyickznkygloigmkwxphlvazjr\",
+        \"new\": \"cnfbaqywuxhgjjmzuxjubqouzswiwxtrkimfcatbxspzmrazsroyjpxmqesedyghenqcopwvow\"
+    }
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/user/update"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "email": "qkunze@example.com",
+    "name": "opfuudtdsufvyvddqamni",
+    "profile_pic": "http:\/\/www.grady.com\/aspernatur-natus-earum-quas-dignissimos-perferendis-voluptatibus",
+    "password": {
+        "current": "ghdtqtqxbajwbpilpmufinllwloauydlsmsjuryvojcybzvrbyickznkygloigmkwxphlvazjr",
+        "new": "cnfbaqywuxhgjjmzuxjubqouzswiwxtrkimfcatbxspzmrazsroyjpxmqesedyghenqcopwvow"
+    }
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-user-update">
+</span>
+<span id="execution-results-POSTapi-user-update" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-user-update"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-user-update"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-user-update" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-user-update">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-user-update" data-method="POST"
+      data-path="api/user/update"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-user-update', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-user-update"
+                    onclick="tryItOut('POSTapi-user-update');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-user-update"
+                    onclick="cancelTryOut('POSTapi-user-update');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-user-update"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/user/update</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-user-update"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-user-update"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="email"                data-endpoint="POSTapi-user-update"
+               value="qkunze@example.com"
+               data-component="body">
+    <br>
+<p>Must be a valid email address. Example: <code>qkunze@example.com</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="name"                data-endpoint="POSTapi-user-update"
+               value="opfuudtdsufvyvddqamni"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>opfuudtdsufvyvddqamni</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>username</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="username"                data-endpoint="POSTapi-user-update"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>profile_pic</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="profile_pic"                data-endpoint="POSTapi-user-update"
+               value="http://www.grady.com/aspernatur-natus-earum-quas-dignissimos-perferendis-voluptatibus"
+               data-component="body">
+    <br>
+<p>Must be a valid URL. Example: <code>http://www.grady.com/aspernatur-natus-earum-quas-dignissimos-perferendis-voluptatibus</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+<br>
+
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>current</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="password.current"                data-endpoint="POSTapi-user-update"
+               value="ghdtqtqxbajwbpilpmufinllwloauydlsmsjuryvojcybzvrbyickznkygloigmkwxphlvazjr"
+               data-component="body">
+    <br>
+<p>Si se quiere cambiar la contraseña, deben venir ambos campos. This field is required when <code>password.new</code> is present. Must be at least 6 characters. Example: <code>ghdtqtqxbajwbpilpmufinllwloauydlsmsjuryvojcybzvrbyickznkygloigmkwxphlvazjr</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>new</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="password.new"                data-endpoint="POSTapi-user-update"
+               value="cnfbaqywuxhgjjmzuxjubqouzswiwxtrkimfcatbxspzmrazsroyjpxmqesedyghenqcopwvow"
+               data-component="body">
+    <br>
+<p>This field is required when <code>password.current</code> is present.  The value and <code>password.current</code> must be different. Must be at least 6 characters. Example: <code>cnfbaqywuxhgjjmzuxjubqouzswiwxtrkimfcatbxspzmrazsroyjpxmqesedyghenqcopwvow</code></p>
+                    </div>
+                                    </details>
+        </div>
+        </form>
 
                 <h1 id="game">Game</h1>
 
@@ -2129,7 +2389,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="game-GETapi-games--gameUUID-">Obtiene los detalles de un juego específico por su UUID.
+                    <h2 id="game-GETapi-games-lobby--gameUUID-">Obtiene los detalles de un juego específico por su UUID.
 
 Este endpoint devuelve los detalles del juego, incluyendo los participantes y el nivel de lenguaje, si el juego está en estado &quot;pending&quot; o &quot;in_progress&quot;.</h2>
 
@@ -2138,20 +2398,20 @@ Este endpoint devuelve los detalles del juego, incluyendo los participantes y el
 
 
 
-<span id="example-requests-GETapi-games--gameUUID-">
+<span id="example-requests-GETapi-games-lobby--gameUUID-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/games/66529e01-d113-3473-8d6f-9e11e09332ea" \
+    --get "http://localhost/api/games/lobby/66529e01-d113-3473-8d6f-9e11e09332ea" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/games/66529e01-d113-3473-8d6f-9e11e09332ea"
+    "http://localhost/api/games/lobby/66529e01-d113-3473-8d6f-9e11e09332ea"
 );
 
 const headers = {
@@ -2166,7 +2426,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-games--gameUUID-">
+<span id="example-responses-GETapi-games-lobby--gameUUID-">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -2198,43 +2458,43 @@ fetch(url, {
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-games--gameUUID-" hidden>
+<span id="execution-results-GETapi-games-lobby--gameUUID-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-games--gameUUID-"></span>:
+                id="execution-response-status-GETapi-games-lobby--gameUUID-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-games--gameUUID-"
+    <pre class="json"><code id="execution-response-content-GETapi-games-lobby--gameUUID-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-games--gameUUID-" hidden>
+<span id="execution-error-GETapi-games-lobby--gameUUID-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-games--gameUUID-">
+    <pre><code id="execution-error-message-GETapi-games-lobby--gameUUID-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-games--gameUUID-" data-method="GET"
-      data-path="api/games/{gameUUID}"
+<form id="form-GETapi-games-lobby--gameUUID-" data-method="GET"
+      data-path="api/games/lobby/{gameUUID}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-games--gameUUID-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-games-lobby--gameUUID-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-games--gameUUID-"
-                    onclick="tryItOut('GETapi-games--gameUUID-');">Try it out ⚡
+                    id="btn-tryout-GETapi-games-lobby--gameUUID-"
+                    onclick="tryItOut('GETapi-games-lobby--gameUUID-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-games--gameUUID-"
-                    onclick="cancelTryOut('GETapi-games--gameUUID-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-games-lobby--gameUUID-"
+                    onclick="cancelTryOut('GETapi-games-lobby--gameUUID-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-games--gameUUID-"
+                    id="btn-executetryout-GETapi-games-lobby--gameUUID-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -2242,7 +2502,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/games/{gameUUID}</code></b>
+            <b><code>api/games/lobby/{gameUUID}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -2250,7 +2510,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-games--gameUUID-"
+                              name="Content-Type"                data-endpoint="GETapi-games-lobby--gameUUID-"
                value="application/json"
                data-component="header">
     <br>
@@ -2261,7 +2521,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-games--gameUUID-"
+                              name="Accept"                data-endpoint="GETapi-games-lobby--gameUUID-"
                value="application/json"
                data-component="header">
     <br>
@@ -2273,7 +2533,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <small>string</small>&nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="gameUUID"                data-endpoint="GETapi-games--gameUUID-"
+                              name="gameUUID"                data-endpoint="GETapi-games-lobby--gameUUID-"
                value="66529e01-d113-3473-8d6f-9e11e09332ea"
                data-component="url">
     <br>
@@ -2871,7 +3131,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
-                    <h2 id="statsuserlanguage-GETapi-user-getUserStatsLanguage--languageId-">Obtiene las estadísticas de un idioma específico de un usuario.
+                    <h2 id="statsuserlanguage-GETapi-user-getUserStatsLanguage--language-">Obtiene las estadísticas de un idioma específico de un usuario.
 
 Este endpoint devuelve las estadísticas de un idioma específico del usuario, los logros relacionados con ese idioma y el historial de juegos más recientes del usuario.</h2>
 
@@ -2880,20 +3140,20 @@ Este endpoint devuelve las estadísticas de un idioma específico del usuario, l
 
 
 
-<span id="example-requests-GETapi-user-getUserStatsLanguage--languageId-">
+<span id="example-requests-GETapi-user-getUserStatsLanguage--language-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/user/getUserStatsLanguage/17" \
+    --get "http://localhost/api/user/getUserStatsLanguage/consequatur" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/user/getUserStatsLanguage/17"
+    "http://localhost/api/user/getUserStatsLanguage/consequatur"
 );
 
 const headers = {
@@ -2908,7 +3168,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-user-getUserStatsLanguage--languageId-">
+<span id="example-responses-GETapi-user-getUserStatsLanguage--language-">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -2967,43 +3227,43 @@ fetch(url, {
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-user-getUserStatsLanguage--languageId-" hidden>
+<span id="execution-results-GETapi-user-getUserStatsLanguage--language-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-user-getUserStatsLanguage--languageId-"></span>:
+                id="execution-response-status-GETapi-user-getUserStatsLanguage--language-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-user-getUserStatsLanguage--languageId-"
+    <pre class="json"><code id="execution-response-content-GETapi-user-getUserStatsLanguage--language-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-user-getUserStatsLanguage--languageId-" hidden>
+<span id="execution-error-GETapi-user-getUserStatsLanguage--language-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-user-getUserStatsLanguage--languageId-">
+    <pre><code id="execution-error-message-GETapi-user-getUserStatsLanguage--language-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-user-getUserStatsLanguage--languageId-" data-method="GET"
-      data-path="api/user/getUserStatsLanguage/{languageId}"
+<form id="form-GETapi-user-getUserStatsLanguage--language-" data-method="GET"
+      data-path="api/user/getUserStatsLanguage/{language}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-user-getUserStatsLanguage--languageId-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-user-getUserStatsLanguage--language-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-user-getUserStatsLanguage--languageId-"
-                    onclick="tryItOut('GETapi-user-getUserStatsLanguage--languageId-');">Try it out ⚡
+                    id="btn-tryout-GETapi-user-getUserStatsLanguage--language-"
+                    onclick="tryItOut('GETapi-user-getUserStatsLanguage--language-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-user-getUserStatsLanguage--languageId-"
-                    onclick="cancelTryOut('GETapi-user-getUserStatsLanguage--languageId-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-user-getUserStatsLanguage--language-"
+                    onclick="cancelTryOut('GETapi-user-getUserStatsLanguage--language-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-user-getUserStatsLanguage--languageId-"
+                    id="btn-executetryout-GETapi-user-getUserStatsLanguage--language-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -3011,7 +3271,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/user/getUserStatsLanguage/{languageId}</code></b>
+            <b><code>api/user/getUserStatsLanguage/{language}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -3019,7 +3279,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-user-getUserStatsLanguage--languageId-"
+                              name="Content-Type"                data-endpoint="GETapi-user-getUserStatsLanguage--language-"
                value="application/json"
                data-component="header">
     <br>
@@ -3030,7 +3290,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-user-getUserStatsLanguage--languageId-"
+                              name="Accept"                data-endpoint="GETapi-user-getUserStatsLanguage--language-"
                value="application/json"
                data-component="header">
     <br>
@@ -3038,11 +3298,22 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>language</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="language"                data-endpoint="GETapi-user-getUserStatsLanguage--language-"
+               value="consequatur"
+               data-component="url">
+    <br>
+<p>Example: <code>consequatur</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>languageId</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="languageId"                data-endpoint="GETapi-user-getUserStatsLanguage--languageId-"
+               step="any"               name="languageId"                data-endpoint="GETapi-user-getUserStatsLanguage--language-"
                value="17"
                data-component="url">
     <br>
