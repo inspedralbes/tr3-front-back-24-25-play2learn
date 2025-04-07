@@ -1,19 +1,19 @@
-name: Game
+name: Translation
 description: ''
 endpoints:
   -
     httpMethods:
-      - POST
-    uri: api/game/store/stats
+      - GET
+    uri: api/lara/languages
     metadata:
-      groupName: Game
+      groupName: Translation
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
       title: |-
-        Almacena las estadísticas de los jugadores al final de un juego.
+        Obtiene la lista de idiomas soportados por el servicio de Lara.
 
-        Este endpoint permite actualizar las estadísticas de los jugadores, sumando los puntos locales de cada uno.
+        Este endpoint devuelve todos los idiomas soportados para traducción. También permite obtener los nombres de los idiomas en un idioma específico.
       description: ''
       authenticated: false
       custom: []
@@ -22,78 +22,19 @@ endpoints:
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      players:
-        name: players
-        description: |-
-          Lista de jugadores con sus ID y puntos locales. Ejemplo:
-          [
-              { "id": 1, "localPoints": 10 },
-              { "id": 2, "localPoints": 5 }
-          ]
-        required: true
-        example:
-          - consequatur
-        type: 'string[]'
+    queryParameters:
+      display_language:
+        name: display_language
+        description: 'El idioma en el que se mostrarán los nombres de los idiomas soportados. Por defecto, es ''es'' (español). Ejemplo: "es"'
+        required: false
+        example: consequatur
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
-    cleanBodyParameters:
-      players:
-        - consequatur
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "status": "success"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 500
-        content: |-
-          {
-              "status": "error",
-              "message": "Error al almacenar las estadísticas."
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/games
-    metadata:
-      groupName: Game
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: |-
-        Obtiene la lista de juegos que están en estado "pending" (pendiente).
-
-        Este endpoint devuelve todos los juegos que están en espera de ser iniciados.
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
+    cleanQueryParameters:
+      display_language: consequatur
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -102,26 +43,14 @@ endpoints:
         status: 200
         content: |-
           {
-              "status": "success",
-              "message": "Games list",
-              "games": [
+              "languages": [
                   {
-                      "id": 1,
-                      "name": "Game 1",
-                      "status": "pending",
-                      "participants": [
-                          {
-                              "user": {
-                                  "name": "Player 1",
-                                  "email": "player1@example.com"
-                              }
-                          }
-                      ],
-                      "language_level": {
-                          "language": {
-                              "name": "English"
-                          }
-                      }
+                      "code": "en",
+                      "name": "Inglés"
+                  },
+                  {
+                      "code": "es",
+                      "name": "Español"
                   }
               ]
           }
@@ -132,8 +61,7 @@ endpoints:
         status: 500
         content: |-
           {
-              "status": "error",
-              "message": "Error al obtener la lista de juegos."
+              "error": "Error al obtener idiomas: Error en la API de Lara"
           }
         headers: []
         description: ''
@@ -147,16 +75,16 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: api/games/store
+    uri: api/lara/translate
     metadata:
-      groupName: Game
+      groupName: Translation
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
       title: |-
-        Crea un nuevo juego.
+        Traduce una palabra o frase de un idioma a otro utilizando el servicio de Lara.
 
-        Este endpoint permite crear un nuevo juego, especificando la configuración de este, como el nivel de lenguaje, las rondas, el máximo de pistas, etc.
+        Este endpoint toma una palabra o frase y la traduce de un idioma a otro. El idioma de origen es opcional y, si no se proporciona, Google puede detectarlo automáticamente.
       description: ''
       authenticated: false
       custom: []
@@ -168,29 +96,9 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      id_level_language:
-        name: id_level_language
-        description: 'El ID del nivel de lenguaje para el juego. Ejemplo: 1'
-        required: true
-        example: 17
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      password:
-        name: password
-        description: 'La contraseña del juego. Ejemplo: "secreta123"'
-        required: true
-        example: 'O[2UZ5ij-e/dl4m{o,'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      name:
-        name: name
-        description: 'El nombre del juego. Ejemplo: "Trivia Game"'
+      word:
+        name: word
+        description: 'La palabra o frase a traducir. Ejemplo: "Hello"'
         required: true
         example: consequatur
         type: string
@@ -198,54 +106,30 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      n_rounds:
-        name: n_rounds
-        description: 'El número de rondas del juego. Ejemplo: 5'
+      target:
+        name: target
+        description: 'El código ISO de 2 letras del idioma de destino (es, en, fr, etc.). Ejemplo: "es"'
         required: true
-        example: 17
-        type: integer
+        example: consequatur
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
-      max_clues:
-        name: max_clues
-        description: 'El máximo de pistas por ronda. Ejemplo: 3'
-        required: true
-        example: 17
-        type: integer
+      source:
+        name: source
+        description: 'Opcional El código ISO de 2 letras del idioma de origen (en, fr, etc.). Ejemplo: "en". Si no se proporciona, se detectará automáticamente.'
+        required: false
+        example: consequatur
+        type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
-        custom: []
-      max_time:
-        name: max_time
-        description: 'El tiempo máximo en segundos por ronda. Ejemplo: 60'
-        required: true
-        example: 17
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      max_players:
-        name: max_players
-        description: 'El número máximo de jugadores en el juego. Ejemplo: 4'
-        required: true
-        example: 17
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
+        nullable: true
         custom: []
     cleanBodyParameters:
-      id_level_language: 17
-      password: 'O[2UZ5ij-e/dl4m{o,'
-      name: consequatur
-      n_rounds: 17
-      max_clues: 17
-      max_time: 17
-      max_players: 17
+      word: consequatur
+      target: consequatur
+      source: consequatur
     fileParameters: []
     responses:
       -
@@ -253,13 +137,7 @@ endpoints:
         content: |-
           {
               "status": "success",
-              "message": "Game created",
-              "gameCreated": {
-                  "id": 1,
-                  "name": "Trivia Game",
-                  "status": "pending"
-              },
-              "games": [...]
+              "result": "Hola"
           }
         headers: []
         description: ''
@@ -269,9 +147,7 @@ endpoints:
         content: |-
           {
               "status": "error",
-              "errors": {
-                  "name": ["The name field is required."]
-              }
+              "message": "La palabra o idioma de destino no puede estar vacío"
           }
         headers: []
         description: ''
@@ -280,284 +156,7 @@ endpoints:
         status: 500
         content: |-
           {
-              "status": "error",
-              "message": "Error al crear el juego."
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: 'api/games/lobby/{gameUUID}'
-    metadata:
-      groupName: Game
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: |-
-        Obtiene los detalles de un juego específico por su UUID.
-
-        Este endpoint devuelve los detalles del juego, incluyendo los participantes y el nivel de lenguaje, si el juego está en estado "pending" o "in_progress".
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      gameUUID:
-        name: gameUUID
-        description: 'El UUID del juego. Ejemplo: "123e4567-e89b-12d3-a456-426614174000"'
-        required: true
-        example: 66529e01-d113-3473-8d6f-9e11e09332ea
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      gameUUID: 66529e01-d113-3473-8d6f-9e11e09332ea
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "status": "success",
-              "game": {
-                  "id": 1,
-                  "name": "Trivia Game",
-                  "status": "pending",
-                  "participants": [...],
-                  "language_level": {
-                      "language": {
-                          "name": "English"
-                      }
-                  }
-              }
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-              "status": "error",
-              "message": "Game not found"
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: 'api/games/join/{gameUUID}'
-    metadata:
-      groupName: Game
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: |-
-        Permite a un usuario unirse a un juego en estado "pending".
-
-        Este endpoint agrega un usuario al juego como participante.
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      gameUUID:
-        name: gameUUID
-        description: 'El UUID del juego al que se unirá el usuario. Ejemplo: "123e4567-e89b-12d3-a456-426614174000"'
-        required: true
-        example: 66529e01-d113-3473-8d6f-9e11e09332ea
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      gameUUID: 66529e01-d113-3473-8d6f-9e11e09332ea
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "status": "success",
-              "games": [...],
-              "game": {
-                  "id": 1,
-                  "name": "Trivia Game",
-                  "status": "pending"
-              }
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-              "status": "error",
-              "message": "Game not found"
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: 'api/games/leave/{gameUUID}'
-    metadata:
-      groupName: Game
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: |-
-        Permite a un usuario abandonar un juego.
-
-        Este endpoint permite a un usuario dejar un juego. Si el usuario es el host, se eliminarán todos los participantes y el juego.
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      gameUUID:
-        name: gameUUID
-        description: 'El UUID del juego. Ejemplo: "123e4567-e89b-12d3-a456-426614174000"'
-        required: true
-        example: 66529e01-d113-3473-8d6f-9e11e09332ea
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      gameUUID: 66529e01-d113-3473-8d6f-9e11e09332ea
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "status": "success",
-              "games": [...]
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-              "status": "error",
-              "message": "Game not found"
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/games/start
-    metadata:
-      groupName: Game
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: |-
-        Inicia un juego que está en estado "pending".
-
-        Este endpoint cambia el estado del juego a "in_progress" y comienza la partida.
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      roomUUID:
-        name: roomUUID
-        description: 'El UUID del juego que se va a iniciar. Ejemplo: "123e4567-e89b-12d3-a456-426614174000"'
-        required: true
-        example: 66529e01-d113-3473-8d6f-9e11e09332ea
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      roomUUID: 66529e01-d113-3473-8d6f-9e11e09332ea
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "status": "success",
-              "message": "Game started",
-              "data": {
-                  "id": 1,
-                  "name": "Trivia Game",
-                  "status": "in_progress"
-              }
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-              "status": "error",
-              "message": "Game not found"
+              "error": "Error al traducir: Error en la API de Lara"
           }
         headers: []
         description: ''
