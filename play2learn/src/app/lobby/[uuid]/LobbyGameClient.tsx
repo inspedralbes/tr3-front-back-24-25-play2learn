@@ -34,7 +34,6 @@ export default function LobbyGameClient() {
     name: string;
     username: string;
     profile_pic: string;
-    username: string;
   }
 
   interface Participant {
@@ -142,9 +141,11 @@ export default function LobbyGameClient() {
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 shadow-xl">
           {/* Players List */}
           <div className="mb-6 sm:mb-8">
+            {/* Aqui posem el numero de jugadors connectats */}
             <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4">
               Jugadores Conectados ({participants.length})
             </h2>
+            {/* Aqui fem la llista de jugadors connectats amb un map i utilitzant el component AvatarUserProfile */}
             <div className="space-y-2 sm:space-y-3">
               {participants.map((player) => (
                 <div

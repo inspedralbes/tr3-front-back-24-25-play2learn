@@ -587,32 +587,42 @@ class GameController extends Controller
     public function storeStatsFinishGame(Request $request)
     {
         try {
+            // Recollim els diferents $request que arriven com uuid(string) i language(string)
             $uuid = $request->uuid;
             $language_string = $request->language;
 
+            // Busquem per el uuid que es unic el Game i canviem el seu status a finished
             $game = Game::where('uuid', $uuid)->first();
             $game->status = 'finished';
             $game->save();
 
+            //Seguidament per el string del name de language que es unic tambe podem recollir el Language
             $language = Language::where('name', $language_string)->first();
             Log::info($language);
+            // Busquem en la taula GameUser que es una taula que relaciona el game amb el user i l'ordeenem per points.
             $gameUsers = GameUser::where('game_id', $game->id)
                 ->orderBy('points', 'desc')
                 ->get();
 
+            // Com el game te diversos users fem un foreach per poder actualitzar les estadistiques i també guardar/crear el historial
             foreach ($gameUsers as $index => $gameUser) {
+                // Aqui creem el history d'aquest game per poder tenirlo amb el socre i en que posició va acabar el user que
+                // com vam fer un orderBy Points ja esta ordenat.
                 $gameHistoryUser = GameHistoryUsers::where('game_id', $game->id)
                     ->where('user_id', $gameUser->user_id)->first();
                 $gameHistoryUser->score = $gameUser->points;
                 $gameHistoryUser->result = $index + 1;
                 $gameHistoryUser->save();
 
+                //Despres busquem les estadistiques del user per el llenguatge ja que nosaltres dividim les stats per el user
+                // i el llenguatge i utilitzem una funció creada per actualitzar el nivell que es un algoritme
+                // on tenim em compte l'experiencia ganada i com el nivell te un max expeprience que te la taula de Level
                 $statsUserLanguage = StatsUserLanguage::where('language_id', $language->id)
                     ->where('user_id', $gameUser->user_id)
                     ->first();
-
                 $this->updateUserExperience($statsUserLanguage, $gameUser);
 
+                //Despres actualitzem les stats que no necesiten tant algoritme
                 $statsUserLanguage->total_games = $statsUserLanguage->total_games + 1;
                 $statsUserLanguage->total_experience += $gameUser->points / 2;
                 if($index === 0)

@@ -15,36 +15,6 @@ class SocketController {
       "grape",
     ];
 
-    // let words = {
-    //   'es': ["hola",
-    //     "por favor",
-    //     "gracias",
-    //     "disculpar",
-    //     "si",
-    //     "no",
-    //     "amigo",
-    //     "amor",
-    //     "beber"],
-    //   'es': ["hello",
-    //     "please",
-    //     "thank you",
-    //     "sorry",
-    //     "yes",
-    //     "no",
-    //     "friend",
-    //     "love",
-    //     "drink"],
-    //   'fr': ["Bon jour",
-    //     "please",
-    //     "thank you",
-    //     "sorry",
-    //     "yes",
-    //     "no",
-    //     "friend",
-    //     "love",
-    //     "drink"],
-    // };
-
     let words = ["hola",
       "por favor",
       "gracias",
@@ -167,33 +137,7 @@ class SocketController {
       console.log("A user connected");
       // console.log(socket);
       users.push({ id: socket.id, room: null });
-      socket.on("startGame", async ({ token, roomUUID, language }) => {
-        const response = await apiRequest("/games/start", token, "POST", {
-          roomUUID,
-        });
-        const sortedTurns = response.data.participants.sort(
-          () => Math.random() - 0.5
-        );
-
-        response.data.participants = sortedTurns;
-
-        // console.log(sortedTurns);
-        confGame.push({
-          room: roomUUID,
-          turn: 1,
-          players: sortedTurns,
-          guessesErrors: 0,
-          game_num_random: Math.floor(Math.random() * 3) + 1,
-          game_num_rounds: 1,
-          game_time_max: response.data.max_time,
-          game: response.data,
-          showLeader: false,
-          currentWord: ''
-        });
-
-        await generateWordHangman(roomUUID, language, token);
-        io.to(roomUUID).emit("gameStarted", response);
-      });
+      
 
       function toggleLanguage(language) {
         socket.leave("Castellano");
@@ -241,6 +185,34 @@ class SocketController {
         io.to(language).emit("getLobbies", response);
       });
 
+      socket.on("startGame", async ({ token, roomUUID, language }) => {
+        const response = await apiRequest("/games/start", token, "POST", {
+          roomUUID,
+        });
+        const sortedTurns = response.data.participants.sort(
+          () => Math.random() - 0.5
+        );
+
+        response.data.participants = sortedTurns;
+
+        // console.log(sortedTurns);
+        confGame.push({
+          room: roomUUID,
+          turn: 1,
+          players: sortedTurns,
+          guessesErrors: 0,
+          game_num_random: Math.floor(Math.random() * 3) + 1,
+          game_num_rounds: 1,
+          game_time_max: response.data.max_time,
+          game: response.data,
+          showLeader: false,
+          currentWord: ''
+        });
+
+        await generateWordHangman(roomUUID, language, token);
+        io.to(roomUUID).emit("gameStarted", response);
+      });
+      
       socket.on('roundRoom', async (data) => {
         console.log("Contador", data)
         let game = confGame.find((game) => game.room === data.uuid);
